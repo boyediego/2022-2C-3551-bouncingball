@@ -14,8 +14,6 @@ namespace TGC.MonoGame.TP.Models.Ball
     public class Ball : Model3D
     {
         private Matrix World;
-        private Matrix Translation;
-
         private Vector3 color;
 
         Random r = new Random((int)DateTime.Now.Ticks);
