@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using TGC.MonoGame.TP.Cameras;
+using TGC.MonoGame.TP.Models.Ball;
 using TGC.MonoGame.TP.Models.Scene;
 
 namespace TGC.MonoGame.TP
@@ -41,7 +42,7 @@ namespace TGC.MonoGame.TP
         private GraphicsDeviceManager Graphics { get; }
         private Camera Camera { get; set; }
         private Scenario Scenario;
-
+        private Ball bola;
         /// <summary>
         ///     Se llama una sola vez, al principio cuando se ejecuta el ejemplo.
         ///     Escribir aqui el codigo de inicializacion: el procesamiento que podemos pre calcular para nuestro juego.
@@ -73,8 +74,8 @@ namespace TGC.MonoGame.TP
         /// </summary>
         protected override void LoadContent()
         {
-            Scenario = new Scenario();
-            Scenario.CreateModel(Content);
+            Scenario = new Scenario(Content);
+            bola = new Ball(Content);
             base.LoadContent();
         }
 
@@ -105,6 +106,7 @@ namespace TGC.MonoGame.TP
             // Aca deberiamos poner toda la logia de renderizado del juego.
             GraphicsDevice.Clear(Color.Black);
             Scenario.Draw(gameTime, Camera.View, Camera.Projection);
+            bola.Draw(gameTime,Camera.View, Camera.Projection);
         }
 
         /// <summary>

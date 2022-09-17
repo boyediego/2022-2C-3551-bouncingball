@@ -34,7 +34,7 @@ namespace TGC.MonoGame.TP.Models.Ball
             var effect = Model.Meshes.FirstOrDefault().Effects.FirstOrDefault() as BasicEffect;
 
 
-            color = new Vector3((float)r.NextDouble(), (float)r.NextDouble(), (float)r.NextDouble());
+            color = new Vector3(1,0,0);
 
 
             // Assign the mesh effect
@@ -80,7 +80,7 @@ namespace TGC.MonoGame.TP.Models.Ball
 
 
                 // We set the main matrices for each mesh to draw
-                Effect.Parameters["World"].SetValue(meshWorld * World);
+                Effect.Parameters["World"].SetValue(meshWorld * World * Matrix.CreateScale(0.2f) * Matrix.CreateTranslation(new Vector3(0,130,0)));
 
 
                 // Draw the mesh
