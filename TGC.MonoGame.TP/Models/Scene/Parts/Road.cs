@@ -16,18 +16,24 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts
     {
         private Vector3 ObjectStartPosition;
         private float rotationAngle;
+        private static Texture2D texture;
 
-        private Vector3 color;
         private static Random r = new Random((int)DateTime.Now.Ticks);
 
-        public Road(ContentManager content) : base(content, "scene/basics/calle")
+        public Road(ContentManager content) : base(content, "scene/basics/road_square")
         {
         }
 
         public override void CreateModel(ContentManager content)
         {
-            Effect = content.Load<Effect>(ContentFolderEffects + "BasicShader");
-            color = new Vector3((float)r.NextDouble() , (float)r.NextDouble(), (float)r.NextDouble());
+            Effect = content.Load<Effect>(ContentFolderEffects + "TextureShader");
+            var effect = Model.Meshes.FirstOrDefault().Effects.FirstOrDefault() as BasicEffect;
+            if (effect != null) //TODO LOAD ALL MODELS OUTSIDE AND USE IT
+            {
+                texture = effect.Texture;
+            }
+
+
             SetEffect(Effect);
             
         }
@@ -47,7 +53,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts
 
         public override void SetCustomEffectParameters(Effect effect)
         {
-            effect.Parameters["DiffuseColor"].SetValue(color);
+            Effect.Parameters["ModelTexture"].SetValue(texture);
         }
     }
 

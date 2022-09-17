@@ -14,17 +14,23 @@ namespace TGC.MonoGame.TP.Models.Ball
     public class Ball : Model3D
     {
         
-        private Vector3 color;
+        
         private Random r = new Random((int)DateTime.Now.Ticks);
+        private static Texture2D texture;//FIXME
 
-        public Ball(ContentManager content) : base(content, "balls/sphere")
+        public Ball(ContentManager content) : base(content, "balls/sphere1")
         {
         }
 
         public override void CreateModel(ContentManager content)
         {
-            Effect = content.Load<Effect>(ContentFolderEffects + "BasicShader");
-            color = new Vector3(1, 0, 0);
+            Effect = content.Load<Effect>(ContentFolderEffects + "TextureShader");
+            var effect = Model.Meshes.FirstOrDefault().Effects.FirstOrDefault() as BasicEffect;
+            if (effect != null) //TODO LOAD ALL MODELS OUTSIDE AND USE IT
+            {
+                texture = effect.Texture;
+            }
+
             SetEffect(Effect);
             base.ScaleMatrix = Matrix.CreateScale(0.55f);
             base.TranslationMatrix = Matrix.CreateTranslation(new Vector3(0, 130, 0));
@@ -38,7 +44,7 @@ namespace TGC.MonoGame.TP.Models.Ball
 
         public override void SetCustomEffectParameters(Effect effect)
         {
-            effect.Parameters["DiffuseColor"].SetValue(color);
+            Effect.Parameters["ModelTexture"].SetValue(texture);
         }
 
     }
