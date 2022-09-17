@@ -7,6 +7,7 @@ using System.Reflection.Metadata;
 using System.Text;
 using TGC.MonoGame.TP.Models.Commons;
 using TGC.MonoGame.TP.Models.Scene.Parts;
+using TGC.MonoGame.TP.Models.Scene.Parts.Obstacule.Base;
 
 namespace TGC.MonoGame.TP.Models.Scene.Builder
 {
@@ -119,6 +120,13 @@ namespace TGC.MonoGame.TP.Models.Scene.Builder
             this.CurrentRoadDirection = newDirection;
             
             models.Add(road);
+            return this;
+        }
+
+        public override SceneBuilder AddObstacule(Obstacule cubeObstacule)
+        {
+            cubeObstacule.SetPositionFromOrigin(CurrentCenter + new Vector3(0, GameParams.ObstacleAltitudeOffset, 0));
+            models.Add(cubeObstacule);
             return this;
         }
     }

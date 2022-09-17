@@ -63,7 +63,7 @@ namespace TGC.MonoGame.TP
 
             foreach(IGameModel m in gamesModels)
             {
-                m.Update(gameTime, Keyboard.GetState(), null);
+                m.Update(gameTime, Keyboard.GetState(), gamesModels);
             }
 
             Camera.Update(gameTime);

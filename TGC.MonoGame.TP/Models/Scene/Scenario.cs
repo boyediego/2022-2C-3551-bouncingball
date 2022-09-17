@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Text;
 using TGC.MonoGame.TP.Models.Commons;
 using TGC.MonoGame.TP.Models.Scene.Builder;
+using TGC.MonoGame.TP.Models.Scene.Parts;
+using TGC.MonoGame.TP.Models.Scene.Parts.Obstacule;
 
 namespace TGC.MonoGame.TP.Models.Scene
 {
@@ -25,11 +27,17 @@ namespace TGC.MonoGame.TP.Models.Scene
             SceneBuilder builder = new SimpleSceneBuilder(content);
             builder
                 .StartRoad()
-                .AddForward(2)
+                .AddForward()
+                .AddObstacule(new CubeObstacule(content).SetMovementDirection(Vector3.Left).SetSpeed(2500).SetMaxMovement(750))
+                .AddForward()
                 .AddLeft(3)
                 .AddBackward(3)
                 .AddLeft(3)
-                .AddForward(8)
+                .AddLeft()
+                .AddObstacule(new CubeObstacule(content).SetMovementDirection(Vector3.Forward).SetSpeed(2500).SetMaxMovement(450))
+                .AddLeft()
+                .AddForward(6)
+                .AddForward(2)
                 .Up()
                 .AddLeft(10)
                 .AddBackward(3)
@@ -55,7 +63,10 @@ namespace TGC.MonoGame.TP.Models.Scene
 
         public void Update(GameTime gameTime, KeyboardState keyboardState, List<IGameModel> otherInteractiveObjects)
         {
-           //UPDATE OBJECT WITH MOVENTS
+            foreach (Model3D model in sceneObjects)
+            {
+                model.Update(gameTime, keyboardState, otherInteractiveObjects);
+            }
         }
     }
 }

@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using TGC.MonoGame.TP.Utilities;
 
 namespace TGC.MonoGame.TP.Models.Commons
@@ -15,13 +16,35 @@ namespace TGC.MonoGame.TP.Models.Commons
 
         protected Model Model { get; set; }
         protected Effect Effect { get; set; }
-        protected Matrix Translation;
+        protected Matrix WorldMatrix
+        {
+            get
+            {
+                return ScaleMatrix * RotationMatrix * TranslationMatrix;
+            }
+        }
+        protected Matrix ScaleMatrix;
+        protected Matrix TranslationMatrix;
         protected Matrix RotationMatrix;
 
         public Model3D(ContentManager content, String pathModel)
         {
             Model = content.Load<Model>(ContentFolder3D + pathModel);
+            ScaleMatrix = Matrix.Identity;
+            TranslationMatrix = Matrix.Identity;
+            RotationMatrix = Matrix.Identity;
             CreateModel(content);
+        }
+
+        protected void SetEffect(Effect effect)
+        {
+            foreach (var mesh in Model.Meshes)
+            {
+                foreach (var meshPart in mesh.MeshParts)
+                {
+                    meshPart.Effect = Effect;
+                }
+            }
         }
 
         public Vector3 GetModelSize()
@@ -31,12 +54,36 @@ namespace TGC.MonoGame.TP.Models.Commons
 
         public Vector3 GetTranlationFromOrigin()
         {
-            return Translation.Translation;
+            return TranslationMatrix.Translation;
         }
 
         public abstract void CreateModel(ContentManager content);
 
-        public abstract void Draw(GameTime gameTime, Matrix view, Matrix projection);
+        public virtual void Draw(GameTime gameTime, Matrix view, Matrix projection)
+        {
+            Effect.Parameters["View"].SetValue(view);
+            Effect.Parameters["Projection"].SetValue(projection);
+            var modelMeshesBaseTransforms = new Matrix[Model.Bones.Count];
+            Model.CopyAbsoluteBoneTransformsTo(modelMeshesBaseTransforms);
+
+            // For each mesh in the model,
+            foreach (var mesh in Model.Meshes)
+            {
+                // Obtain the world matrix for that mesh (relative to the parent)
+                var meshWorld = modelMeshesBaseTransforms[mesh.ParentBone.Index];
+                SetCustomEffectParameters(Effect);
+
+
+                // We set the main matrices for each mesh to draw
+                Effect.Parameters["World"].SetValue(meshWorld * WorldMatrix);
+
+
+                // Draw the mesh
+                mesh.Draw();
+            }
+        }
+
+        public abstract void SetCustomEffectParameters(Effect effect);
 
         public virtual void Update(GameTime gameTime, KeyboardState keyboardState, List<IGameModel> otherInteractiveObjects)
         {

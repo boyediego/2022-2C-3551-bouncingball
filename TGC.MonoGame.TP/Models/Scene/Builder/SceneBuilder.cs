@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using TGC.MonoGame.TP.Models.Commons;
+using TGC.MonoGame.TP.Models.Scene.Parts.Obstacule.Base;
 
 namespace TGC.MonoGame.TP.Models.Scene.Builder
 {
@@ -18,6 +19,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Builder
         public abstract SceneBuilder AddLeft();
         public abstract SceneBuilder Up();
         public abstract SceneBuilder Down();
+        public abstract SceneBuilder AddObstacule(Obstacule cubeObstacule);
 
         public SceneBuilder AddForward(int times)
         {
@@ -79,6 +81,8 @@ namespace TGC.MonoGame.TP.Models.Scene.Builder
         {
             return this.models;
         }
-            
+
+        
+        
     }
 }

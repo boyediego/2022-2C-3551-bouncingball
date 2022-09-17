@@ -14,11 +14,10 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts
 {
     public class Road : Model3D
     {
-        protected Matrix World;
-        
-        
-        private Vector3 color;
+        private Vector3 ObjectStartPosition;
+        private float rotationAngle;
 
+        private Vector3 color;
         private static Random r = new Random((int)DateTime.Now.Ticks);
 
         public Road(ContentManager content) : base(content, "scene/basics/calle")
@@ -28,72 +27,26 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts
         public override void CreateModel(ContentManager content)
         {
             Effect = content.Load<Effect>(ContentFolderEffects + "BasicShader");
-
-
-            // Get the first texture we find
-            // The city model only contains a single texture
-            var effect = Model.Meshes.FirstOrDefault().Effects.FirstOrDefault() as BasicEffect;
             color = new Vector3((float)r.NextDouble() , (float)r.NextDouble(), (float)r.NextDouble());
-
-            // Assign the mesh effect
-            // A model contains a collection of meshes
-            foreach (var mesh in Model.Meshes)
-            {
-                // A mesh contains a collection of parts
-                foreach (var meshPart in mesh.MeshParts)
-                {
-                    // Assign the loaded effect to each part
-                    meshPart.Effect = Effect;
-                }
-            }
-
-            // Create a list of places where the city model will be drawn
-
-            World = Matrix.Identity;
-            RotationMatrix = Matrix.Identity;
+            SetEffect(Effect);
         }
 
         public void SetPositionFromOrigin(Vector3 position)
         {
-            Translation = Matrix.CreateTranslation(position);
-            World = Matrix.Identity * Translation;
+            this.ObjectStartPosition = position;
+            TranslationMatrix = Matrix.CreateTranslation(ObjectStartPosition);
         }
 
         public void Rotate(float angle)
         {
-            RotationMatrix = Matrix.CreateRotationY(angle);
+            rotationAngle = angle;
+            RotationMatrix = Matrix.CreateRotationY(rotationAngle);
         }
 
 
-
-        public override void Draw(GameTime gameTime, Matrix view, Matrix projection)
+        public override void SetCustomEffectParameters(Effect effect)
         {
-            Effect.Parameters["View"].SetValue(view);
-            Effect.Parameters["Projection"].SetValue(projection);
-
-
-            var modelMeshesBaseTransforms = new Matrix[Model.Bones.Count];
-            Model.CopyAbsoluteBoneTransformsTo(modelMeshesBaseTransforms);
-
-
-
-            // For each mesh in the model,
-            foreach (var mesh in Model.Meshes)
-            {
-                // Obtain the world matrix for that mesh (relative to the parent)
-                var meshWorld = modelMeshesBaseTransforms[mesh.ParentBone.Index];
-
-
-                Effect.Parameters["DiffuseColor"].SetValue(color);
-
-
-                // We set the main matrices for each mesh to draw
-                Effect.Parameters["World"].SetValue(meshWorld * RotationMatrix * World);
-
-
-                // Draw the mesh
-                mesh.Draw();
-            }
+            effect.Parameters["DiffuseColor"].SetValue(color);
         }
     }
 
