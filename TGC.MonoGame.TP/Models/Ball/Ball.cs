@@ -26,7 +26,7 @@ namespace TGC.MonoGame.TP.Models.Ball
             Effect = content.Load<Effect>(ContentFolderEffects + "BasicShader");
             color = new Vector3(1, 0, 0);
             SetEffect(Effect);
-            base.ScaleMatrix = Matrix.CreateScale(0.35f);
+            base.ScaleMatrix = Matrix.CreateScale(0.55f);
             base.TranslationMatrix = Matrix.CreateTranslation(new Vector3(0, 130, 0));
         }
 

@@ -14,7 +14,6 @@ namespace TGC.MonoGame.TP.Models.Scene.Builder
     public class SimpleSceneBuilder : SceneBuilder
     {
 
-        
         private Vector3 CurrentRoadDirection;
         private Vector3 CurrentCenter;
         
@@ -40,6 +39,16 @@ namespace TGC.MonoGame.TP.Models.Scene.Builder
         {
             Road road = new Road(this.contentManager);
             this.CurrentCenter = new Vector3(0, 0, 0);
+            this.CurrentRoadDirection = Vector3.Forward;
+            models.Add(road);
+            return this;
+        }
+
+
+        public override SceneBuilder StartRoad(Vector3 initialPosition)
+        {
+            Road road = new Road(this.contentManager);
+            this.CurrentCenter = initialPosition;
             this.CurrentRoadDirection = Vector3.Forward;
             models.Add(road);
             return this;
@@ -129,5 +138,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Builder
             models.Add(obstacule);
             return this;
         }
+
+       
     }
 }

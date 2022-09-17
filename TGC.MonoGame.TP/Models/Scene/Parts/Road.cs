@@ -29,6 +29,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts
             Effect = content.Load<Effect>(ContentFolderEffects + "BasicShader");
             color = new Vector3((float)r.NextDouble() , (float)r.NextDouble(), (float)r.NextDouble());
             SetEffect(Effect);
+            
         }
 
         public void SetPositionFromOrigin(Vector3 position)

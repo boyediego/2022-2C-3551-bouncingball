@@ -1,6 +1,8 @@
-﻿using Microsoft.Xna.Framework.Content;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using System;
 using System.Collections.Generic;
+
 using System.Text;
 using TGC.MonoGame.TP.Models.Commons;
 using TGC.MonoGame.TP.Models.Scene.Parts.Obstacule.Base;
@@ -12,6 +14,8 @@ namespace TGC.MonoGame.TP.Models.Scene.Builder
         protected List<Model3D> models;
         protected ContentManager contentManager;
 
+
+        public abstract SceneBuilder StartRoad(Vector3 initialPosition);
         public abstract SceneBuilder StartRoad();
         public abstract SceneBuilder AddForward();
         public abstract SceneBuilder AddRight();
