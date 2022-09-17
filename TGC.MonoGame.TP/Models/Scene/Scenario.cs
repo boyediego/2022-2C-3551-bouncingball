@@ -13,6 +13,8 @@ namespace TGC.MonoGame.TP.Models.Scene
     {
         private List<Model3D> sceneObjects;
 
+        public List<Model3D> models { get { return this.sceneObjects; } }
+
         public void CreateModel(ContentManager content)
         {
             SceneBuilder builder = new SimpleSceneBuilder(content);

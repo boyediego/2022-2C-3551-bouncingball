@@ -75,33 +75,6 @@ namespace TGC.MonoGame.TP
         {
             Scenario = new Scenario();
             Scenario.CreateModel(Content);
-
-            /*
-            Cube = new Road(Content);
-            Cube.color = new Vector3(1, 0, 0);
-            Cube1 = new Road(Content);
-            Cube1.color = new Vector3(0, 1, 0);
-            Cube.SetPositionFromOrigin(new Vector3(-500, -500, 0));
-
-            
-            
-            Cube1.SetPositionFromOrigin(new Vector3(-500, -500, 0));
-            new Vector3(-500, -500,-893)
-              Cube1 = new Road(Content);
-              Cube2 = new Road(Content);
-              Cube3 = new Road(Content);
-              Curva = new CurveRoad(Content);
-              ball = new Ball(Content);
-
-              Cube.SetPositionFromOrigin(new Vector3(-500, -500,0 ));
-              Cube1.SetPositionFromOrigin(new Vector3(-500, -500,-893));
-              Cube2.SetPositionFromOrigin(new Vector3(-500, -500, -893*2));
-
-              Curva.Rotate(-MathHelper.PiOver2);
-              Curva.SetPositionFromOrigin(new Vector3(-395, -500, (-893 * 3)+103));
-
-              Cube3.SetPositionFromOrigin(new Vector3(290+207, -500, (-893 * 3) + 103));
-              Cube3.Rotate(MathHelper.PiOver2);*/
             base.LoadContent();
         }
 
@@ -132,13 +105,6 @@ namespace TGC.MonoGame.TP
             // Aca deberiamos poner toda la logia de renderizado del juego.
             GraphicsDevice.Clear(Color.Black);
             Scenario.Draw(gameTime, Camera.View, Camera.Projection);
-            /*
-            Cube.Draw(gameTime, Camera.View, Camera.Projection);
-            Cube1.Draw(gameTime, Camera.View, Camera.Projection);
-           Cube2.Draw(gameTime, Camera.View, Camera.Projection);
-             Cube3.Draw(gameTime, Camera.View, Camera.Projection);
-             Curva.Draw(gameTime, Camera.View, Camera.Projection);
-             ball.Draw(gameTime, Camera.View, Camera.Projection);*/
         }
 
         /// <summary>
@@ -148,7 +114,6 @@ namespace TGC.MonoGame.TP
         {
             // Libero los recursos.
             Content.Unload();
-
             base.UnloadContent();
         }
     }
