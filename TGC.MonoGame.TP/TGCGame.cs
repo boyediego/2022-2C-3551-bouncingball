@@ -1,7 +1,10 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using TGC.MonoGame.TP.Cameras;
+using TGC.MonoGame.TP.Models.Scene;
 
 namespace TGC.MonoGame.TP
 {
@@ -36,13 +39,8 @@ namespace TGC.MonoGame.TP
         }
 
         private GraphicsDeviceManager Graphics { get; }
-        private SpriteBatch SpriteBatch { get; set; }
-        private Model Model { get; set; }
-        private Effect Effect { get; set; }
-        private float Rotation { get; set; }
-        private Matrix World { get; set; }
-        private Matrix View { get; set; }
-        private Matrix Projection { get; set; }
+        private Camera Camera { get; set; }
+        private Scenario Scenario;
 
         /// <summary>
         ///     Se llama una sola vez, al principio cuando se ejecuta el ejemplo.
@@ -51,20 +49,19 @@ namespace TGC.MonoGame.TP
         protected override void Initialize()
         {
             // La logica de inicializacion que no depende del contenido se recomienda poner en este metodo.
+            var screenSize = new Point(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height / 2);
+            Camera = new FreeCamera(GraphicsDevice.Viewport.AspectRatio, new Vector3(0, 700, 3500), screenSize);
 
-            // Apago el backface culling.
-            // Esto se hace por un problema en el diseno del modelo del logo de la materia.
-            // Una vez que empiecen su juego, esto no es mas necesario y lo pueden sacar.
             var rasterizerState = new RasterizerState();
-            rasterizerState.CullMode = CullMode.None;
+            rasterizerState.CullMode = CullMode.CullCounterClockwiseFace;
             GraphicsDevice.RasterizerState = rasterizerState;
-            // Seria hasta aca.
+            GraphicsDevice.BlendState = BlendState.Opaque;
 
-            // Configuramos nuestras matrices de la escena.
-            World = Matrix.Identity;
-            View = Matrix.CreateLookAt(Vector3.UnitZ * 150, Vector3.Zero, Vector3.Up);
-            Projection =
-                Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, GraphicsDevice.Viewport.AspectRatio, 1, 250);
+            // Configuro el tamaño de la pantalla
+            Graphics.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width - 100;
+            Graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height - 100;
+            Graphics.ApplyChanges();
+
 
             base.Initialize();
         }
@@ -76,23 +73,35 @@ namespace TGC.MonoGame.TP
         /// </summary>
         protected override void LoadContent()
         {
-            // Aca es donde deberiamos cargar todos los contenido necesarios antes de iniciar el juego.
-            SpriteBatch = new SpriteBatch(GraphicsDevice);
+            Scenario = new Scenario();
+            Scenario.CreateModel(Content);
 
-            // Cargo el modelo del logo.
-            Model = Content.Load<Model>(ContentFolder3D + "tgc-logo/tgc-logo");
+            /*
+            Cube = new Road(Content);
+            Cube.color = new Vector3(1, 0, 0);
+            Cube1 = new Road(Content);
+            Cube1.color = new Vector3(0, 1, 0);
+            Cube.SetPositionFromOrigin(new Vector3(-500, -500, 0));
 
-            // Cargo un efecto basico propio declarado en el Content pipeline.
-            // En el juego no pueden usar BasicEffect de MG, deben usar siempre efectos propios.
-            Effect = Content.Load<Effect>(ContentFolderEffects + "BasicShader");
+            
+            
+            Cube1.SetPositionFromOrigin(new Vector3(-500, -500, 0));
+            new Vector3(-500, -500,-893)
+              Cube1 = new Road(Content);
+              Cube2 = new Road(Content);
+              Cube3 = new Road(Content);
+              Curva = new CurveRoad(Content);
+              ball = new Ball(Content);
 
-            // Asigno el efecto que cargue a cada parte del mesh.
-            // Un modelo puede tener mas de 1 mesh internamente.
-            foreach (var mesh in Model.Meshes)
-                // Un mesh puede tener mas de 1 mesh part (cada 1 puede tener su propio efecto).
-            foreach (var meshPart in mesh.MeshParts)
-                meshPart.Effect = Effect;
+              Cube.SetPositionFromOrigin(new Vector3(-500, -500,0 ));
+              Cube1.SetPositionFromOrigin(new Vector3(-500, -500,-893));
+              Cube2.SetPositionFromOrigin(new Vector3(-500, -500, -893*2));
 
+              Curva.Rotate(-MathHelper.PiOver2);
+              Curva.SetPositionFromOrigin(new Vector3(-395, -500, (-893 * 3)+103));
+
+              Cube3.SetPositionFromOrigin(new Vector3(290+207, -500, (-893 * 3) + 103));
+              Cube3.Rotate(MathHelper.PiOver2);*/
             base.LoadContent();
         }
 
@@ -107,12 +116,10 @@ namespace TGC.MonoGame.TP
 
             // Capturar Input teclado
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
-                //Salgo del juego.
                 Exit();
 
-            // Basado en el tiempo que paso se va generando una rotacion.
-            Rotation += Convert.ToSingle(gameTime.ElapsedGameTime.TotalSeconds);
-
+            Scenario.Update(gameTime, Keyboard.GetState(), null);
+            Camera.Update(gameTime);
             base.Update(gameTime);
         }
 
@@ -124,19 +131,14 @@ namespace TGC.MonoGame.TP
         {
             // Aca deberiamos poner toda la logia de renderizado del juego.
             GraphicsDevice.Clear(Color.Black);
-
-            // Para dibujar le modelo necesitamos pasarle informacion que el efecto esta esperando.
-            Effect.Parameters["View"].SetValue(View);
-            Effect.Parameters["Projection"].SetValue(Projection);
-            Effect.Parameters["DiffuseColor"].SetValue(Color.DarkBlue.ToVector3());
-            var rotationMatrix = Matrix.CreateRotationY(Rotation);
-
-            foreach (var mesh in Model.Meshes)
-            {
-                World = mesh.ParentBone.Transform * rotationMatrix;
-                Effect.Parameters["World"].SetValue(World);
-                mesh.Draw();
-            }
+            Scenario.Draw(gameTime, Camera.View, Camera.Projection);
+            /*
+            Cube.Draw(gameTime, Camera.View, Camera.Projection);
+            Cube1.Draw(gameTime, Camera.View, Camera.Projection);
+           Cube2.Draw(gameTime, Camera.View, Camera.Projection);
+             Cube3.Draw(gameTime, Camera.View, Camera.Projection);
+             Curva.Draw(gameTime, Camera.View, Camera.Projection);
+             ball.Draw(gameTime, Camera.View, Camera.Projection);*/
         }
 
         /// <summary>

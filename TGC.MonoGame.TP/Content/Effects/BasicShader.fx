@@ -33,6 +33,7 @@ struct VertexShaderOutput
 
 VertexShaderOutput MainVS(in VertexShaderInput input)
 {
+	
     // Clear the output
 	VertexShaderOutput output = (VertexShaderOutput)0;
     // Model space to World space
