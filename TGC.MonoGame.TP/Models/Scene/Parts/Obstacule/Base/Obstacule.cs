@@ -17,11 +17,25 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Obstacule.Base
     {
         protected Vector3 startPosition;
         protected Vector3 currentPosition;
+        public Vector3 InitialOffset;
 
         protected Obstacule(ContentManager content, string pathModel) : base(content, pathModel)
         {
+            InitialOffset = new Vector3(0, 0, 0);
             startPosition = new Vector3(0, 0, 0);
             currentPosition = startPosition;
+        }
+
+        public Obstacule Up(float amount)
+        {
+            this.InitialOffset += Vector3.Up * amount;
+            return this;
+        }
+
+        public Obstacule Down(float amount)
+        {
+            this.InitialOffset += Vector3.Down * amount;
+            return this;
         }
 
         public Obstacule SetPositionFromOrigin(Vector3 position)

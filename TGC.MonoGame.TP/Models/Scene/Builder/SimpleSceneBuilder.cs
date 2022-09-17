@@ -123,10 +123,10 @@ namespace TGC.MonoGame.TP.Models.Scene.Builder
             return this;
         }
 
-        public override SceneBuilder AddObstacule(Obstacule cubeObstacule)
+        public override SceneBuilder AddObstacule(Obstacule obstacule)
         {
-            cubeObstacule.SetPositionFromOrigin(CurrentCenter + new Vector3(0, GameParams.ObstacleAltitudeOffset, 0));
-            models.Add(cubeObstacule);
+            obstacule.SetPositionFromOrigin(CurrentCenter + new Vector3(0, GameParams.ObstacleAltitudeOffset, 0) + obstacule.InitialOffset);
+            models.Add(obstacule);
             return this;
         }
     }

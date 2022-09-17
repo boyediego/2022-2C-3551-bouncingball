@@ -16,7 +16,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Obstacule.Base
     public abstract class BouncingObstacule : Obstacule
     {
 
-        private Vector3 color;
+        protected Vector3 color;
         protected Vector3 movementDirection;
         protected float speed;
         protected float maxMovementUnits;
@@ -27,15 +27,17 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Obstacule.Base
         {
         }
 
+
         public override void CreateModel(ContentManager content)
         {
-            Effect = content.Load<Effect>(ContentFolderEffects + "BasicShader");
-            color = new Vector3(0, 1, 0);
+            LoadEffectAndParameters(content);
             SetEffect(Effect);
             movementDirection = Vector3.Forward;
             speed = 0;
             maxMovementUnits = 0;
         }
+
+        protected abstract void LoadEffectAndParameters(ContentManager content);
 
         public BouncingObstacule SetMaxMovement(float maxUnits)
         {
@@ -49,6 +51,8 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Obstacule.Base
             return this;
         }
 
+      
+
         public BouncingObstacule SetMovementDirection(Vector3 direction)
         {
             movementDirection = direction;
@@ -60,7 +64,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Obstacule.Base
         {
             float time = (float)gameTime.ElapsedGameTime.Milliseconds / 1000;
             //TODO check collition to another object and change direction
-            if (Vector3.DistanceSquared(startPosition, currentPosition) > MathF.Pow(maxMovementUnits, 2))
+            if (Vector3.DistanceSquared(startPosition, currentPosition) > MathF.Pow(maxMovementUnits, 2) || CheckCollision(gameTime, otherInteractiveObjects))
             {
                 movementDirection *= -1;
             }
@@ -68,6 +72,8 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Obstacule.Base
             currentPosition += movementDirection * speed * GameParams.ObstacleSpeedMultiplier * time;
             TranslationMatrix = Matrix.CreateTranslation(currentPosition);
         }
+
+        protected abstract Boolean CheckCollision(GameTime gameTime, List<IGameModel> otherInteractiveObjects);
 
         public override void SetCustomEffectParameters(Effect effect)
         {
