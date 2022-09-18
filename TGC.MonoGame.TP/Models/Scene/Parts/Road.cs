@@ -18,8 +18,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts
         private float rotationAngle;
         private static Texture2D texture;
 
-        private static Random r = new Random((int)DateTime.Now.Ticks);
-
+        
         public Road(ContentManager content) : base(content, "scene/basics/road_square")
         {
         }

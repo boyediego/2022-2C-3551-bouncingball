@@ -66,7 +66,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Builder
             }
 
             this.CurrentCenter += (newDirection * road.GetModelSize());
-            road.SetPositionFromOrigin(this.CurrentCenter);
+            road.SetPositionFromOrigin(this.CurrentCenter + newDirection );
             this.CurrentRoadDirection = newDirection;
             models.Add(road);
             return this;

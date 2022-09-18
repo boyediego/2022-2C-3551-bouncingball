@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Reflection.Metadata;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
@@ -30,12 +33,18 @@ namespace TGC.MonoGame.TP
 
         private GraphicsDeviceManager Graphics { get; }
         private Camera Camera { get; set; }
+        private FreeCamera FreeCamera { get; set; }
+        private FollowCamera TargetCamera { get; set; }
+
         private List<IGameModel> gamesModels = new List<IGameModel>();
 
         protected override void Initialize()
         {
             var screenSize = new Point(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height / 2);
-            Camera = new FreeCamera(GraphicsDevice.Viewport.AspectRatio, new Vector3(0, 700, 5500), screenSize);
+            FreeCamera = new FreeCamera(GraphicsDevice.Viewport.AspectRatio, new Vector3(0, 700, 5500), screenSize);
+            TargetCamera = new FollowCamera(GraphicsDevice.Viewport.AspectRatio);
+
+            Camera = TargetCamera;
 
             var rasterizerState = new RasterizerState();
             rasterizerState.CullMode = CullMode.CullCounterClockwiseFace;
@@ -50,18 +59,42 @@ namespace TGC.MonoGame.TP
             base.Initialize();
         }
 
+        private void PreloadResources()
+        {
+            
+        }
+
         protected override void LoadContent()
         {
+            PreloadResources();
+
+            Ball player = new Ball(Content);
             gamesModels.Add(new Scenario(Content));
-            gamesModels.Add(new Ball(Content));
+            gamesModels.Add(player);
+            TargetCamera.Target = player;
             base.LoadContent();
         }
+
         protected override void Update(GameTime gameTime)
         {
+            
+            float time = (float)gameTime.TotalGameTime.Milliseconds;
+
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            foreach(IGameModel m in gamesModels)
+
+            if (Keyboard.GetState().IsKeyDown(Keys.T) && (Camera is FreeCamera))
+            {
+                Camera = TargetCamera;
+            }
+            else if (Keyboard.GetState().IsKeyDown(Keys.F) && (Camera is FollowCamera))
+            {
+                Camera = FreeCamera;
+            }
+
+
+            foreach (IGameModel m in gamesModels)
             {
                 m.Update(gameTime, Keyboard.GetState(), gamesModels);
             }

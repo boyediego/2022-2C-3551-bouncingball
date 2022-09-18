@@ -16,7 +16,7 @@ namespace TGC.MonoGame.TP.Models.Commons
 
         protected Model Model { get; set; }
         protected Effect Effect { get; set; }
-        protected Matrix WorldMatrix
+        public Matrix WorldMatrix
         {
             get
             {
@@ -26,6 +26,22 @@ namespace TGC.MonoGame.TP.Models.Commons
         protected Matrix ScaleMatrix;
         protected Matrix TranslationMatrix;
         protected Matrix RotationMatrix;
+
+        public Vector3 Position
+        {
+            get
+            {
+                return TranslationMatrix.Translation;
+            }
+        }
+
+        public Matrix Rotation
+        {
+            get
+            {
+                return RotationMatrix;
+            }
+        }
 
         public Model3D(ContentManager content, String pathModel)
         {

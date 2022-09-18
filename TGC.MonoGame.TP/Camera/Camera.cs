@@ -11,6 +11,11 @@ namespace TGC.MonoGame.TP.Cameras
         public const float DefaultNearPlaneDistance = 0.1f;
         public const float DefaultFarPlaneDistance = 20000;
 
+        public Camera()
+        {
+
+        }
+
         public Camera(float aspectRatio, float nearPlaneDistance = DefaultNearPlaneDistance,
             float farPlaneDistance = DefaultFarPlaneDistance) : this(aspectRatio, nearPlaneDistance, farPlaneDistance,
             DefaultFieldOfViewDegrees)
