@@ -28,7 +28,7 @@ namespace TGC.MonoGame.TP.Models.Ball
         {
             Effect = content.Load<Effect>(ContentFolderEffects + "TextureShader");
             var effect = Model.Meshes.FirstOrDefault().Effects.FirstOrDefault() as BasicEffect;
-            if (effect != null) 
+            if (effect != null)
             {
                 texture = effect.Texture;
             }
@@ -36,6 +36,9 @@ namespace TGC.MonoGame.TP.Models.Ball
             SetEffect(Effect);
             base.ScaleMatrix = Matrix.CreateScale(0.55f);
             base.TranslationMatrix = Matrix.CreateTranslation(new Vector3(0, 130, 0));
+
+            //FIXME
+            RotationWithDirection = Matrix.Identity;
         }
 
         public void SetPositionFromOrigin(Vector3 position)
@@ -55,24 +58,23 @@ namespace TGC.MonoGame.TP.Models.Ball
         private Vector3 yPosition = new Vector3(0, 130, 0);
         private float speed = 0;
 
+
+        
         public override void Update(GameTime gameTime, KeyboardState keyboardState, List<IGameModel> otherInteractiveObjects)
         {
-            
-
-
-            var da = 0.01f;
+var da = 0.035f;
             if (keyboardState.IsKeyDown(Keys.Left)) { angle -= da; }
             if (keyboardState.IsKeyDown(Keys.P)) { angle += da; }
 
-            
+
             if (keyboardState.IsKeyDown(Keys.Up))
             {
-                speed = 10;
+                speed = 50;
             }
 
             else if (keyboardState.IsKeyDown(Keys.Down))
             {
-                speed = -10;
+                speed = -50;
             }
             else
             {
@@ -85,18 +87,21 @@ namespace TGC.MonoGame.TP.Models.Ball
             position += new Vector3(dirX, 0, dirZ) * -speed;
             position.Y = 130;
 
-            Spin(gameTime, speed);
+            Matrix SpinMatrix = Spin(gameTime, speed);
 
-            RotationMatrix *= Matrix.CreateFromAxisAngle(Vector3.Down, angle);
+            RotationWithDirection = Matrix.CreateFromAxisAngle(Vector3.Down, angle);
+            RotationMatrix = SpinMatrix * RotationWithDirection;
             TranslationMatrix = Matrix.CreateTranslation(position);
         }
 
 
-        private void Spin(GameTime gameTime, float speed)
+
+
+        private Matrix Spin(GameTime gameTime, float speed)
         {
             float time = ((float)gameTime.ElapsedGameTime.Milliseconds) / 1000;
-            currentSpinAngle += time * speed;
-            this.RotationMatrix = Matrix.CreateRotationX(-currentSpinAngle);
+            currentSpinAngle += time * (speed/2);
+            return Matrix.CreateRotationX(-currentSpinAngle);
         }
 
 

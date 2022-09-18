@@ -34,7 +34,7 @@ namespace TGC.MonoGame.TP
         private GraphicsDeviceManager Graphics { get; }
         private Camera Camera { get; set; }
         private FreeCamera FreeCamera { get; set; }
-        private FollowCamera TargetCamera { get; set; }
+        private TargetCamera TargetCamera { get; set; }
 
         private List<IGameModel> gamesModels = new List<IGameModel>();
 
@@ -42,7 +42,8 @@ namespace TGC.MonoGame.TP
         {
             var screenSize = new Point(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height / 2);
             FreeCamera = new FreeCamera(GraphicsDevice.Viewport.AspectRatio, new Vector3(0, 700, 5500), screenSize);
-            TargetCamera = new FollowCamera(GraphicsDevice.Viewport.AspectRatio);
+            
+            TargetCamera = new TargetCamera(GraphicsDevice.Viewport.AspectRatio, Vector3.One * 100f, Vector3.Zero);
 
             Camera = TargetCamera;
 
@@ -63,12 +64,12 @@ namespace TGC.MonoGame.TP
         {
             
         }
-
+        Ball player;
         protected override void LoadContent()
         {
             PreloadResources();
 
-            Ball player = new Ball(Content);
+            player = new Ball(Content);
             gamesModels.Add(new Scenario(Content));
             gamesModels.Add(player);
             TargetCamera.Target = player;
@@ -88,7 +89,7 @@ namespace TGC.MonoGame.TP
             {
                 Camera = TargetCamera;
             }
-            else if (Keyboard.GetState().IsKeyDown(Keys.F) && (Camera is FollowCamera))
+            else if (Keyboard.GetState().IsKeyDown(Keys.F) && (Camera is TargetCamera))
             {
                 Camera = FreeCamera;
             }

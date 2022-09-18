@@ -27,6 +27,8 @@ namespace TGC.MonoGame.TP.Models.Commons
         protected Matrix TranslationMatrix;
         protected Matrix RotationMatrix;
 
+        public Matrix RotationWithDirection { get; set; }
+
         public Vector3 Position
         {
             get
