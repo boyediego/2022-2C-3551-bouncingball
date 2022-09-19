@@ -74,7 +74,7 @@ namespace TGC.MonoGame.TP
             var skyBox = Content.Load<Model>(ContentFolder3D + "skybox/cube");
             var skyBoxTexture = Content.Load<TextureCube>(ContentFolderTextures + "/skyboxes/skybox/skybox");
             var skyBoxEffect = Content.Load<Effect>(ContentFolderEffects + "SkyBox");
-            SkyBox = new SkyBox(skyBox, skyBoxTexture, skyBoxEffect,4000);
+            SkyBox = new SkyBox(skyBox, skyBoxTexture, skyBoxEffect,5000);
 
 
             player = new Ball(Content);
@@ -116,25 +116,20 @@ namespace TGC.MonoGame.TP
         {
             GraphicsDevice.Clear(Color.Black);
 
-
-             foreach (IGameModel m in gamesModels)
-               {
-                   m.Draw(gameTime, Camera.View, Camera.Projection);
-               }
-
-            /*
-
             var originalRasterizerState = GraphicsDevice.RasterizerState;
             var rasterizerState = new RasterizerState();
             rasterizerState.CullMode = CullMode.None;
             Graphics.GraphicsDevice.RasterizerState = rasterizerState;
-            
 
             SkyBox.Draw(Camera.View, Camera.Projection, Camera.Position);
 
             GraphicsDevice.RasterizerState = originalRasterizerState;
-            
-             */
+
+           foreach (IGameModel m in gamesModels)
+            {
+                m.Draw(gameTime, Camera.View, Camera.Projection);
+            }
+
 
         }
 

@@ -51,7 +51,12 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
 
 float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
 {
-    return float4(texCUBE(SkyBoxSampler, normalize(input.TextureCoordinate)).rgb, 1);
+    
+        
+    //return float4(texCUBE(SkyBoxSampler, normalize(input.TextureCoordinate)).rgb, 1);
+    return texCUBE(SkyBoxSampler, normalize(input.TextureCoordinate));
+    
+    //return float4(float3(1.0, 0, 0), 1.0);
 }
 
 technique Skybox
