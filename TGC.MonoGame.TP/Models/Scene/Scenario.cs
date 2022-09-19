@@ -23,8 +23,8 @@ namespace TGC.MonoGame.TP.Models.Scene
         }
 
         public void CreateModel(ContentManager content)
-        {
-              /*SceneBuilder builder = new SimpleSceneBuilder(content);
+        {/* 
+              SceneBuilder builder = new SimpleSceneBuilder(content);
              builder
                  .StartRoad()
                  .AddForward()
@@ -56,7 +56,7 @@ namespace TGC.MonoGame.TP.Models.Scene
                  .AddBackward(3)
                  .AddRight(5);*/
 
-              SceneBuilder builder = new SimpleSceneBuilder(content);
+            SceneBuilder builder = new SimpleSceneBuilder(content);
             builder
                 .StartRoad()
                 .AddForward(4)

@@ -19,7 +19,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts
         private static Texture2D texture;
 
         
-        public Road(ContentManager content) : base(content, "scene/basics/road_square")
+        public Road(ContentManager content) : base(content, "scene/basics/road2")
         {
         }
 
@@ -32,7 +32,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts
                 texture = effect.Texture;
             }
 
-
+            //base.ScaleMatrix = Matrix.CreateScale(0.55f);
             SetEffect(Effect);
             
         }
