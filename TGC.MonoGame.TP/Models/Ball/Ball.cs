@@ -5,10 +5,12 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection.Metadata;
 using System.Text;
 using TGC.MonoGame.TP.Models.Commons;
+using TGC.MonoGame.TP.Utilities;
 
 namespace TGC.MonoGame.TP.Models.Ball
 {
@@ -34,9 +36,9 @@ namespace TGC.MonoGame.TP.Models.Ball
             }
 
             SetEffect(Effect);
-            base.ScaleMatrix = Matrix.CreateScale(0.55f);
-            base.TranslationMatrix = Matrix.CreateTranslation(new Vector3(0, 130, 0));
-
+            //            base.ScaleMatrix = Matrix.CreateScale(50f);
+            base.TranslationMatrix = Matrix.CreateTranslation(new Vector3(0, 1430, 0));
+            previousPosition = TranslationMatrix.Translation;
             //FIXME
             RotationWithDirection = Matrix.Identity;
         }
@@ -53,45 +55,55 @@ namespace TGC.MonoGame.TP.Models.Ball
             Effect.Parameters["ModelTexture"].SetValue(texture);
         }
 
-        private float angle;
         public Vector3 position;
-        private Vector3 yPosition = new Vector3(0, 130, 0);
-        private float speed = 0;
+        private Vector3 previousPosition;
+        private float delta = 0f;
 
+
+        private Object semaphore = new Object();
+        public void setWorldMatrix(Matrix rotation, Matrix translation)
+        {
+                base.TranslationMatrix = translation;
+                base.RotationMatrix = rotation;
+
+         
+        }
 
         
+
         public override void Update(GameTime gameTime, KeyboardState keyboardState, List<IGameModel> otherInteractiveObjects)
         {
-var da = 0.035f;
+            /*  var da = 0.035f;
             if (keyboardState.IsKeyDown(Keys.Left)) { angle -= da; }
-            if (keyboardState.IsKeyDown(Keys.P)) { angle += da; }
+             if (keyboardState.IsKeyDown(Keys.P)) { angle += da; }
 
 
-            if (keyboardState.IsKeyDown(Keys.Up))
-            {
-                speed = 50;
-            }
+             if (keyboardState.IsKeyDown(Keys.Up))
+             {
+                 speed = 50;
+             }
 
-            else if (keyboardState.IsKeyDown(Keys.Down))
-            {
-                speed = -50;
-            }
-            else
-            {
-                speed = 0;
-            }
+             else if (keyboardState.IsKeyDown(Keys.Down))
+             {
+                 speed = -50;
+             }
+             else
+             {
+                 speed = 0;
+             }
 
-            float dirX = (float)Math.Sin(-angle);
-            float dirZ = (float)Math.Cos(-angle);
+             float dirX = (float)Math.Sin(-angle);
+             float dirZ = (float)Math.Cos(-angle);
 
-            position += new Vector3(dirX, 0, dirZ) * -speed;
-            position.Y = 130;
+             position += new Vector3(dirX, 0, dirZ) * -speed;
+             position.Y = 130;
 
             Matrix SpinMatrix = Spin(gameTime, speed);
 
             RotationWithDirection = Matrix.CreateFromAxisAngle(Vector3.Down, angle);
             RotationMatrix = SpinMatrix * RotationWithDirection;
             TranslationMatrix = Matrix.CreateTranslation(position);
+            */
         }
 
 
@@ -100,7 +112,7 @@ var da = 0.035f;
         private Matrix Spin(GameTime gameTime, float speed)
         {
             float time = ((float)gameTime.ElapsedGameTime.Milliseconds) / 1000;
-            currentSpinAngle += time * (speed/2);
+            currentSpinAngle += time * (speed / 2);
             return Matrix.CreateRotationX(-currentSpinAngle);
         }
 

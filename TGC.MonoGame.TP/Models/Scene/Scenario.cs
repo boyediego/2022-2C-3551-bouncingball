@@ -23,8 +23,8 @@ namespace TGC.MonoGame.TP.Models.Scene
         }
 
         public void CreateModel(ContentManager content)
-        {/* 
-              SceneBuilder builder = new SimpleSceneBuilder(content);
+        { 
+              /*SceneBuilder builder = new SimpleSceneBuilder(content);
              builder
                  .StartRoad()
                  .AddForward()
@@ -56,15 +56,15 @@ namespace TGC.MonoGame.TP.Models.Scene
                  .AddBackward(3)
                  .AddRight(5);*/
 
-            SceneBuilder builder = new SimpleSceneBuilder(content);
-            builder
-                .StartRoad()
-                .AddForward(4)
-                .AddLeft(1)
-                .AddBackward(4)
-                .AddLeft(1)
-                .AddForward(4)
-                .AddObstacule(new CubeObstacule(content).SetMovementDirection(Vector3.Left).SetSpeed(2500).SetMaxMovement(750));
+             SceneBuilder builder = new SimpleSceneBuilder(content);
+             builder
+                 .StartRoad()
+                 .AddForward(4)
+                 .AddLeft(1)
+                 .AddBackward(4)
+                 .AddLeft(1)
+                 .AddForward(4)
+                 .AddObstacule(new CubeObstacule(content).SetMovementDirection(Vector3.Left).SetSpeed(2500).SetMaxMovement(750)); 
 
 
             sceneObjects = builder.GetScene();

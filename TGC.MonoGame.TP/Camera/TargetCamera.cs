@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using System.Diagnostics;
 using TGC.MonoGame.TP.Models.Commons;
 
 namespace TGC.MonoGame.TP.Cameras
@@ -65,6 +66,8 @@ namespace TGC.MonoGame.TP.Cameras
 
             // Create a normalized vector that points to the back of the Robot
             var robotBackDirection = Vector3.Transform(Vector3.Backward, rotation);
+
+
             // Then scale the vector by a radius, to set an horizontal distance between the Camera and the Robot
             var orbitalPosition = robotBackDirection * CameraFollowRadius;
 
@@ -100,6 +103,7 @@ namespace TGC.MonoGame.TP.Cameras
             // Set our Target as the Robot, the Camera needs to be always pointing to it
             this.TargetPosition = position;
 
+            
             // Build our View matrix from the Position and TargetPosition
             this.BuildView();
         }

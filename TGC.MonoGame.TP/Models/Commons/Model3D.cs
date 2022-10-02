@@ -24,7 +24,7 @@ namespace TGC.MonoGame.TP.Models.Commons
             }
         }
         protected Matrix ScaleMatrix;
-        protected Matrix TranslationMatrix;
+        public Matrix TranslationMatrix;
         protected Matrix RotationMatrix;
 
         public Matrix RotationWithDirection { get; set; }
@@ -68,6 +68,11 @@ namespace TGC.MonoGame.TP.Models.Commons
         public Vector3 GetModelSize()
         {
             return this.Model.GetBoundingBox(RotationMatrix).Max - this.Model.GetBoundingBox(RotationMatrix).Min;
+        }
+
+        public BoundingSphere GetBoundingSphere()
+        {
+            return this.Model.GetSphereFrom();
         }
 
         public Vector3 GetTranlationFromOrigin()
