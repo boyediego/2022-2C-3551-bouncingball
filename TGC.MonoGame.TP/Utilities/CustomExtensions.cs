@@ -1,8 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
-using System.Collections.Generic;
-using System.Text;
+using NumericVector3 = System.Numerics.Vector3;
 
 namespace TGC.MonoGame.TP.Utilities
 {
@@ -16,6 +15,21 @@ namespace TGC.MonoGame.TP.Utilities
         public static Vector3 Abs(this Vector3 vector)
         {
             return new Vector3(vector.X.Abs(), vector.Y.Abs(), vector.Z.Abs());
+        }
+
+        public static NumericVector3 ToNumericVector3(this Vector3 vector)
+        {
+            return new NumericVector3(vector.X, vector.Y, vector.Z);
+        }
+
+        public static Vector3 PerpendicularClockwiseIn2D(this Vector3 vector2)
+        {
+            return new Vector3(vector2.Z,0, -vector2.X);
+        }
+
+        public static Vector3 PerpendicularCounterClockwiseIn2D(this Vector3 vector2)
+        {
+            return new Vector3(-vector2.Z, 0, vector2.X);
         }
 
 

@@ -1,4 +1,5 @@
-﻿using BepuPhysics.Collidables;
+﻿using BepuPhysics;
+using BepuPhysics.Collidables;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -7,23 +8,59 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Numerics;
 using System.Reflection.Metadata;
 using System.Text;
 using TGC.MonoGame.TP.Models.Commons;
 using TGC.MonoGame.TP.Utilities;
+using NumericVector3 = System.Numerics.Vector3;
+using Matrix = Microsoft.Xna.Framework.Matrix;
+using Vector3 = Microsoft.Xna.Framework.Vector3;
+using Quaternion = Microsoft.Xna.Framework.Quaternion;
+using TGC.MonoGame.TP.Cameras;
 
 namespace TGC.MonoGame.TP.Models.Ball
 {
     public class Ball : Model3D
     {
-
-
-        private Random r = new Random((int)DateTime.Now.Ticks);
         private static Texture2D texture;//FIXME
-        private float currentSpinAngle;
 
-        public Ball(ContentManager content) : base(content, "balls/sphere1")
+        private Simulation simulation;
+        public BodyDescription BodyDescription { get; set; }
+        public BodyHandle playerHanle { get; set; }
+        private Vector3 PreviousVelocityDirection;
+        
+        protected float ForwardImpulse
         {
+            get { return 30f;}
+        }
+
+        protected float BrakeForce
+        {
+            get { return 60f; }
+        }
+
+        protected float RotateForce
+        {
+            get { return 25f; }
+        }
+
+
+        public Ball(ContentManager content, Vector3 startPosition, Simulation Simulation) : base(content, "balls/sphere1")
+        {
+            this.simulation = Simulation;
+            var position = new NumericVector3(startPosition.X, startPosition.Y, startPosition.Z);
+            var boundingPlayer = this.GetBoundingSphere();
+            var simulationPlayer = new Sphere(boundingPlayer.Radius - 60);
+            this.BodyDescription = BodyDescription.CreateConvexDynamic(position, 1f, Simulation.Shapes, simulationPlayer);
+            this.playerHanle = Simulation.Bodies.Add(this.BodyDescription);
+            base.CurrentMovementDirection = new Vector3(0 , 0,  0);
+            
+        }
+
+        public BoundingSphere GetBoundingSphere()
+        {
+            return this.Model.GetSphereFrom();
         }
 
         public override void CreateModel(ContentManager content)
@@ -36,85 +73,78 @@ namespace TGC.MonoGame.TP.Models.Ball
             }
 
             SetEffect(Effect);
-            //            base.ScaleMatrix = Matrix.CreateScale(50f);
-            base.TranslationMatrix = Matrix.CreateTranslation(new Vector3(0, 1430, 0));
-            previousPosition = TranslationMatrix.Translation;
-            //FIXME
-            RotationWithDirection = Matrix.Identity;
+//            base.TranslationMatrix = Matrix.CreateTranslation(new Vector3(0, 1430, 0));
         }
-
-        public void SetPositionFromOrigin(Vector3 position)
-        {
-            TranslationMatrix = Matrix.CreateTranslation(position);
-            this.position = position;
-        }
-
 
         public override void SetCustomEffectParameters(Effect effect)
         {
             Effect.Parameters["ModelTexture"].SetValue(texture);
         }
 
-        public Vector3 position;
-        private Vector3 previousPosition;
-        private float delta = 0f;
-
-
-        private Object semaphore = new Object();
-        public void setWorldMatrix(Matrix rotation, Matrix translation)
-        {
-                base.TranslationMatrix = translation;
-                base.RotationMatrix = rotation;
-
-         
-        }
-
-        
-
         public override void Update(GameTime gameTime, KeyboardState keyboardState, List<IGameModel> otherInteractiveObjects)
         {
-            /*  var da = 0.035f;
-            if (keyboardState.IsKeyDown(Keys.Left)) { angle -= da; }
-             if (keyboardState.IsKeyDown(Keys.P)) { angle += da; }
+            var bodyReference = simulation.Bodies.GetBodyReference(playerHanle);
+            var position = bodyReference.Pose.Position;
+            var quaternion = bodyReference.Pose.Orientation;
+
+            var velocityVector = new Vector3(bodyReference.Velocity.Linear.X, 0, bodyReference.Velocity.Linear.Z);
+            var velocityDirection = velocityVector;//.Abs();
+            velocityDirection.Normalize();
+            velocityDirection=velocityDirection.Abs();
 
 
-             if (keyboardState.IsKeyDown(Keys.Up))
-             {
-                 speed = 50;
-             }
+            int fSign = -1; //velocityVector.Z < 0.01 ? -1 : 1;
+            Debug.WriteLine(velocityVector);
 
-             else if (keyboardState.IsKeyDown(Keys.Down))
-             {
-                 speed = -50;
-             }
-             else
-             {
-                 speed = 0;
-             }
+            if (keyboardState.IsKeyDown(Keys.W))
+            {
+                bodyReference.Awake = true;
+                bodyReference.ApplyLinearImpulse(velocityDirection.ToNumericVector3() * fSign*ForwardImpulse);
+            }
 
-             float dirX = (float)Math.Sin(-angle);
-             float dirZ = (float)Math.Cos(-angle);
+            if (keyboardState.IsKeyDown(Keys.S))
+            {
+                bodyReference.Awake = true;
+                bodyReference.ApplyLinearImpulse(velocityDirection.ToNumericVector3() *-fSign* BrakeForce);
+            }
 
-             position += new Vector3(dirX, 0, dirZ) * -speed;
-             position.Y = 130;
+            if (keyboardState.IsKeyDown(Keys.A))
+            {
+                bodyReference.Awake = true;
+                bodyReference.ApplyLinearImpulse(velocityDirection.PerpendicularCounterClockwiseIn2D().ToNumericVector3() * RotateForce);
+            }
 
-            Matrix SpinMatrix = Spin(gameTime, speed);
+            if (keyboardState.IsKeyDown(Keys.X))
+            {
+                bodyReference.Awake = true;
+                bodyReference.ApplyLinearImpulse(velocityDirection.PerpendicularClockwiseIn2D().ToNumericVector3() * RotateForce);
+            }
 
-            RotationWithDirection = Matrix.CreateFromAxisAngle(Vector3.Down, angle);
-            RotationMatrix = SpinMatrix * RotationWithDirection;
-            TranslationMatrix = Matrix.CreateTranslation(position);
-            */
+            if (keyboardState.IsKeyDown(Keys.Space))
+            {
+                bodyReference.Awake = true;
+                bodyReference.ApplyLinearImpulse(Vector3.Up.ToNumericVector3() * 300);
+            }
+
+            base.RotationMatrix = Matrix.CreateFromQuaternion(new Quaternion(quaternion.X, quaternion.Y, quaternion.Z,quaternion.W));
+            base.TranslationMatrix = Matrix.CreateTranslation(new Vector3(position.X, position.Y, position.Z));
+
+            
+
+            if (velocityVector.LengthSquared() > 0)
+            {
+                PreviousVelocityDirection = velocityVector;
+                PreviousVelocityDirection.Normalize();
+            }
+
+
+            base.CurrentMovementDirection = Vector3.Lerp(base.CurrentMovementDirection,- PreviousVelocityDirection, 0.05f);
+            
         }
 
 
 
 
-        private Matrix Spin(GameTime gameTime, float speed)
-        {
-            float time = ((float)gameTime.ElapsedGameTime.Milliseconds) / 1000;
-            currentSpinAngle += time * (speed / 2);
-            return Matrix.CreateRotationX(-currentSpinAngle);
-        }
 
 
     }

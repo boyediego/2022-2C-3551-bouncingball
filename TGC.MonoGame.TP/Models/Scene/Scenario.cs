@@ -50,20 +50,32 @@ namespace TGC.MonoGame.TP.Models.Scene
                  .AddForward(8)
                  .Down()
                  .AddRight(3)
-                 .StartRoad(new Vector3(0,590,1500))
+                 .StartRoad(new Vector3(0,1590,1500))
                  .AddForward(8)
                  .AddRight(3)
                  .AddBackward(3)
                  .AddRight(5);*/
 
-             SceneBuilder builder = new SimpleSceneBuilder(content);
+            SceneBuilder builder = new SimpleSceneBuilder(content);
              builder
                  .StartRoad()
-                 .AddForward(4)
+                 .AddForward(40)
                  .AddLeft(1)
-                 .AddBackward(4)
+                 .AddBackward(40)
                  .AddLeft(1)
-                 .AddForward(4)
+                 .AddForward(40)
+                 .AddLeft(1)
+                 .AddBackward(40)
+                 .AddLeft(1)
+                 .AddForward(40)
+                 .AddLeft(1)
+                 .AddBackward(40)
+                 .AddLeft(1)
+                 .AddForward(40)
+                 .AddLeft(1)
+                 .AddBackward(40)
+                 .AddLeft(1)
+                 .AddForward(40)
                  .AddObstacule(new CubeObstacule(content).SetMovementDirection(Vector3.Left).SetSpeed(2500).SetMaxMovement(750)); 
 
 

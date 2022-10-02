@@ -42,13 +42,19 @@ namespace TGC.MonoGame.TP
             IsMouseVisible = true;
         }
 
+       
         private GraphicsDeviceManager Graphics { get; }
+
+        //Cameras
         private Camera Camera { get; set; }
         private FreeCamera FreeCamera { get; set; }
         private TargetCamera TargetCamera { get; set; }
 
+        //Game objects
+        private SkyBox SkyBox { get; set; }
         private List<IGameModel> gamesModels = new List<IGameModel>();
-
+        private Ball player;
+        private Scenario scenario;
 
         //Physics
         public Simulation Simulation { get; protected set; }
@@ -74,44 +80,41 @@ namespace TGC.MonoGame.TP
             Graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height - 100;
             Graphics.ApplyChanges();
 
+            InitPhysics();
+            base.Initialize();
+        }
 
+        private void InitPhysics()
+        {
             BufferPool = new BufferPool();
 
             var targetThreadCount = Math.Max(1,
               Environment.ProcessorCount > 4 ? Environment.ProcessorCount - 2 : Environment.ProcessorCount - 1);
             ThreadDispatcher = new SimpleThreadDispatcher(targetThreadCount);
 
-            base.Initialize();
         }
 
         private void PreloadResources()
         {
-
+            LoadSkybox();
         }
-        Ball player;
-        private SkyBox SkyBox { get; set; }
-        private BodyHandle playerHanle;
-        protected override void LoadContent()
-        {
-            PreloadResources();
 
+        private void LoadSkybox()
+        {
             var skyBox = Content.Load<Model>(ContentFolder3D + "skybox/cube");
             var skyBoxTexture = Content.Load<TextureCube>(ContentFolderTextures + "/skyboxes/skybox/skybox");
             var skyBoxEffect = Content.Load<Effect>(ContentFolderEffects + "SkyBox");
             SkyBox = new SkyBox(skyBox, skyBoxTexture, skyBoxEffect, 5000);
+        }
 
-
-            player = new Ball(Content);
-            Scenario scenario = new Scenario(Content);
-            gamesModels.Add(scenario);
-            gamesModels.Add(player);
-            TargetCamera.Target = player;
-
-
+        private void LoadScenarioSimulation()
+        {
+            //Create simulation
             Simulation = Simulation.Create(BufferPool, new NarrowPhaseCallbacks(),
-             new PoseIntegratorCallbacks(new NumericVector3(0, -10 * 150, 0)), new PositionFirstTimestepper());
+                new PoseIntegratorCallbacks(new NumericVector3(0, -10 * 150, 0)), new PositionFirstTimestepper());
 
 
+            //Add scene parts to simulation
             foreach (Model3D part in scenario.models)
             {
                 Vector3 size = part.GetModelSize();
@@ -119,39 +122,52 @@ namespace TGC.MonoGame.TP
                     new CollidableDescription(Simulation.Shapes.Add(new Box(size.X, size.Y, size.Z)), 0.1f)));
             }
 
+        }
 
-            var position = new NumericVector3(player.Position.X, player.Position.Y, player.Position.Z);
-            var boundingPlayer = player.GetBoundingSphere();
-            var simulationPlayer = new Sphere(boundingPlayer.Radius - 60);
+        
+        protected override void LoadContent()
+        {
+            //Load resources
+            PreloadResources();
 
-             var bodyDescription = BodyDescription.CreateConvexDynamic(position,
-                 1f, Simulation.Shapes, simulationPlayer);
+            //Create scenario         
+            scenario = new Scenario(Content);
 
-            /*var bodyDescription = BodyDescription.CreateConvexKinematic(new RigidPose() { Position=position},Simulation.Shapes, simulationPlayer);
-            bodyDescription.LocalInertia.InverseMass = 1;*/
+            //Add to games model list
+            gamesModels.Add(scenario);
             
-            playerHanle = Simulation.Bodies.Add(bodyDescription);
+            //Load physics simulationn
+            LoadScenarioSimulation();
 
-            vecAnterior = new Vector3(1, 1, 1);
-           
+            //Create player  
+            player = new Ball(Content, new Vector3(0,150,0), Simulation);
+
+            //Add to games model list
+            gamesModels.Add(player);
+
+            //Add player to simulation
+            Simulation.Bodies.Add(player.BodyDescription);
+
+            //Set camera to target player
+            TargetCamera.Target = player;
+
 
             base.LoadContent();
         }
 
-        private Vector3 vecAnterior;
-        private Vector3 velAnterior;
+      
         protected override void Update(GameTime gameTime)
         {
-
+            //Gametime
             float time = (float)gameTime.TotalGameTime.Milliseconds;
-
             Simulation.Timestep(1 / 60f, ThreadDispatcher);
 
 
+            //Exit Game
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-
+            //Camera controls 
             if (Keyboard.GetState().IsKeyDown(Keys.T) && (Camera is FreeCamera))
             {
                 Camera = TargetCamera;
@@ -161,72 +177,14 @@ namespace TGC.MonoGame.TP
                 Camera = FreeCamera;
             }
 
-
+            //Update each model in the game
             foreach (IGameModel m in gamesModels)
             {
                 m.Update(gameTime, Keyboard.GetState(), gamesModels);
             }
 
-
-
-            var bodyReference = Simulation.Bodies.GetBodyReference(playerHanle);
-            var position = bodyReference.Pose.Position;
-            var quaternion = bodyReference.Pose.Orientation;
-
-            
-            
-            if (Keyboard.GetState().IsKeyDown(Keys.W))
-            {
-                bodyReference.Awake = true;
-                bodyReference.ApplyLinearImpulse(new NumericVector3(0, 0, -100));
-                
-            }
-
-            if (Keyboard.GetState().IsKeyDown(Keys.S))
-            {
-                bodyReference.Awake = true;
-                bodyReference.ApplyLinearImpulse(new NumericVector3(0, 0, 20));
-            }
-
-            if (Keyboard.GetState().IsKeyDown(Keys.A))
-            {
-                bodyReference.Awake = true;
-                bodyReference.ApplyLinearImpulse(new NumericVector3(-25, 0, 0));
-            }
-
-            if (Keyboard.GetState().IsKeyDown(Keys.X))
-            {
-                bodyReference.Awake = true;
-                bodyReference.ApplyLinearImpulse(new NumericVector3(25, 0, 0));
-            }
-
-
-            Matrix rotation = Matrix.CreateFromQuaternion(new Quaternion(quaternion.X, quaternion.Y, quaternion.Z,
-                   quaternion.W));
-
-            player.setWorldMatrix(rotation, Microsoft.Xna.Framework.Matrix.CreateTranslation(new Vector3(position.X, position.Y, position.Z)));
-
-
-            
-            var vector = new Vector3(bodyReference.Velocity.Linear.X, 0, bodyReference.Velocity.Linear.Z);
-
-            if (vector.LengthSquared() > 0)
-            {
-                velAnterior = vector;
-                velAnterior.Normalize();
-            }
-
-
-
-
-            vecAnterior = Vector3.Lerp(vecAnterior, -velAnterior, 0.05f);
-
-            Camera.View = Matrix.CreateLookAt(player.WorldMatrix.Translation + new Vector3(0, 550,0) + vecAnterior * 1000f, 
-                player.WorldMatrix.Translation, 
-                Vector3.Up);
-            
-
-            //Camera.Update(gameTime);
+            //Update camera position.
+            Camera.Update(gameTime);
             base.Update(gameTime);
         }
 
@@ -234,21 +192,23 @@ namespace TGC.MonoGame.TP
         {
             GraphicsDevice.Clear(Color.Black);
 
-            var originalRasterizerState = GraphicsDevice.RasterizerState;
-            var rasterizerState = new RasterizerState();
-            rasterizerState.CullMode = CullMode.None;
-            Graphics.GraphicsDevice.RasterizerState = rasterizerState;
-
-            SkyBox.Draw(Camera.View, Camera.Projection, Camera.Position);
-
-            GraphicsDevice.RasterizerState = originalRasterizerState;
+            DrawSkyBox();
 
             foreach (IGameModel m in gamesModels)
             {
                 m.Draw(gameTime, Camera.View, Camera.Projection);
             }
 
+        }
 
+        private void DrawSkyBox()
+        {
+            var originalRasterizerState = GraphicsDevice.RasterizerState;
+            var rasterizerState = new RasterizerState();
+            rasterizerState.CullMode = CullMode.None;
+            Graphics.GraphicsDevice.RasterizerState = rasterizerState;
+            SkyBox.Draw(Camera.View, Camera.Projection, Camera.Position);
+            GraphicsDevice.RasterizerState = originalRasterizerState;
         }
 
         protected override void UnloadContent()
