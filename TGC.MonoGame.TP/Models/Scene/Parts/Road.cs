@@ -1,4 +1,5 @@
-﻿using BepuPhysics.Collidables;
+﻿using BepuPhysics;
+using BepuPhysics.Collidables;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -9,6 +10,7 @@ using System.Reflection.Metadata;
 using System.Text;
 using TGC.MonoGame.TP.Models.Commons;
 using TGC.MonoGame.TP.Utilities;
+using NumericVector3 = System.Numerics.Vector3;
 
 namespace TGC.MonoGame.TP.Models.Scene.Parts
 {
@@ -32,7 +34,6 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts
                 texture = effect.Texture;
             }
 
-            //base.ScaleMatrix = Matrix.CreateScale(0.55f);
             SetEffect(Effect);
             
         }
@@ -53,6 +54,23 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts
         public override void SetCustomEffectParameters(Effect effect)
         {
             Effect.Parameters["ModelTexture"].SetValue(texture);
+        }
+
+        public override int PhysicsType
+        {
+            get { return PhysicsTypeHome.Static; }
+        }
+
+        public override StaticDescription GetStaticDescription(Simulation simulation)
+        {
+            Vector3 size = GetModelSize();
+            return new StaticDescription(new NumericVector3(Position.X, Position.Y, Position.Z),
+                new CollidableDescription(simulation.Shapes.Add(new Box(size.X, size.Y, size.Z)), 0.1f));
+        }
+
+        public override BodyDescription GetBodyDescription(Simulation simulation)
+        {
+            throw new NotSupportedException();
         }
     }
 

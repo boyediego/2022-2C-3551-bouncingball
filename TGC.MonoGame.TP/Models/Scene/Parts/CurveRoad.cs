@@ -1,4 +1,5 @@
-﻿using BepuPhysics.Collidables;
+﻿using BepuPhysics;
+using BepuPhysics.Collidables;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -8,6 +9,7 @@ using System.Linq;
 using System.Reflection.Metadata;
 using System.Text;
 using TGC.MonoGame.TP.Models.Commons;
+using TGC.MonoGame.TP.Utilities;
 
 namespace TGC.MonoGame.TP.Models.Scene.Parts
 {
@@ -16,6 +18,10 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts
         private Vector3 color;
 
 
+        public override int PhysicsType
+        {
+            get { return PhysicsTypeHome.Static; }
+        }
 
         public CurveRoad(ContentManager content) : base(content, "scene/basics/curva")
         {
@@ -40,6 +46,16 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts
         public override void SetCustomEffectParameters(Effect effect)
         {
             effect.Parameters["DiffuseColor"].SetValue(color);
+        }
+
+        public override StaticDescription GetStaticDescription(Simulation simulation)
+        {
+            throw new NotSupportedException();
+        }
+
+        public override BodyDescription GetBodyDescription(Simulation simulation)
+        {
+            throw new NotSupportedException();
         }
     }
 

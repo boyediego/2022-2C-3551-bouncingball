@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using BepuPhysics;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -13,6 +14,9 @@ namespace TGC.MonoGame.TP.Models.Commons
     {
         protected const string ContentFolder3D = "Models/";
         protected const string ContentFolderEffects = "Effects/";
+
+        public abstract int PhysicsType { get; }
+
 
         protected Model Model { get; set; }
         protected Effect Effect { get; set; }
@@ -101,5 +105,9 @@ namespace TGC.MonoGame.TP.Models.Commons
         {
             //TODO IMPLEMTS IN CHILD CLASESS
         }
+
+        public abstract StaticDescription GetStaticDescription(Simulation simulation);
+        public abstract BodyDescription GetBodyDescription(Simulation simulation);
+        
     }
 }

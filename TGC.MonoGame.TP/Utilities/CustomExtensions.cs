@@ -32,6 +32,32 @@ namespace TGC.MonoGame.TP.Utilities
             return new Vector3(-vector2.Z, 0, vector2.X);
         }
 
+        public static int GetQuadrant(this Vector3 vector)
+        {
+            if (vector.X >= 0 && vector.Z >= 0)
+            {
+                return 1;
+            }
+
+            if (vector.X <= 0 && vector.Z >= 0)
+            {
+                return 2;
+            }
+
+            if (vector.X <= 0 && vector.Z <= 0)
+            {
+                return 3;
+            }
+
+            if (vector.X >= 0 && vector.Z <= 0)
+            {
+                return 4;
+            }
+
+            return 0;
+        }
+        
+
 
         public static BoundingSphere GetSphereFrom(this Model model)
         {

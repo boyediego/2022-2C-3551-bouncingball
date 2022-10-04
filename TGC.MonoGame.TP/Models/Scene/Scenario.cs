@@ -24,21 +24,21 @@ namespace TGC.MonoGame.TP.Models.Scene
 
         public void CreateModel(ContentManager content)
         { 
-              /*SceneBuilder builder = new SimpleSceneBuilder(content);
+              SceneBuilder builder = new SimpleSceneBuilder(content);
              builder
                  .StartRoad()
                  .AddForward()
-                 .AddObstacule(new CubeObstacule(content).SetMovementDirection(Vector3.Left).SetSpeed(2500).SetMaxMovement(750))
+                 .AddObstacule(new CubeObstacule(content).SetMovementDirection(Vector3.Right).SetSpeed(12500).SetMaxMovement(750).SetInitialOffset(new Vector3(400, 0, 0)))
                  .AddForward()
                  .AddLeft(3)
                  .AddBackward(3)
                  .AddLeft(3)
                  .AddLeft()
-                 .AddObstacule(new CubeObstacule(content).SetMovementDirection(Vector3.Forward).SetSpeed(2500).SetMaxMovement(450))
+              //   .AddObstacule(new CubeObstacule(content).SetMovementDirection(Vector3.Forward).SetSpeed(2500).SetMaxMovement(450))
                  .AddLeft()
                  .AddForward(6)
                  .AddForward()
-                 .AddObstacule(new SphereObstacule(content).SetMovementDirection(Vector3.Up).SetSpeed(1500).SetMaxMovement(450).Up(500))
+                // .AddObstacule(new SphereObstacule(content).SetMovementDirection(Vector3.Up).SetSpeed(1500).SetMaxMovement(450).Up(500))
                  .AddForward()
                  .AddForward(2)
                  .Up()
@@ -54,29 +54,29 @@ namespace TGC.MonoGame.TP.Models.Scene
                  .AddForward(8)
                  .AddRight(3)
                  .AddBackward(3)
-                 .AddRight(5);*/
+                 .AddRight(5);
 
-            SceneBuilder builder = new SimpleSceneBuilder(content);
+           /* SceneBuilder builder = new SimpleSceneBuilder(content);
              builder
                  .StartRoad()
+                 .AddForward(5)
+                 .AddLeft(1)
+                 .AddBackward(80)
+                 .AddLeft(1)
+                 .AddForward(80)
+                 .AddLeft(1)
+                 .AddBackward(80)
+                 .AddLeft(1)
+                 .AddForward(80)
+                 .AddLeft(1)
+                 .AddBackward(80)
+                 .AddLeft(1)
+                 .AddForward(80)
+                 .AddLeft(1)
+                 .AddBackward(80)
+                 .AddLeft(1)
                  .AddForward(40)
-                 .AddLeft(1)
-                 .AddBackward(40)
-                 .AddLeft(1)
-                 .AddForward(40)
-                 .AddLeft(1)
-                 .AddBackward(40)
-                 .AddLeft(1)
-                 .AddForward(40)
-                 .AddLeft(1)
-                 .AddBackward(40)
-                 .AddLeft(1)
-                 .AddForward(40)
-                 .AddLeft(1)
-                 .AddBackward(40)
-                 .AddLeft(1)
-                 .AddForward(40)
-                 .AddObstacule(new CubeObstacule(content).SetMovementDirection(Vector3.Left).SetSpeed(2500).SetMaxMovement(750)); 
+                 .AddObstacule(new CubeObstacule(content).SetMovementDirection(Vector3.Left).SetSpeed(2500).SetMaxMovement(750)); */
 
 
             sceneObjects = builder.GetScene();

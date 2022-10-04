@@ -26,6 +26,12 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Obstacule.Base
             currentPosition = startPosition;
         }
 
+        public Obstacule SetInitialOffset(Vector3 v)
+        {
+            this.InitialOffset = v;
+            return this;
+        }
+
         public Obstacule Up(float amount)
         {
             this.InitialOffset += Vector3.Up * amount;

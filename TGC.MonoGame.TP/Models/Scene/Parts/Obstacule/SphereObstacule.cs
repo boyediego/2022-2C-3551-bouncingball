@@ -1,4 +1,5 @@
-﻿using BepuPhysics.Collidables;
+﻿using BepuPhysics;
+using BepuPhysics.Collidables;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -32,6 +33,21 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Obstacule
         {
             //TODO IMPLEMENT
             return false;
+        }
+
+        public override int PhysicsType
+        {
+            get { return PhysicsTypeHome.Kinematic; }
+        }
+
+        public override StaticDescription GetStaticDescription(Simulation simulation)
+        {
+            throw new NotSupportedException();
+        }
+
+        public override BodyDescription GetBodyDescription(Simulation simulation)
+        {
+            throw new NotSupportedException();
         }
 
     }

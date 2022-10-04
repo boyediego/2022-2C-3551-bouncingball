@@ -21,7 +21,9 @@ using TGC.MonoGame.TP.Physics;
 using NumericVector3 = System.Numerics.Vector3;
 using Matrix = Microsoft.Xna.Framework.Matrix;
 using TGC.MonoGame.TP.Utilities;
-
+using System.Drawing;
+using Point = Microsoft.Xna.Framework.Point;
+using Color = Microsoft.Xna.Framework.Color;
 
 namespace TGC.MonoGame.TP
 {
@@ -109,22 +111,32 @@ namespace TGC.MonoGame.TP
 
         private void LoadScenarioSimulation()
         {
+            PositionFirstTimestepper p = new  PositionFirstTimestepper();
+            p.CollisionsDetected += P_CollisionsDetected;
+
             //Create simulation
             Simulation = Simulation.Create(BufferPool, new NarrowPhaseCallbacks(),
-                new PoseIntegratorCallbacks(new NumericVector3(0, -10 * 150, 0)), new PositionFirstTimestepper());
-
+                new PoseIntegratorCallbacks(new NumericVector3(0, -10 * 150, 0)),p);
 
             //Add scene parts to simulation
             foreach (Model3D part in scenario.models)
             {
-                Vector3 size = part.GetModelSize();
-                Simulation.Statics.Add(new StaticDescription(new NumericVector3(part.Position.X, part.Position.Y, part.Position.Z),
-                    new CollidableDescription(Simulation.Shapes.Add(new Box(size.X, size.Y, size.Z)), 0.1f)));
+                if(part.PhysicsType == PhysicsTypeHome.Static)
+                {
+                    Simulation.Statics.Add(part.GetStaticDescription(Simulation)); 
+                }
+                else if (part.PhysicsType == PhysicsTypeHome.Kinematic || part.PhysicsType == PhysicsTypeHome.Dynamic)
+                {
+                    part.GetBodyDescription(Simulation);
+                }
             }
-
         }
 
-        
+        private void P_CollisionsDetected(float dt, IThreadDispatcher threadDispatcher)
+        {
+            throw new NotImplementedException();
+        }
+
         protected override void LoadContent()
         {
             //Load resources
@@ -141,6 +153,7 @@ namespace TGC.MonoGame.TP
 
             //Create player  
             player = new Ball(Content, new Vector3(0,150,0), Simulation);
+            player.Graphics = Graphics;
 
             //Add to games model list
             gamesModels.Add(player);

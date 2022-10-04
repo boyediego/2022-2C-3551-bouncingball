@@ -7,6 +7,6 @@ namespace TGC.MonoGame.TP
     public static class GameParams
     {
         public static float ObstacleAltitudeOffset = 150f;
-        public static float ObstacleSpeedMultiplier = 1f;
+        public static float ObstacleSpeedMultiplier = 10f;
     }
 }
