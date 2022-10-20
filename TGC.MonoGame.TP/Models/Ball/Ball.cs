@@ -123,14 +123,11 @@ namespace TGC.MonoGame.TP.Models.Ball
                 dv = 1;
             }
 
-            Debug.WriteLine("Velocity direction Normalizado : " + velocityVector.Length() );
-
+    
             if (keyboardState.IsKeyDown(Keys.W))
             {
                 bodyReference.Awake = true;
                 applyImpulse = nVelocityVector ;
-                
-                    Debug.WriteLine("Force : " + ForwardImpulse / dv);
                 bodyReference.ApplyLinearImpulse(applyImpulse.ToNumericVector3() * ForwardImpulse/dv);
             }
 

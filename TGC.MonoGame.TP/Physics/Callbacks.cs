@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Net.NetworkInformation;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using BepuPhysics;
@@ -9,6 +11,27 @@ using BepuUtilities;
 
 namespace TGC.MonoGame.TP.Physics
 {
+
+    public static class Collider
+    {
+        public class CollisionInformation
+        {
+            public int extra { get; set; }
+        }
+        
+        public delegate void Notify(CollidablePair pair, CollisionInformation info);
+        public static event Notify CollisionDetected;
+
+
+
+
+        public static void OnCollisionDetected(CollidablePair pair, CollisionInformation info)
+        {
+            CollisionDetected?.Invoke(pair, info);
+        }
+    }
+
+    
     public struct PoseIntegratorCallbacks : IPoseIntegratorCallbacks
     {
         public Vector3 Gravity;
@@ -17,6 +40,8 @@ namespace TGC.MonoGame.TP.Physics
         private Vector3 GravityDt;
         private float LinearDampingDt;
         private float AngularDampingDt;
+        
+
 
         public AngularIntegrationMode AngularIntegrationMode => AngularIntegrationMode.Nonconserving;
 
@@ -33,6 +58,7 @@ namespace TGC.MonoGame.TP.Physics
         /// <param name="simulation">Simulation that owns these callbacks.</param>
         public void Initialize(Simulation simulation)
         {
+            
             //In this demo, we don't need to initialize anything.
             //If you had a simulation with per body gravity stored in a CollidableProperty<T> or something similar, having the simulation provided in a callback can be helpful.
         }
@@ -78,7 +104,7 @@ namespace TGC.MonoGame.TP.Physics
             //While the engine won't even try creating pairs between statics at all, it will ask about kinematic-kinematic pairs.
             //Those pairs cannot emit constraints since both involved bodies have infinite inertia. Since most of the demos don't need
             //to collect information about kinematic-kinematic pairs, we'll require that at least one of the bodies needs to be dynamic.
-            return a.Mobility == CollidableMobility.Dynamic || b.Mobility == CollidableMobility.Dynamic;
+            return a.Mobility == CollidableMobility.Dynamic || b.Mobility == CollidableMobility.Dynamic || a.Mobility == CollidableMobility.Kinematic || b.Mobility == CollidableMobility.Kinematic;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -96,6 +122,20 @@ namespace TGC.MonoGame.TP.Physics
                 MaximumRecoveryVelocity = 2, 
                 SpringSettings = new SpringSettings(30, 1) 
             };
+
+            if(pair.A.Mobility == CollidableMobility.Static)
+            {
+                return true;
+            }
+
+
+            if (pair.B.Mobility == CollidableMobility.Static)
+            {
+                return true;
+            }
+
+            
+            Collider.OnCollisionDetected(pair, new Collider.CollisionInformation());
             return true;
         }
 

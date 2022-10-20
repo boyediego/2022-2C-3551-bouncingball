@@ -64,8 +64,13 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts
         public override StaticDescription GetStaticDescription(Simulation simulation)
         {
             Vector3 size = GetModelSize();
-            return new StaticDescription(new NumericVector3(Position.X, Position.Y, Position.Z),
+            StaticDescription sta=  new StaticDescription(new NumericVector3(Position.X, Position.Y, Position.Z),
                 new CollidableDescription(simulation.Shapes.Add(new Box(size.X, size.Y, size.Z)), 0.1f));
+
+            StaticHandle handle = simulation.Statics.Add(sta);
+            SimulationHandle = handle.Value;
+
+            return sta;
         }
 
         public override BodyDescription GetBodyDescription(Simulation simulation)

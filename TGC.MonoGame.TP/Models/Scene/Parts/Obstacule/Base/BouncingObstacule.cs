@@ -77,9 +77,6 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Obstacule.Base
 
             var bodyReference = simulation.Bodies.GetBodyReference(bodyHandle);
 
-            Debug.WriteLine("D:" + Vector3.Distance(startPosition, currentPosition));
-            Debug.WriteLine("Max:" + maxMovementUnits + " Step :" + step);
-
             if (Vector3.Distance(startPosition, currentPosition) > maxMovementUnits && step==2)
             {
                 movementDirection *= -1;
@@ -142,6 +139,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Obstacule.Base
             var collidable = new CollidableDescription(simulation.Shapes.Add(shape), 0.1f);
             bodyDescription = BodyDescription.CreateKinematic(new RigidPose(startPosition.ToNumericVector3()), collidable, new BodyActivityDescription(0.01f));
             bodyHandle = simulation.Bodies.Add(bodyDescription);
+            SimulationHandle = bodyHandle.Value;
             return bodyDescription;
         }
 

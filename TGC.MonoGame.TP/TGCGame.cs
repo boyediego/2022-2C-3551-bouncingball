@@ -24,11 +24,27 @@ using TGC.MonoGame.TP.Utilities;
 using System.Drawing;
 using Point = Microsoft.Xna.Framework.Point;
 using Color = Microsoft.Xna.Framework.Color;
+using static TGC.MonoGame.TP.Physics.Collider;
+using BepuUtilities.Collections;
 
 namespace TGC.MonoGame.TP
 {
     public class TGCGame : Game
     {
+        public class CollisionData
+        {
+            public Model3D player;
+            public Model3D sceneObject;
+            public Boolean procesed;
+
+            public CollisionData(Model3D player, Model3D sceneObject)
+            {
+                this.player = player;
+                this.sceneObject = sceneObject;
+                
+            }   
+        }
+
 
         public const string ContentFolder3D = "Models/";
         public const string ContentFolderEffects = "Effects/";
@@ -36,6 +52,8 @@ namespace TGC.MonoGame.TP
         public const string ContentFolderSounds = "Sounds/";
         public const string ContentFolderSpriteFonts = "SpriteFonts/";
         public const string ContentFolderTextures = "Textures/";
+
+        
 
         public TGCGame()
         {
@@ -57,6 +75,10 @@ namespace TGC.MonoGame.TP
         private List<IGameModel> gamesModels = new List<IGameModel>();
         private Ball player;
         private Scenario scenario;
+
+        //Collision info
+        public List<CollisionData> collisionInnfo = new List<CollisionData>();
+        public static object CollisionSemaphoreList = new object();
 
         //Physics
         public Simulation Simulation { get; protected set; }
@@ -82,8 +104,44 @@ namespace TGC.MonoGame.TP
             Graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height - 100;
             Graphics.ApplyChanges();
 
+            Collider.CollisionDetected += Collider_CollisionDetected;
+
             InitPhysics();
             base.Initialize();
+        }
+
+        private void Collider_CollisionDetected(CollidablePair pair, CollisionInformation info)
+        {
+            if (!PlayerPresent(pair))
+            {
+                return;
+            }
+
+            Model3D x = scenario.models.Find(x => x.SimulationHandle == pair.A.BodyHandle.Value && x.PhysicsType!= PhysicsTypeHome.Static);
+            if (x == null)
+            {
+                x = scenario.models.Find(x => x.SimulationHandle == pair.B.BodyHandle.Value &&  x.PhysicsType != PhysicsTypeHome.Static);
+            }
+
+            if (x == null)
+            {
+                return;
+            }
+
+            lock (CollisionSemaphoreList)
+            {
+                CollisionData data = collisionInnfo.Find(y => y.sceneObject == x);
+                if(data == null)
+                {
+                    collisionInnfo.Add(new CollisionData(player, x));
+                }
+            }
+
+        }
+
+        private bool PlayerPresent(CollidablePair pair)
+        {
+            return pair.A.BodyHandle.Value == player.playerHanle.Value || pair.B.BodyHandle.Value == player.playerHanle.Value;
         }
 
         private void InitPhysics()
@@ -112,8 +170,7 @@ namespace TGC.MonoGame.TP
         private void LoadScenarioSimulation()
         {
             PositionFirstTimestepper p = new  PositionFirstTimestepper();
-            p.CollisionsDetected += P_CollisionsDetected;
-
+       
             //Create simulation
             Simulation = Simulation.Create(BufferPool, new NarrowPhaseCallbacks(),
                 new PoseIntegratorCallbacks(new NumericVector3(0, -10 * 150, 0)),p);
@@ -123,7 +180,7 @@ namespace TGC.MonoGame.TP
             {
                 if(part.PhysicsType == PhysicsTypeHome.Static)
                 {
-                    Simulation.Statics.Add(part.GetStaticDescription(Simulation)); 
+                    part.GetStaticDescription(Simulation);
                 }
                 else if (part.PhysicsType == PhysicsTypeHome.Kinematic || part.PhysicsType == PhysicsTypeHome.Dynamic)
                 {
@@ -132,11 +189,7 @@ namespace TGC.MonoGame.TP
             }
         }
 
-        private void P_CollisionsDetected(float dt, IThreadDispatcher threadDispatcher)
-        {
-            throw new NotImplementedException();
-        }
-
+   
         protected override void LoadContent()
         {
             //Load resources
@@ -158,9 +211,7 @@ namespace TGC.MonoGame.TP
             //Add to games model list
             gamesModels.Add(player);
 
-            //Add player to simulation
-            Simulation.Bodies.Add(player.BodyDescription);
-
+         
             //Set camera to target player
             TargetCamera.Target = player;
 
@@ -188,6 +239,18 @@ namespace TGC.MonoGame.TP
             else if (Keyboard.GetState().IsKeyDown(Keys.F) && (Camera is TargetCamera))
             {
                 Camera = FreeCamera;
+            }
+
+            //Before update check collision
+            lock (CollisionSemaphoreList)
+            {
+                foreach(var c in collisionInnfo)
+                {
+                    c.player.Collide(c.sceneObject);
+                    c.procesed = true;
+                }
+
+                collisionInnfo.Clear();
             }
 
             //Update each model in the game

@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using TGC.MonoGame.TP.Utilities;
 
@@ -17,6 +18,8 @@ namespace TGC.MonoGame.TP.Models.Commons
 
         public abstract int PhysicsType { get; }
 
+
+        public int SimulationHandle { get; set; }
 
         protected Model Model { get; set; }
         protected Effect Effect { get; set; }
@@ -36,6 +39,7 @@ namespace TGC.MonoGame.TP.Models.Commons
         {
             get
             {
+                
                 return TranslationMatrix.Translation;
             }
         }
@@ -108,6 +112,10 @@ namespace TGC.MonoGame.TP.Models.Commons
 
         public abstract StaticDescription GetStaticDescription(Simulation simulation);
         public abstract BodyDescription GetBodyDescription(Simulation simulation);
-        
+
+        public virtual void Collide(Model3D sceneObject)
+        {
+            Debug.WriteLine("YES " + sceneObject.GetType());
+        }
     }
 }
