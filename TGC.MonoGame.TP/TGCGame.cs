@@ -13,7 +13,7 @@ using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using TGC.MonoGame.TP.Cameras;
-using TGC.MonoGame.TP.Models.Ball;
+using TGC.MonoGame.TP.Models.Players;
 using TGC.MonoGame.TP.Models.Commons;
 using TGC.MonoGame.TP.Models.Scene;
 using TGC.MonoGame.TP.Models.SkyBox;
@@ -117,19 +117,24 @@ namespace TGC.MonoGame.TP
                 return;
             }
 
-            Model3D x = scenario.models.Find(x => x.SimulationHandle == pair.A.BodyHandle.Value && x.PhysicsType!= PhysicsTypeHome.Static);
-            if (x == null)
-            {
-                x = scenario.models.Find(x => x.SimulationHandle == pair.B.BodyHandle.Value &&  x.PhysicsType != PhysicsTypeHome.Static);
-            }
+            CollidableReference collisionObject = GetCollisionObject(pair);
+            int handle = collisionObject.Mobility == CollidableMobility.Static ? collisionObject.StaticHandle.Value : collisionObject.BodyHandle.Value;
+
+
+
+            Model3D x = scenario.models.Find(x => (
+                    (x.SimulationHandle == handle && x.PhysicsType == PhysicsTypeHome.Static && collisionObject.Mobility == CollidableMobility.Static) ||
+                    (x.SimulationHandle == handle && x.PhysicsType != PhysicsTypeHome.Static && collisionObject.Mobility != CollidableMobility.Static)
+            ));
 
             if (x == null)
             {
                 return;
             }
 
-            lock (CollisionSemaphoreList)
+                lock (CollisionSemaphoreList)
             {
+               // Debug.WriteLine("Collision with : " + x.GetType());
                 CollisionData data = collisionInnfo.Find(y => y.sceneObject == x);
                 if(data == null)
                 {
@@ -139,9 +144,20 @@ namespace TGC.MonoGame.TP
 
         }
 
+        //Check Before is player isPresent
+        private CollidableReference GetCollisionObject(CollidablePair pair)
+        {
+            if(pair.A.BodyHandle.Value == player.playerHanle.Value && pair.A.Mobility == CollidableMobility.Dynamic)
+            {
+                return pair.B;
+            }
+
+            return pair.A;
+        }
+
         private bool PlayerPresent(CollidablePair pair)
         {
-            return pair.A.BodyHandle.Value == player.playerHanle.Value || pair.B.BodyHandle.Value == player.playerHanle.Value;
+            return (pair.A.BodyHandle.Value == player.playerHanle.Value && pair.A.Mobility== CollidableMobility.Dynamic) || (pair.B.BodyHandle.Value == player.playerHanle.Value && pair.B.Mobility == CollidableMobility.Dynamic);
         }
 
         private void InitPhysics()

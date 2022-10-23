@@ -1,0 +1,38 @@
+﻿***Ready***
+* OnGround
+* Checkpoints
+
+------------------------------
+
+
+***Pending***
+- Checkpoints size
+- ReSpawn
+- PowerUps
+
+
+- Mouse camera orbit
+- Sounds Music
+- 3 Type of balls
+- Map Object
+
+
+------------------------------
+
+
+***Finish Stage***
+- Lights
+- Shadows maps
+- Enviroment Map per ball
+
+
+***Optional***
+- Blur or effects with powerups
+- Power ups with rotations.
+
+
+
+-----------------------------
+***Optimization***
+	- OnGround (Check another form)
+	- Checkpoint trought

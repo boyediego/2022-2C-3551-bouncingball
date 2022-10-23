@@ -17,7 +17,9 @@ namespace TGC.MonoGame.TP.Models.Commons
         protected const string ContentFolderEffects = "Effects/";
 
         public abstract int PhysicsType { get; }
+        public abstract Boolean IsGround { get; }
 
+        public virtual Boolean IsRoad { get { return false; } }
 
         public int SimulationHandle { get; set; }
 
@@ -54,11 +56,15 @@ namespace TGC.MonoGame.TP.Models.Commons
 
         public Model3D(ContentManager content, String pathModel)
         {
-            Model = content.Load<Model>(ContentFolder3D + pathModel);
+            if (!String.IsNullOrEmpty(pathModel))
+                Model = content.Load<Model>(ContentFolder3D + pathModel);
+            
             ScaleMatrix = Matrix.Identity;
             TranslationMatrix = Matrix.Identity;
             RotationMatrix = Matrix.Identity;
-            CreateModel(content);
+
+            if (!String.IsNullOrEmpty(pathModel))
+                CreateModel(content);
         }
 
         protected void SetEffect(Effect effect)

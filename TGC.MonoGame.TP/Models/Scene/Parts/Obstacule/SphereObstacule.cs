@@ -23,6 +23,8 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Obstacule
             base.ScaleMatrix = Matrix.CreateScale(1.5f);
         }
 
+        public override bool IsGround { get { return false; } }
+
         protected override void LoadEffectAndParameters(ContentManager content)
         {
             Effect = content.Load<Effect>(ContentFolderEffects + "BasicShader");

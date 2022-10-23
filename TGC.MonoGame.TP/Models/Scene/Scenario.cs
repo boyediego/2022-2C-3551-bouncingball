@@ -31,6 +31,7 @@ namespace TGC.MonoGame.TP.Models.Scene
                  .AddObstacule(new CubeObstacule(content).SetMovementDirection(Vector3.Right).SetSpeed(12500).SetMaxMovement(750).SetInitialOffset(new Vector3(400, 0, 0)))
                  .AddForward()
                  .AddLeft(3)
+                 .AddCheckpoint(500, 200)
                  .AddBackward(3)
                  .AddLeft(3)
                  .AddLeft()

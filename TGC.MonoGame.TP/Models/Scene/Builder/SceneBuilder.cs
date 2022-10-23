@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework.Content;
 using System;
 using System.Collections.Generic;
-
+using System.Linq;
 using System.Text;
 using TGC.MonoGame.TP.Models.Commons;
 using TGC.MonoGame.TP.Models.Scene.Parts.Obstacule.Base;
@@ -24,6 +24,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Builder
         public abstract SceneBuilder Up();
         public abstract SceneBuilder Down();
         public abstract SceneBuilder AddObstacule(Obstacule cubeObstacule);
+        public abstract SceneBuilder AddCheckpoint(float checkpointHeight, float checkpointWidth);
 
         public SceneBuilder AddForward(int times)
         {
@@ -78,7 +79,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Builder
                 throw new Exception("You need call StartRoad First!");
             }
 
-            return models[models.Count - 1];
+            return models.Last(x=> x.IsRoad);
         }
 
         public List<Model3D> GetScene()

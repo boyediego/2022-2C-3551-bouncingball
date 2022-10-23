@@ -139,6 +139,13 @@ namespace TGC.MonoGame.TP.Models.Scene.Builder
             return this;
         }
 
-       
+        public override SceneBuilder AddCheckpoint(float checkpointHeight, float checkpointWidth)
+        {
+            models.Add(new Checkpoint(this.contentManager, CurrentCenter, this.CurrentRoadDirection, checkpointHeight, checkpointWidth));
+            return this;
+        }
+
+
+
     }
 }

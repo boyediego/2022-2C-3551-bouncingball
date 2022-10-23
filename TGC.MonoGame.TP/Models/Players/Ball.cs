@@ -18,8 +18,9 @@ using Matrix = Microsoft.Xna.Framework.Matrix;
 using Vector3 = Microsoft.Xna.Framework.Vector3;
 using Quaternion = Microsoft.Xna.Framework.Quaternion;
 using TGC.MonoGame.TP.Cameras;
+using TGC.MonoGame.TP.Models.Scene.Parts;
 
-namespace TGC.MonoGame.TP.Models.Ball
+namespace TGC.MonoGame.TP.Models.Players
 {
     public class Ball : Model3D
     {
@@ -32,6 +33,7 @@ namespace TGC.MonoGame.TP.Models.Ball
         public BodyDescription BodyDescription { get; set; }
         public BodyHandle playerHanle { get; set; }
         private Vector3 PreviousVelocityDirection;
+        private Boolean OnGround = false;
 
         protected float ForwardImpulse
         {
@@ -52,6 +54,8 @@ namespace TGC.MonoGame.TP.Models.Ball
         {
             get { return PhysicsTypeHome.Dynamic; }
         }
+
+        
 
         public Ball(ContentManager content, Vector3 startPosition, Simulation Simulation) : base(content, "balls/sphere1")
         {
@@ -154,11 +158,35 @@ namespace TGC.MonoGame.TP.Models.Ball
 
             if (keyboardState.IsKeyDown(Keys.Space) )
             {
-                bodyReference.Awake = true;
-                bodyReference.ApplyLinearImpulse(Vector3.Up.ToNumericVector3() * 300);
+                TryJump(bodyReference);
             }
 
         }
+
+        private void TryJump(BodyReference bodyReference)
+        {
+            if (OnGround)
+            {
+                bodyReference.Awake = true;
+                bodyReference.ApplyLinearImpulse(Vector3.Up.ToNumericVector3() * 1000);
+                OnGround = false;
+            }
+        }
+
+
+        public override void Collide(Model3D sceneObject)
+        {
+            if (sceneObject.PhysicsType == PhysicsTypeHome.Static)
+            {
+                OnGround = sceneObject.IsGround;
+            }
+            else
+            {
+                sceneObject.Collide(this);
+            }
+            
+        }
+
 
         private Vector3 temp;
         private Vector3 applyImpulse;
@@ -240,6 +268,14 @@ namespace TGC.MonoGame.TP.Models.Ball
         {
             throw new NotSupportedException();
         }
+
+        internal void CheckpointReached(Checkpoint checkpoint)
+        {
+            //TODO Respawn information
+            Debug.WriteLine("Checkpoint");
+        }
+
+        public override bool IsGround => throw new NotSupportedException();
     }
 
 }

@@ -14,7 +14,7 @@ using NumericVector3 = System.Numerics.Vector3;
 
 namespace TGC.MonoGame.TP.Models.Scene.Parts
 {
-    public class Road : Model3D
+    public class Road : Ground
     {
         private Vector3 ObjectStartPosition;
         private float rotationAngle;
@@ -24,6 +24,8 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts
         public Road(ContentManager content) : base(content, "scene/basics/road2")
         {
         }
+
+        public override Boolean IsRoad { get { return true; } }
 
         public override void CreateModel(ContentManager content)
         {
@@ -56,10 +58,6 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts
             Effect.Parameters["ModelTexture"].SetValue(texture);
         }
 
-        public override int PhysicsType
-        {
-            get { return PhysicsTypeHome.Static; }
-        }
 
         public override StaticDescription GetStaticDescription(Simulation simulation)
         {
@@ -73,10 +71,6 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts
             return sta;
         }
 
-        public override BodyDescription GetBodyDescription(Simulation simulation)
-        {
-            throw new NotSupportedException();
-        }
     }
 
 }
