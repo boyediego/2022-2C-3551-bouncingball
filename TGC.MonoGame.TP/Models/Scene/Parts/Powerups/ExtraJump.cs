@@ -18,9 +18,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Powerups
 {
     public class ExtraJump : Powerup
     {
-
         private const float HEIGTH = 300;
-
 
         //TODO CHANGE MODEL
         public ExtraJump(ContentManager content) : base(content, "scene/basics/powerup")
@@ -48,7 +46,5 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Powerups
             Effect = content.Load<Effect>(ContentFolderEffects + "BasicShader");
             color = new Vector3(0, 1, 0);
         }
-
-      
     }
 }
