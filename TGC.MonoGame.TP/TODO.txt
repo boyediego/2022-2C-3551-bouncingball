@@ -1,13 +1,13 @@
 ﻿***Ready***
 * OnGround
 * Checkpoints
+* Checkpoints size
+* ReSpawn
 
 ------------------------------
 
 
 ***Pending***
-- Checkpoints size
-- ReSpawn
 - PowerUps
 
 
