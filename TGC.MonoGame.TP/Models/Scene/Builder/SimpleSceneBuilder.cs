@@ -8,6 +8,7 @@ using System.Text;
 using TGC.MonoGame.TP.Models.Commons;
 using TGC.MonoGame.TP.Models.Scene.Parts;
 using TGC.MonoGame.TP.Models.Scene.Parts.Obstacule.Base;
+using TGC.MonoGame.TP.Models.Scene.Parts.Powerups;
 
 namespace TGC.MonoGame.TP.Models.Scene.Builder
 {
@@ -139,12 +140,18 @@ namespace TGC.MonoGame.TP.Models.Scene.Builder
             return this;
         }
 
-        public override SceneBuilder AddCheckpoint(float checkpointHeight, float checkpointWidth)
+        public override SceneBuilder AddCheckpoint(float checkpointWidth)
         {
-            models.Add(new Checkpoint(this.contentManager, CurrentCenter, this.CurrentRoadDirection, checkpointHeight, checkpointWidth));
+            models.Add(new Checkpoint(this.contentManager, CurrentCenter, checkpointWidth));
             return this;
         }
 
+        public override SceneBuilder AddPowerup(Powerup powerup)
+        {
+            powerup.SetPosition(CurrentCenter + new Vector3(0, GameParams.ObstacleAltitudeOffset, 0));
+            models.Add(powerup);
+            return this;
+        }
 
 
     }

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using TGC.MonoGame.TP.Models.Commons;
 using TGC.MonoGame.TP.Models.Scene.Parts.Obstacule.Base;
+using TGC.MonoGame.TP.Models.Scene.Parts.Powerups;
 
 namespace TGC.MonoGame.TP.Models.Scene.Builder
 {
@@ -24,7 +25,8 @@ namespace TGC.MonoGame.TP.Models.Scene.Builder
         public abstract SceneBuilder Up();
         public abstract SceneBuilder Down();
         public abstract SceneBuilder AddObstacule(Obstacule cubeObstacule);
-        public abstract SceneBuilder AddCheckpoint(float checkpointHeight, float checkpointWidth);
+        public abstract SceneBuilder AddCheckpoint(float checkpointWidth);
+        public abstract SceneBuilder AddPowerup(Powerup powerup);
 
         public SceneBuilder AddForward(int times)
         {

@@ -21,8 +21,6 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Obstacule
         {
         }
 
-        public override bool IsGround { get { return false; } }
-
         protected override void LoadEffectAndParameters(ContentManager content)
         {
             Effect = content.Load<Effect>(ContentFolderEffects + "BasicShader");
@@ -31,7 +29,6 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Obstacule
 
         protected override bool CheckCollision(GameTime gameTime, List<IGameModel> otherInteractiveObjects)
         {
-            //TODO IMPLEMENT
             return false;
         }
 

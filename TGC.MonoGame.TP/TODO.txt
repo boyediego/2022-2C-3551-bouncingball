@@ -3,12 +3,17 @@
 * Checkpoints
 * Checkpoints size
 * ReSpawn
-
+* PowerUps
 ------------------------------
 
 
 ***Pending***
-- PowerUps
+
+- PowerUps form and texture
+- PowerUps time
+- Respawn (Draw powerups and restore checkpoints)
+- StartRoad - End Road (Player Win)
+- Road or plataform with angle
 
 
 - Mouse camera orbit
@@ -37,4 +42,4 @@
 -----------------------------
 ***Optimization***
 	- OnGround (Check another form)
-	- Checkpoint trought
+	- Checkpoint trought effect

@@ -19,6 +19,7 @@ using Vector3 = Microsoft.Xna.Framework.Vector3;
 using Quaternion = Microsoft.Xna.Framework.Quaternion;
 using TGC.MonoGame.TP.Cameras;
 using TGC.MonoGame.TP.Models.Scene.Parts;
+using TGC.MonoGame.TP.Models.Scene.Parts.Powerups;
 
 namespace TGC.MonoGame.TP.Models.Players
 {
@@ -52,6 +53,10 @@ namespace TGC.MonoGame.TP.Models.Players
         {
             get { return PhysicsTypeHome.Dynamic; }
         }
+
+        protected virtual float JumpImpulse { get { return 1000f; } }
+        private float IncreaseJumpValue=0;
+        private float ExtraImpulse { get { return JumpImpulse*(IncreaseJumpValue/100f); } }
 
         public Ball(ContentManager content, Vector3 startPosition, Simulation Simulation) : base(content, "balls/sphere1")
         {
@@ -188,7 +193,7 @@ namespace TGC.MonoGame.TP.Models.Players
             if (OnGround)
             {
                 bodyReference.Awake = true;
-                bodyReference.ApplyLinearImpulse(Vector3.Up.ToNumericVector3() * 1000);
+                bodyReference.ApplyLinearImpulse(Vector3.Up.ToNumericVector3() * (JumpImpulse + ExtraImpulse));
                 OnGround = false;
             }
         }
@@ -275,13 +280,21 @@ namespace TGC.MonoGame.TP.Models.Players
         }
 
 
-        internal void CheckpointReached(Checkpoint checkpoint)
+        public void CheckpointReached(Checkpoint checkpoint)
         {
             Debug.WriteLine("Checkpoint");
             this.ReSpawnPosition = checkpoint.Position + Vector3.Up * 550;
         }
 
+        public void Powerup(Powerup powerup)
+        {
+            powerup.ApplyPowerUp(this);
+        }
 
+        internal void IncreaseJump(float percent)
+        {
+            IncreaseJumpValue = percent;
+        }
     }
 
 }

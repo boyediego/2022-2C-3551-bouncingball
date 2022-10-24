@@ -15,6 +15,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Obstacule.Base
 {
     public abstract class Obstacule : Model3D
     {
+
         protected Vector3 startPosition;
         protected Vector3 currentPosition;
         public Vector3 InitialOffset;
@@ -25,6 +26,8 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Obstacule.Base
             startPosition = new Vector3(0, 0, 0);
             currentPosition = startPosition;
         }
+
+        public override bool IsGround { get { return false; } }
 
         public Obstacule SetInitialOffset(Vector3 v)
         {

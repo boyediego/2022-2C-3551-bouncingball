@@ -24,11 +24,11 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts
         private Simulation simulation;
         private Boolean playerPassCheckPoint = false;
         private Vector3 checkpointPosition;
-        private Vector3 direction;
-        private float checkpointHeight;
         private float checkpointWidth;
         private BodyDescription bodyDescription;
         private BodyHandle bodyHandle;
+        
+        
         private CubePrimitive cubePrimitive;
         
 
@@ -41,17 +41,15 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts
             throw new NotSupportedException();
         }
 
-        public Checkpoint(ContentManager content, Vector3 checkpointPosition, Vector3 direction, float checkpointHeight, float checkpointWidth) : base(content, null)
+        public Checkpoint(ContentManager content, Vector3 checkpointPosition, float checkpointWidth) : base(content, null)
         {
             base.TranslationMatrix = Matrix.CreateTranslation(checkpointPosition);
             this.checkpointPosition = checkpointPosition;
-            this.direction = (direction == Vector3.Forward || direction == Vector3.Backward) ? Vector3.Left : Vector3.Forward;
-            this.checkpointHeight = checkpointHeight;
             this.checkpointWidth = checkpointWidth;
             cubePrimitive = new CubePrimitive(TGCGame.Graphics.GraphicsDevice, checkpointWidth, Color.Fuchsia);
         }
 
-        public override bool IsGround { get { return true; } }
+        public override bool IsGround { get { return false; } }
         public override int PhysicsType { get { return PhysicsTypeHome.Kinematic; } }
         public override StaticDescription GetStaticDescription(Simulation simulation) { throw new NotSupportedException(); }
 
@@ -62,35 +60,8 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts
 
         public override BodyDescription GetBodyDescription(Simulation simulation)
         {
-            float marginY = 20;
-            float height = marginY + checkpointHeight;
-
-            float zPosition = 0;
-            float xPosition = 0;
-
-            float xWidth = 0;
-            float zWidth = 0;
-
-            if (direction == Vector3.Forward)
-            {
-                zPosition = checkpointPosition.Z;
-                zWidth = 50;
-                xPosition = checkpointPosition.X - checkpointWidth / 2;
-                xWidth = checkpointWidth;
-            }
-            else
-            {
-                xPosition = checkpointPosition.X;
-                xWidth = 50;
-                zPosition = checkpointPosition.Z - checkpointWidth / 2;
-                zWidth = checkpointWidth;
-            }
-
-
             this.simulation = simulation;
             var shape = new Box(checkpointWidth, checkpointWidth, checkpointWidth);
-            //var collidable = new CollidableDescription(simulation.Shapes.Add(shape), 0.1f);
-            //bodyDescription = BodyDescription.CreateKinematic(new RigidPose(new NumericVector3(xPosition, checkpointPosition.Y - marginY, zPosition)), collidable, new BodyActivityDescription(0.01f));
             bodyDescription = BodyDescription.CreateConvexDynamic(new NumericVector3(checkpointPosition.X, checkpointPosition.Y + (checkpointWidth/2), checkpointPosition.Z), 0.1f, simulation.Shapes, shape);
             bodyHandle = simulation.Bodies.Add(bodyDescription);
             SimulationHandle = bodyHandle.Value;

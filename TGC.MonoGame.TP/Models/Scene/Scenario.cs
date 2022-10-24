@@ -8,6 +8,7 @@ using TGC.MonoGame.TP.Models.Commons;
 using TGC.MonoGame.TP.Models.Scene.Builder;
 using TGC.MonoGame.TP.Models.Scene.Parts;
 using TGC.MonoGame.TP.Models.Scene.Parts.Obstacule;
+using TGC.MonoGame.TP.Models.Scene.Parts.Powerups;
 
 namespace TGC.MonoGame.TP.Models.Scene
 {
@@ -31,9 +32,10 @@ namespace TGC.MonoGame.TP.Models.Scene
                  .AddObstacule(new CubeObstacule(content).SetMovementDirection(Vector3.Right).SetSpeed(12500).SetMaxMovement(750).SetInitialOffset(new Vector3(400, 0, 0)))
                  .AddForward()
                  .AddLeft(3)
-                 .AddCheckpoint(500, 900)
+                 .AddCheckpoint(900)
                  .AddBackward(3)
                  .AddLeft(3)
+                 .AddPowerup(new ExtraJump(content))
                  .AddLeft()
               //   .AddObstacule(new CubeObstacule(content).SetMovementDirection(Vector3.Forward).SetSpeed(2500).SetMaxMovement(450))
                  .AddLeft()
