@@ -108,7 +108,7 @@ namespace TGC.MonoGame.TP.Models.Players
             base.TranslationMatrix = Matrix.CreateTranslation(new Vector3(position.X, position.Y, position.Z));
 
 
-            if (position.Y < -100)
+            if (position.Y < -400)
             {
                 Respawn();
                 return;
