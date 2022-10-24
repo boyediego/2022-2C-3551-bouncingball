@@ -63,7 +63,7 @@ namespace TGC.MonoGame.TP
         }
 
        
-        private GraphicsDeviceManager Graphics { get; }
+        public static GraphicsDeviceManager Graphics { get; set; }
 
         //Cameras
         private Camera Camera { get; set; }

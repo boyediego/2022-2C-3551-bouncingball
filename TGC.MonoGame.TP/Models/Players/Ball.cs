@@ -25,15 +25,13 @@ namespace TGC.MonoGame.TP.Models.Players
     public class Ball : Model3D
     {
         private static Texture2D texture;//FIXME
-
-
         public GraphicsDeviceManager Graphics;
-
         private Simulation simulation;
         public BodyDescription BodyDescription { get; set; }
         public BodyHandle playerHanle { get; set; }
         private Vector3 PreviousVelocityDirection;
-        private Boolean OnGround = false;
+        protected Boolean OnGround = false;
+        protected Vector3 ReSpawnPosition;
 
         protected float ForwardImpulse
         {
@@ -55,18 +53,26 @@ namespace TGC.MonoGame.TP.Models.Players
             get { return PhysicsTypeHome.Dynamic; }
         }
 
-        
-
         public Ball(ContentManager content, Vector3 startPosition, Simulation Simulation) : base(content, "balls/sphere1")
         {
             this.simulation = Simulation;
             var position = new NumericVector3(startPosition.X, startPosition.Y, startPosition.Z);
+            CreatePhysics(position);
+            this.ReSpawnPosition = startPosition;
+        }
+
+        private void CreatePhysics(NumericVector3 position)
+        {
             var boundingPlayer = this.GetBoundingSphere();
             var simulationPlayer = new Sphere(boundingPlayer.Radius - 60);
-            this.BodyDescription = BodyDescription.CreateConvexDynamic(position, 1f, Simulation.Shapes, simulationPlayer);
-            this.playerHanle = Simulation.Bodies.Add(this.BodyDescription);
+            this.BodyDescription = BodyDescription.CreateConvexDynamic(position, 1f, simulation.Shapes, simulationPlayer);
+            this.playerHanle = simulation.Bodies.Add(this.BodyDescription);
             base.CurrentMovementDirection = new Vector3(0, 0, 0);
         }
+
+        public override StaticDescription GetStaticDescription(Simulation simulation) { throw new NotSupportedException(); }
+        public override BodyDescription GetBodyDescription(Simulation simulation) { throw new NotSupportedException(); }
+        public override bool IsGround => throw new NotSupportedException();
 
         public BoundingSphere GetBoundingSphere()
         {
@@ -102,6 +108,12 @@ namespace TGC.MonoGame.TP.Models.Players
             base.TranslationMatrix = Matrix.CreateTranslation(new Vector3(position.X, position.Y, position.Z));
 
 
+            if (position.Y < -100)
+            {
+                Respawn();
+                return;
+            }
+
 
             if (velocityVector.LengthSquared() > 0)
             {
@@ -116,37 +128,37 @@ namespace TGC.MonoGame.TP.Models.Players
             velocityDirection.Normalize();
 
             var nVelocityVector = PreviousVelocityDirection;
-            
+
             nVelocityVector.Normalize();
 
-            temp = velocityDirection ;
+            temp = velocityDirection;
 
-            var dv = velocityVector.Length()/500;
-            if(dv <=1)
+            var dv = velocityVector.Length() / 500;
+            if (dv <= 1)
             {
                 dv = 1;
             }
 
-    
+
             if (keyboardState.IsKeyDown(Keys.W))
             {
                 bodyReference.Awake = true;
-                applyImpulse = nVelocityVector ;
-                bodyReference.ApplyLinearImpulse(applyImpulse.ToNumericVector3() * ForwardImpulse/dv);
+                applyImpulse = nVelocityVector;
+                bodyReference.ApplyLinearImpulse(applyImpulse.ToNumericVector3() * ForwardImpulse / dv);
             }
 
             if (keyboardState.IsKeyDown(Keys.S))
             {
                 bodyReference.Awake = true;
                 applyImpulse = velocityDirection;
-                bodyReference.ApplyLinearImpulse(applyImpulse.ToNumericVector3()  * BrakeForce);
+                bodyReference.ApplyLinearImpulse(applyImpulse.ToNumericVector3() * BrakeForce);
             }
 
             if (keyboardState.IsKeyDown(Keys.A))
             {
                 bodyReference.Awake = true;
                 applyImpulse = (velocityDirection.PerpendicularCounterClockwiseIn2D());
-                bodyReference.ApplyLinearImpulse(applyImpulse.ToNumericVector3() * (RotateForce/velocityDirection.Length()));
+                bodyReference.ApplyLinearImpulse(applyImpulse.ToNumericVector3() * (RotateForce / velocityDirection.Length()));
 
             }
 
@@ -156,11 +168,19 @@ namespace TGC.MonoGame.TP.Models.Players
                 bodyReference.ApplyLinearImpulse(velocityDirection.PerpendicularClockwiseIn2D().ToNumericVector3() * RotateForce / velocityDirection.Length());
             }
 
-            if (keyboardState.IsKeyDown(Keys.Space) )
+            if (keyboardState.IsKeyDown(Keys.Space))
             {
                 TryJump(bodyReference);
             }
 
+        }
+
+        private void Respawn()
+        {
+            simulation.Bodies.Remove(this.playerHanle);
+            base.TranslationMatrix = Matrix.CreateTranslation(ReSpawnPosition);
+            base.TranslationMatrix = Matrix.Identity;
+            CreatePhysics(ReSpawnPosition.ToNumericVector3());
         }
 
         private void TryJump(BodyReference bodyReference)
@@ -184,7 +204,7 @@ namespace TGC.MonoGame.TP.Models.Players
             {
                 sceneObject.Collide(this);
             }
-            
+
         }
 
 
@@ -251,31 +271,17 @@ namespace TGC.MonoGame.TP.Models.Players
         public override void Draw(GameTime gameTime, Matrix view, Matrix projection)
         {
             base.Draw(gameTime, view, projection);
-
-
             DrawLine(temp, Color.Red, Color.Yellow, view, projection, new Vector3(5, 20, 5));
-         // DrawLine(applyImpulse, Color.Fuchsia, Color.Green, view, projection, new Vector3(5, 20, 5));
-
-            //FIN 
         }
 
-        public override StaticDescription GetStaticDescription(Simulation simulation)
-        {
-            throw new NotSupportedException();
-        }
-
-        public override BodyDescription GetBodyDescription(Simulation simulation)
-        {
-            throw new NotSupportedException();
-        }
 
         internal void CheckpointReached(Checkpoint checkpoint)
         {
-            //TODO Respawn information
             Debug.WriteLine("Checkpoint");
+            this.ReSpawnPosition = checkpoint.Position + Vector3.Up * 550;
         }
 
-        public override bool IsGround => throw new NotSupportedException();
+
     }
 
 }
