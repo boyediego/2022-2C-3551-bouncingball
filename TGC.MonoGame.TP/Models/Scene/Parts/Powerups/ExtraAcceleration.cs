@@ -17,19 +17,20 @@ using Vector3 = Microsoft.Xna.Framework.Vector3;
 
 namespace TGC.MonoGame.TP.Models.Scene.Parts.Powerups
 {
-    public class ExtraJump : Powerup
+    public class ExtraAcceleration : Powerup
     {
         private const float HEIGTH = 300;
 
         //TODO CHANGE MODEL
-        public ExtraJump(ContentManager content) : base(content, "scene/basics/powerup")
+        public ExtraAcceleration(ContentManager content) : base(content, "scene/basics/powerup")
         {
             
         }
 
         public override void ApplyPowerUp(Ball ball)
         {
-            ball.IncreaseJump(50);
+            //TODO CALL INCREASE ACCELERATION
+            ball.IncreaseJump(150);
         }
      
         public override BodyDescription GetBodyDescription(Simulation simulation)

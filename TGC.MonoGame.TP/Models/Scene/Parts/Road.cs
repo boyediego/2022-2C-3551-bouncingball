@@ -44,12 +44,13 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts
         {
             this.ObjectStartPosition = position;
             TranslationMatrix = Matrix.CreateTranslation(ObjectStartPosition);
+            Rotate(90);
         }
 
         public void Rotate(float angle)
         {
             rotationAngle = angle;
-            RotationMatrix = Matrix.CreateRotationY(rotationAngle);
+            RotationMatrix = Matrix.CreateRotationX(rotationAngle);
         }
 
 

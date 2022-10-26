@@ -34,6 +34,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Powerups
 
         public override void CreateModel(ContentManager content)
         {
+
             LoadEffectAndParameters(content);
             SetEffect(Effect);
         }

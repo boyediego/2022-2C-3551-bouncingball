@@ -39,6 +39,7 @@ namespace TGC.MonoGame.TP.Models.Scene
                  .AddLeft()
               //   .AddObstacule(new CubeObstacule(content).SetMovementDirection(Vector3.Forward).SetSpeed(2500).SetMaxMovement(450))
                  .AddLeft()
+                 .AddPowerup(new ExtraAcceleration(content))
                  .AddForward(6)
                  .AddForward()
                 // .AddObstacule(new SphereObstacule(content).SetMovementDirection(Vector3.Up).SetSpeed(1500).SetMaxMovement(450).Up(500))
