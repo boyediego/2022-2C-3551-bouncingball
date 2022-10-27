@@ -36,9 +36,9 @@ namespace TGC.MonoGame.TP.Utilities.Geometries
 
         // Once all the geometry has been specified, the InitializePrimitive method copies the vertex and index data into these buffers,
         // which store it on the GPU ready for efficient rendering.
-        private VertexBuffer VertexBuffer { get; set; }
+        protected VertexBuffer VertexBuffer { get; set; }
 
-        private IndexBuffer IndexBuffer { get; set; }
+        protected IndexBuffer IndexBuffer { get; set; }
         public BasicEffect Effect { get; set; }
 
         #endregion Fields

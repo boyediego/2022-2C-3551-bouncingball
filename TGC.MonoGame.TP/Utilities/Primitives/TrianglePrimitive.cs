@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using TGC.MonoGame.TP.Utilities.Geometries;
 
@@ -80,33 +81,36 @@ namespace TGC.MonoGame.TP.Utilities.Geometries
             InitializePrimitive(graphicsDevice);
         }
 
-        public TrianglePrimitive(GraphicsDevice graphicsDevice, Vector3 vertex1, Vector3 vertex2, Vector3 vertex3,Vector3 normal)
+        public TrianglePrimitive(GraphicsDevice graphicsDevice, Vector3 vertex1, Vector3 vertex2, Vector3 vertex3,Vector3 normal, List<Vector2> textureCoordinates, Texture2D texture)
         {
+            Effect = new BasicEffect(graphicsDevice);
+            Effect.TextureEnabled = true;
+            Effect.Texture = texture;
+            Effect.EnableDefaultLighting();
+
             AddIndex(CurrentVertex + 0);
             AddIndex(CurrentVertex + 1);
             AddIndex(CurrentVertex + 2);
 
+            Vertices.Add(new VertexPositionColorNormal(vertex1, Color.White, normal));
+            Vertices.Add(new VertexPositionColorNormal(vertex2, Color.White, normal));
+            Vertices.Add(new VertexPositionColorNormal(vertex3, Color.White, normal));
 
-
-            //AddVertex(vertex1, vertexColor1, normal);
-            //AddVertex(vertex2, vertexColor2, normal);
-            //AddVertex(vertex3, vertexColor3, normal);
 
             var vertices = new VertexPositionNormalTexture[3];
 
-            VertexBuffer Vertices = new VertexBuffer(graphicsDevice, VertexPositionNormalTexture.VertexDeclaration, vertices.Length, BufferUsage.None);
-
-            
-
-            
-            vertices[0] = new VertexPositionNormalTexture(vertex1, normal, textureCoordinates[index]);
-            vertices[1] = new VertexPositionNormalTexture(vertex2, normal, textureCoordinates[index]);
-            vertices[2] = new VertexPositionNormalTexture(vertex3, normal, textureCoordinates[index]);
-
-            Vertices.SetData(vertices);
 
 
-            InitializePrimitive(graphicsDevice);
+            VertexBuffer = new VertexBuffer(graphicsDevice, VertexPositionNormalTexture.VertexDeclaration, vertices.Length, BufferUsage.None);
+            vertices[0] = new VertexPositionNormalTexture(vertex1, normal, textureCoordinates[0]);
+            vertices[1] = new VertexPositionNormalTexture(vertex2, normal, textureCoordinates[1]);
+            vertices[2] = new VertexPositionNormalTexture(vertex3, normal, textureCoordinates[2]);
+            VertexBuffer.SetData(vertices);
+
+
+            IndexBuffer = new IndexBuffer(graphicsDevice, typeof(ushort), Indices.Count, BufferUsage.None);
+            IndexBuffer.SetData(Indices.ToArray());
+
         }
     }
 }

@@ -88,9 +88,16 @@ namespace TGC.MonoGame.TP.Models.Scene
             CustomRoad customRoad = new CustomRoad(content, TGCGame.Graphics.GraphicsDevice, 1000, 3500, 100, 0, 0);
             customRoad.SetTranslation(0, 200, 0);
             sceneObjects.Add(customRoad);
-            customRoad = new CustomRoad(content, TGCGame.Graphics.GraphicsDevice, 1000, 3500, 100, 500, 0);
-            customRoad.SetTranslation(0, 200, 3500);
-            sceneObjects.Add(customRoad);
+            //customRoad = new CustomRoad(content, TGCGame.Graphics.GraphicsDevice, 1000, 3500, 100, 500, 0);
+            //customRoad.SetTranslation(0, 200, 3500);
+
+            CustomCurvedRoad curved = new CustomCurvedRoad(content, TGCGame.Graphics.GraphicsDevice, new Vector3(0,100,0), new Vector3(5000,100,3000),1000,100);
+            curved.SetTranslation(0, 200, 3500);
+            sceneObjects.Add(curved);
+
+            curved = new CustomCurvedRoad(content, TGCGame.Graphics.GraphicsDevice, new Vector3(0, 100, 0), new Vector3(5000, 100, 3000), 1000, 100);
+            curved.SetTranslation(5000, 200, 3000+3500);
+            sceneObjects.Add(curved);
         }
 
         public void Draw(GameTime gameTime, Matrix view, Matrix projection)
