@@ -101,8 +101,11 @@ namespace TGC.MonoGame.TP.Models.Players
             Effect.Parameters["ModelTexture"].SetValue(texture);
         }
 
+        
+        private TimeSpan lastJump=TimeSpan.Zero;
         public override void Update(GameTime gameTime, KeyboardState keyboardState, List<IGameModel> otherInteractiveObjects)
         {
+            
             var bodyReference = simulation.Bodies.GetBodyReference(playerHanle);
             var position = bodyReference.Pose.Position;
             var quaternion = bodyReference.Pose.Orientation;
@@ -173,9 +176,11 @@ namespace TGC.MonoGame.TP.Models.Players
                 bodyReference.ApplyLinearImpulse(velocityDirection.PerpendicularClockwiseIn2D().ToNumericVector3() * RotateForce / velocityDirection.Length());
             }
 
+           
+
             if (keyboardState.IsKeyDown(Keys.Space))
             {
-                TryJump(bodyReference);
+                TryJump(bodyReference, gameTime.TotalGameTime);
             }
 
         }
@@ -188,13 +193,18 @@ namespace TGC.MonoGame.TP.Models.Players
             CreatePhysics(ReSpawnPosition.ToNumericVector3());
         }
 
-        private void TryJump(BodyReference bodyReference)
+        
+        private void TryJump(BodyReference bodyReference, TimeSpan current)
         {
-            if (OnGround)
+            if (lastJump == TimeSpan.Zero || current.Subtract(lastJump).Milliseconds > 300)
             {
-                bodyReference.Awake = true;
-                bodyReference.ApplyLinearImpulse(Vector3.Up.ToNumericVector3() * (JumpImpulse + ExtraImpulse));
-                OnGround = false;
+                if (OnGround)
+                {
+                    lastJump = current;
+                    bodyReference.Awake = true;
+                    bodyReference.ApplyLinearImpulse(Vector3.Up.ToNumericVector3() * (JumpImpulse + ExtraImpulse));
+                    OnGround = false;
+                }
             }
         }
 
@@ -203,7 +213,10 @@ namespace TGC.MonoGame.TP.Models.Players
         {
             if (sceneObject.PhysicsType == PhysicsTypeHome.Static)
             {
+                if(!OnGround)
+                    Debug.WriteLine("OnGround detected with " + sceneObject);
                 OnGround = sceneObject.IsGround;
+                
             }
             else
             {

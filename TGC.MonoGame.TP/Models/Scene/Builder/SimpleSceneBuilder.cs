@@ -78,7 +78,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Builder
         {
             Vector3 newDirection = Vector3.Right;
             Road road = new Road(this.contentManager);
-            road.Rotate(-MathHelper.PiOver2); //ROTATE 90° DEGREES TO RIGHT
+            road.RotateY(-MathHelper.PiOver2); //ROTATE 90° DEGREES TO RIGHT
             if (newDirection != CurrentRoadDirection)
             {
                this.CurrentCenter.Z -= (Last().GetModelSize().Z - road.GetModelSize().X) / 2 * -CurrentRoadDirection.Z;
@@ -117,7 +117,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Builder
         {
             Vector3 newDirection = Vector3.Left;
             Road road = new Road(this.contentManager);
-            road.Rotate(-MathHelper.PiOver2); //ROTATE 90° DEGREES TO RIGHT
+            road.RotateY(-MathHelper.PiOver2); //ROTATE 90° DEGREES TO RIGHT
             if (newDirection != CurrentRoadDirection)
             {
                 this.CurrentCenter.Z += (Last().GetModelSize().Z - road.GetModelSize().X) / 2 * CurrentRoadDirection.Z;

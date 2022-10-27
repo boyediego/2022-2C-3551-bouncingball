@@ -1,5 +1,7 @@
 ﻿using BepuPhysics;
 using BepuPhysics.Collidables;
+using BepuUtilities.Collections;
+using BepuUtilities.Memory;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -17,10 +19,11 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts
     public class Road : Ground
     {
         private Vector3 ObjectStartPosition;
-        private float rotationAngle;
+        private float rotationAngleY=0;
+        private float rotationAngleX=0;
         private static Texture2D texture;
 
-        
+
         public Road(ContentManager content) : base(content, "scene/basics/road2")
         {
         }
@@ -37,22 +40,27 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts
             }
 
             SetEffect(Effect);
-            
+
         }
 
         public void SetPositionFromOrigin(Vector3 position)
         {
             this.ObjectStartPosition = position;
             TranslationMatrix = Matrix.CreateTranslation(ObjectStartPosition);
-            Rotate(90);
+            
         }
 
-        public void Rotate(float angle)
+        public void RotateY(float angle)
         {
-            rotationAngle = angle;
-            RotationMatrix = Matrix.CreateRotationX(rotationAngle);
+            rotationAngleY = angle;
+            RotationMatrix = Matrix.CreateRotationY(rotationAngleY)* Matrix.CreateRotationX(rotationAngleX);
         }
 
+        public void RotateX(float angle)
+        {
+            rotationAngleX = angle;
+            RotationMatrix = Matrix.CreateRotationY(rotationAngleY) * Matrix.CreateRotationX(rotationAngleX);
+        }
 
         public override void SetCustomEffectParameters(Effect effect)
         {
@@ -63,8 +71,41 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts
         public override StaticDescription GetStaticDescription(Simulation simulation)
         {
             Vector3 size = GetModelSize();
-            StaticDescription sta=  new StaticDescription(new NumericVector3(Position.X, Position.Y, Position.Z),
-                new CollidableDescription(simulation.Shapes.Add(new Box(size.X, size.Y, size.Z)), 0.1f));
+
+            var halfWidth = size.X / 2;
+            var halfHeight = size.Y / 2;
+            var HalfLength = size.Z / 2;
+
+
+            List<Vector3> puntos = new List<Vector3>();
+
+            //UP FACE
+            puntos.Add( new Vector3(Position.X - halfWidth, Position.Y + halfHeight, Position.Z - HalfLength));
+            puntos.Add( new Vector3(Position.X - halfWidth, Position.Y + halfHeight, Position.Z + HalfLength));
+            puntos.Add( new Vector3(Position.X + halfWidth, Position.Y + halfHeight, Position.Z - HalfLength));
+            puntos.Add( new Vector3(Position.X + halfWidth, Position.Y + halfHeight, Position.Z + HalfLength));
+
+            //DOWN FACE
+            puntos.Add( new Vector3(Position.X - halfWidth, Position.Y - halfHeight, Position.Z - HalfLength));
+            puntos.Add( new Vector3(Position.X - halfWidth, Position.Y - halfHeight, Position.Z + HalfLength));
+            puntos.Add( new Vector3(Position.X + halfWidth, Position.Y - halfHeight, Position.Z - HalfLength));
+            puntos.Add( new Vector3(Position.X + halfWidth, Position.Y - halfHeight, Position.Z + HalfLength));
+
+
+            var points = new QuickList<System.Numerics.Vector3>(8, simulation.BufferPool);
+            foreach (Vector3 p in puntos)
+            {
+                Vector3 v = Vector3.Transform(p, Quaternion.CreateFromRotationMatrix(base.RotationMatrix));
+                points.AllocateUnsafely() = new System.Numerics.Vector3(v.X,v.Y,v.Z);
+            }
+            
+            ConvexHull r =new ConvexHull(points.Span.Slice(points.Count), simulation.BufferPool, out _);
+
+            /*StaticDescription sta = new StaticDescription(new NumericVector3(Position.X, Position.Y, Position.Z),
+                 new CollidableDescription(simulation.Shapes.Add(new Box(size.X, size.Y, size.Z)), 0.1f));*/
+
+            StaticDescription sta = new StaticDescription(new NumericVector3(Position.X, Position.Y, Position.Z),
+                 new CollidableDescription(simulation.Shapes.Add(r), 0.1f));
 
             StaticHandle handle = simulation.Statics.Add(sta);
             SimulationHandle = handle.Value;

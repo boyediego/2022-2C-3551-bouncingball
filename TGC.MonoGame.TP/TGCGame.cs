@@ -26,6 +26,7 @@ using Point = Microsoft.Xna.Framework.Point;
 using Color = Microsoft.Xna.Framework.Color;
 using static TGC.MonoGame.TP.Physics.Collider;
 using BepuUtilities.Collections;
+using TGC.MonoGame.TP.Models.Scene.Parts;
 
 namespace TGC.MonoGame.TP
 {
@@ -41,8 +42,8 @@ namespace TGC.MonoGame.TP
             {
                 this.player = player;
                 this.sceneObject = sceneObject;
-                
-            }   
+
+            }
         }
 
 
@@ -53,7 +54,7 @@ namespace TGC.MonoGame.TP
         public const string ContentFolderSpriteFonts = "SpriteFonts/";
         public const string ContentFolderTextures = "Textures/";
 
-        
+
 
         public TGCGame()
         {
@@ -62,7 +63,7 @@ namespace TGC.MonoGame.TP
             IsMouseVisible = true;
         }
 
-       
+
         public static GraphicsDeviceManager Graphics { get; set; }
 
         //Cameras
@@ -85,6 +86,9 @@ namespace TGC.MonoGame.TP
         public BufferPool BufferPool { get; private set; }
         public SimpleThreadDispatcher ThreadDispatcher { get; private set; }
 
+        CustomRoad road = null;
+        CustomRoad road1 = null;
+
         protected override void Initialize()
         {
             var screenSize = new Point(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height / 2);
@@ -93,6 +97,7 @@ namespace TGC.MonoGame.TP
             TargetCamera = new TargetCamera(GraphicsDevice.Viewport.AspectRatio, Vector3.One * 100f, Vector3.Zero);
 
             Camera = TargetCamera;
+            // Camera = FreeCamera;
 
             var rasterizerState = new RasterizerState();
             rasterizerState.CullMode = CullMode.CullCounterClockwiseFace;
@@ -132,11 +137,11 @@ namespace TGC.MonoGame.TP
                 return;
             }
 
-                lock (CollisionSemaphoreList)
+            lock (CollisionSemaphoreList)
             {
-               // Debug.WriteLine("Collision with : " + x.GetType());
+                // Debug.WriteLine("Collision with : " + x.GetType());
                 CollisionData data = collisionInnfo.Find(y => y.sceneObject == x);
-                if(data == null)
+                if (data == null)
                 {
                     collisionInnfo.Add(new CollisionData(player, x));
                 }
@@ -147,7 +152,7 @@ namespace TGC.MonoGame.TP
         //Check Before is player isPresent
         private CollidableReference GetCollisionObject(CollidablePair pair)
         {
-            if(pair.A.BodyHandle.Value == player.playerHanle.Value && pair.A.Mobility == CollidableMobility.Dynamic)
+            if (pair.A.BodyHandle.Value == player.playerHanle.Value && pair.A.Mobility == CollidableMobility.Dynamic)
             {
                 return pair.B;
             }
@@ -157,7 +162,7 @@ namespace TGC.MonoGame.TP
 
         private bool PlayerPresent(CollidablePair pair)
         {
-            return (pair.A.BodyHandle.Value == player.playerHanle.Value && pair.A.Mobility== CollidableMobility.Dynamic) || (pair.B.BodyHandle.Value == player.playerHanle.Value && pair.B.Mobility == CollidableMobility.Dynamic);
+            return (pair.A.BodyHandle.Value == player.playerHanle.Value && pair.A.Mobility == CollidableMobility.Dynamic) || (pair.B.BodyHandle.Value == player.playerHanle.Value && pair.B.Mobility == CollidableMobility.Dynamic);
         }
 
         private void InitPhysics()
@@ -185,16 +190,16 @@ namespace TGC.MonoGame.TP
 
         private void LoadScenarioSimulation()
         {
-            PositionFirstTimestepper p = new  PositionFirstTimestepper();
-       
+            PositionFirstTimestepper p = new PositionFirstTimestepper();
+
             //Create simulation
             Simulation = Simulation.Create(BufferPool, new NarrowPhaseCallbacks(),
-                new PoseIntegratorCallbacks(new NumericVector3(0, -10 * 150, 0)),p);
+                new PoseIntegratorCallbacks(new NumericVector3(0, -10 * 150, 0)), p);
 
             //Add scene parts to simulation
             foreach (Model3D part in scenario.models)
             {
-                if(part.PhysicsType == PhysicsTypeHome.Static)
+                if (part.PhysicsType == PhysicsTypeHome.Static)
                 {
                     part.GetStaticDescription(Simulation);
                 }
@@ -205,9 +210,10 @@ namespace TGC.MonoGame.TP
             }
         }
 
-   
+
         protected override void LoadContent()
         {
+
             //Load resources
             PreloadResources();
 
@@ -216,26 +222,27 @@ namespace TGC.MonoGame.TP
 
             //Add to games model list
             gamesModels.Add(scenario);
-            
+
             //Load physics simulationn
             LoadScenarioSimulation();
 
             //Create player  
-            player = new Ball(Content, new Vector3(0,150,0), Simulation);
+            player = new Ball(Content, new Vector3(0, 150, 0), Simulation);
             player.Graphics = Graphics;
 
             //Add to games model list
             gamesModels.Add(player);
 
-         
+
             //Set camera to target player
             TargetCamera.Target = player;
+
 
 
             base.LoadContent();
         }
 
-      
+
         protected override void Update(GameTime gameTime)
         {
             //Gametime
@@ -257,10 +264,11 @@ namespace TGC.MonoGame.TP
                 Camera = FreeCamera;
             }
 
+
             //Before update check collision
             lock (CollisionSemaphoreList)
             {
-                foreach(var c in collisionInnfo)
+                foreach (var c in collisionInnfo)
                 {
                     c.player.Collide(c.sceneObject);
                     c.procesed = true;
@@ -290,6 +298,8 @@ namespace TGC.MonoGame.TP
             {
                 m.Draw(gameTime, Camera.View, Camera.Projection);
             }
+
+
 
         }
 

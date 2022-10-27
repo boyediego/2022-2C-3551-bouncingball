@@ -148,7 +148,7 @@ namespace TGC.MonoGame.TP.Utilities.Geometries
 
                 var primitiveCount = Indices.Count / 3;
 
-                graphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, primitiveCount);
+                graphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleStrip, 0, 0, primitiveCount);
             }
         }
 

@@ -25,7 +25,7 @@ namespace TGC.MonoGame.TP.Models.Scene
 
         public void CreateModel(ContentManager content)
         { 
-              SceneBuilder builder = new SimpleSceneBuilder(content);
+            /*  SceneBuilder builder = new SimpleSceneBuilder(content);
              builder
                  .StartRoad()
                  .AddForward()
@@ -58,9 +58,9 @@ namespace TGC.MonoGame.TP.Models.Scene
                  .AddForward(8)
                  .AddRight(3)
                  .AddBackward(3)
-                 .AddRight(5);
+                 .AddRight(5);*/
 
-           /* SceneBuilder builder = new SimpleSceneBuilder(content);
+            SceneBuilder builder = new SimpleSceneBuilder(content);
              builder
                  .StartRoad()
                  .AddForward(5)
@@ -80,10 +80,17 @@ namespace TGC.MonoGame.TP.Models.Scene
                  .AddBackward(80)
                  .AddLeft(1)
                  .AddForward(40)
-                 .AddObstacule(new CubeObstacule(content).SetMovementDirection(Vector3.Left).SetSpeed(2500).SetMaxMovement(750)); */
+                 .AddObstacule(new CubeObstacule(content).SetMovementDirection(Vector3.Left).SetSpeed(2500).SetMaxMovement(750)); 
 
 
             sceneObjects = builder.GetScene();
+
+            CustomRoad customRoad = new CustomRoad(content, TGCGame.Graphics.GraphicsDevice, 1000, 3500, 100, 0, 0);
+            customRoad.SetTranslation(0, 200, 0);
+            sceneObjects.Add(customRoad);
+            customRoad = new CustomRoad(content, TGCGame.Graphics.GraphicsDevice, 1000, 3500, 100, 500, 0);
+            customRoad.SetTranslation(0, 200, 3500);
+            sceneObjects.Add(customRoad);
         }
 
         public void Draw(GameTime gameTime, Matrix view, Matrix projection)
