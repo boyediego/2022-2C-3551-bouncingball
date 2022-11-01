@@ -64,13 +64,13 @@ namespace TGC.MonoGame.TP.Models.Players
             var position = new NumericVector3(startPosition.X, startPosition.Y, startPosition.Z);
             CreatePhysics(position);
             this.ReSpawnPosition = startPosition;
-            base.ScaleMatrix = Matrix.CreateScale(0.4f);
+            base.ScaleMatrix = Matrix.CreateScale(0.5f);
         }
 
         private void CreatePhysics(NumericVector3 position)
         {
             var boundingPlayer = this.GetBoundingSphere();
-            var simulationPlayer = new Sphere(boundingPlayer.Radius - 90);
+            var simulationPlayer = new Sphere(boundingPlayer.Radius - 95);
             this.BodyDescription = BodyDescription.CreateConvexDynamic(position, 1f, simulation.Shapes, simulationPlayer);
             this.playerHanle = simulation.Bodies.Add(this.BodyDescription);
             base.CurrentMovementDirection = new Vector3(0, 0, 0);
@@ -102,7 +102,7 @@ namespace TGC.MonoGame.TP.Models.Players
             Effect.Parameters["ModelTexture"].SetValue(texture);
         }
 
-        
+        private Boolean init = false;
         private TimeSpan lastJump=TimeSpan.Zero;
         public override void Update(GameTime gameTime, KeyboardState keyboardState, List<IGameModel> otherInteractiveObjects)
         {
@@ -121,6 +121,12 @@ namespace TGC.MonoGame.TP.Models.Players
             {
                 Respawn();
                 return;
+            }
+
+            if (!init)
+            {
+                bodyReference.ApplyLinearImpulse(Vector3.Backward.ToNumericVector3() * ForwardImpulse);
+                init = true;
             }
 
 

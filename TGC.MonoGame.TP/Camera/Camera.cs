@@ -7,9 +7,9 @@ namespace TGC.MonoGame.TP.Cameras
     /// </summary>
     public abstract class Camera
     {
-        public const float DefaultFieldOfViewDegrees = MathHelper.PiOver4;
+        public const float DefaultFieldOfViewDegrees = MathHelper.PiOver2;
         public const float DefaultNearPlaneDistance = 0.1f;
-        public const float DefaultFarPlaneDistance = 20000;
+        public const float DefaultFarPlaneDistance = 50000;
 
         public Camera()
         {

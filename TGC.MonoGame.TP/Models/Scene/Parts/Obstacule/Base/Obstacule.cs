@@ -19,6 +19,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Obstacule.Base
         protected Vector3 startPosition;
         protected Vector3 currentPosition;
         public Vector3 InitialOffset;
+        public virtual Matrix ExternalTransformation { get; set; }
 
         protected Obstacule(ContentManager content, string pathModel) : base(content, pathModel)
         {

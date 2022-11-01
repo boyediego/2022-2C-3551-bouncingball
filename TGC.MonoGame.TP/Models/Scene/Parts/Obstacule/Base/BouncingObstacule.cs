@@ -62,6 +62,14 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Obstacule.Base
             return this;
         }
 
+        private Matrix _ExternalTransformation;
+        public override Matrix ExternalTransformation { 
+            get { return _ExternalTransformation; }
+            set { 
+                _ExternalTransformation = value;
+                movementDirection = Vector3.Transform(movementDirection, ExternalTransformation);
+            }
+        }
 
 
         public BouncingObstacule SetMovementDirection(Vector3 direction)
@@ -95,7 +103,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Obstacule.Base
                 var position = bodyReference.Pose.Position;
             var quaternion = bodyReference.Pose.Orientation;
 
-
+            
             bodyReference.Velocity.Linear = movementDirection.ToNumericVector3() * speed * GameParams.ObstacleSpeedMultiplier * time;
 
 
@@ -137,6 +145,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Obstacule.Base
             var size = base.GetModelSize();
             var shape = new Box(size.X, size.Y, size.Z);
             var collidable = new CollidableDescription(simulation.Shapes.Add(shape), 0.1f);
+            
             bodyDescription = BodyDescription.CreateKinematic(new RigidPose(startPosition.ToNumericVector3()), collidable, new BodyActivityDescription(0.01f));
             bodyHandle = simulation.Bodies.Add(bodyDescription);
             SimulationHandle = bodyHandle.Value;

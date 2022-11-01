@@ -57,6 +57,7 @@ namespace TGC.MonoGame.TP.Cameras
             Position = position;
             TargetPosition = targetPosition;
             
+
         }
 
         private const float CameraFollowRadius = 1200f;
@@ -64,7 +65,7 @@ namespace TGC.MonoGame.TP.Cameras
 
         public void UpdateCamera(Vector3 translation, Vector3 direction)
         {
-            Position = translation + new Vector3(0, 200, 0) + direction * 600f;
+            Position = translation + new Vector3(0, 255, 0) + direction * 400;
             
             View = Matrix.CreateLookAt(
               Position,

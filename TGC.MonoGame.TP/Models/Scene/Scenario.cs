@@ -59,14 +59,27 @@ namespace TGC.MonoGame.TP.Models.Scene
                 .addTramo(new CustomRoad(content, TGCGame.Graphics.GraphicsDevice, 2000, 500, 100, 0, 0))
                 .addTramo(new CustomRoad(content, TGCGame.Graphics.GraphicsDevice, 2000, 5000, 100, 0, 0))
                 .addPowerup(new ExtraJump(content))
-                .addHorizontalSpace(1000)
+                .addForwardSpace(1000)
                 .addVerticalSpace(450)
                 .addTramo(new CustomRoad(content, TGCGame.Graphics.GraphicsDevice, 2000, 5000, 100, 0, 0))
                 .addTramo(new CustomRoad(content, TGCGame.Graphics.GraphicsDevice, 2000, 2500, 100, 1000, 0))
                 .addTramo(new CustomRoad(content, TGCGame.Graphics.GraphicsDevice, 2000, 3000, 100, 0, 0))
-                .addTramo(new CustomCurvedRoad(content, TGCGame.Graphics.GraphicsDevice, new Vector3(0, 100, 0), new Vector3(-5000, 100, 3000), 2000, 100))
-                .addTramo(new CustomRoad(content, TGCGame.Graphics.GraphicsDevice, 2000, 9000, 100, 0, 0));
-            customBuilder.addTramo(new CustomCurvedRoad(content, TGCGame.Graphics.GraphicsDevice, new Vector3(0, 100, 0), new Vector3(-5000, 100, 3000), 2000, 100));
+                .addTramo(new CustomCurvedRoad(content, TGCGame.Graphics.GraphicsDevice, new Vector3(0, 100, 0), new Vector3(-5000, 1400, 3000), 2000, 100))
+                .addSideSpace(Vector3.Right,145 )
+                .addPlataform(new CustomRoad(content, TGCGame.Graphics.GraphicsDevice, 800, 800, 100, 0, 0))
+                .addVerticalSpace(450)
+                .addForwardSpace(300)
+                .addPlataform(new CustomRoad(content, TGCGame.Graphics.GraphicsDevice, 800, 800, 100, 0, 0))
+                .addObstacule(new CubeObstacule(content).SetMovementDirection(Vector3.Right).SetSpeed(12500).SetMaxMovement(1750).SetInitialOffset(new Vector3(400, 0, 0)))
+                .addVerticalSpace(450)
+                .addForwardSpace(300)
+                .addPlataform(new CustomRoad(content, TGCGame.Graphics.GraphicsDevice, 800, 800, 100, 0, 0))
+                .addVerticalSpace(450)
+                .addForwardSpace(300)
+                .addPlataform(new CustomRoad(content, TGCGame.Graphics.GraphicsDevice, 800, 800, 100, 0, 0))
+                .addTramo(new CustomRoad(content, TGCGame.Graphics.GraphicsDevice, 2000, 9000, 100, 0, 0))
+                .addCheckpoint(2000)
+                .addTramo(new CustomCurvedRoad(content, TGCGame.Graphics.GraphicsDevice, new Vector3(0, 100, 0), new Vector3(-5000, 100, 3000), 2000, 100));
             sceneObjects.AddRange(customBuilder.GetScene());
 
             /*

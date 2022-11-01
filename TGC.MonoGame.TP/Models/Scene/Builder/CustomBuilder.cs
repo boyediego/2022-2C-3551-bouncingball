@@ -3,10 +3,12 @@ using Microsoft.Xna.Framework.Content;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using TGC.MonoGame.TP.Models.Commons;
 using TGC.MonoGame.TP.Models.Scene.Parts;
+using TGC.MonoGame.TP.Models.Scene.Parts.Obstacule.Base;
 using TGC.MonoGame.TP.Models.Scene.Parts.Powerups;
 
 namespace TGC.MonoGame.TP.Models.Scene.Builder
@@ -40,13 +42,24 @@ namespace TGC.MonoGame.TP.Models.Scene.Builder
         }
 
         private float rotations = 0f;
+        private Boolean lastPlataform = false;
+
         public CustomBuilder addTramo(Tramo t)
         {
-            if(models.Count == 0)
+
+            return addTramo(t, false);
+        }
+        public CustomBuilder addPlataform(Tramo t)
+        {
+            return addTramo(t, true);
+        }
+        private CustomBuilder addTramo(Tramo t, Boolean platform)
+        {
+            if (models.Count == 0)
             {
                 this.models.Add(
                                 t
-                                .SetTranslation(new Vector3(0,200,0))
+                                .SetTranslation(new Vector3(0, 200, 0))
                                 .Build()
                                 .To3DModel()
                             );
@@ -56,27 +69,34 @@ namespace TGC.MonoGame.TP.Models.Scene.Builder
             else
             {
                 Tramo last = (Tramo)Last();
-                rotations += last.ActualRotation;
+
+                if (!platform && !lastPlataform)
+                {
+                    t.SetWidth(last.ActualWidth);
+                }
+                else if (platform)
+                {
+                    this.addForwardSpace(200);
+                }
                 this.models.Add(
-                                t
-                            .SetWidth(last.ActualWidth)
-                            .SetRotation(rotations)
-                            .SetTranslation(LastPosition)                
-                            .Build()
-                                .To3DModel()
+                                t.SetRotation(rotations)
+                                 .SetTranslation(LastPosition)
+                                 .Build()
+                                 .To3DModel()
                             );
 
                 LastPosition = Vector3.Transform(t.EndPoint, t.To3DModel().WorldMatrix);
 
             }
-
+            rotations += t.ActualRotation;
             Debug.WriteLine("Position:" + LastPosition);
 
+            lastPlataform = platform;
             return this;
         }
 
 
-        public CustomBuilder addHorizontalSpace(float length)
+        public CustomBuilder addForwardSpace(float length)
         {
             Vector3 offset = Vector3.Transform(Vector3.Backward, Matrix.CreateRotationY(rotations));
             offset.Normalize();
@@ -86,15 +106,41 @@ namespace TGC.MonoGame.TP.Models.Scene.Builder
 
         public CustomBuilder addVerticalSpace(float h)
         {
-            this.LastPosition = new Vector3(LastPosition.X, LastPosition.Y+h, LastPosition.Z);
+            this.LastPosition = new Vector3(LastPosition.X, LastPosition.Y + h, LastPosition.Z);
             return this;
         }
 
-        internal CustomBuilder addPowerup(Powerup powerup)
+        public CustomBuilder addSideSpace(Vector3 side, float length)
+        {
+            Vector3 offset = Vector3.Transform(side, Matrix.CreateRotationY(rotations));
+            offset.Normalize();
+            LastPosition += offset * length;
+            return this;
+        }
+
+        public CustomBuilder addPowerup(Powerup powerup)
         {
             Tramo last = (Tramo)Last();
             powerup.SetPosition(last.Center + new Vector3(0, GameParams.ObstacleAltitudeOffset, 0));
             models.Add(powerup);
+            return this;
+        }
+
+        public CustomBuilder addObstacule(Obstacule obstacule)
+        {
+            Tramo last = (Tramo)Last();
+            obstacule.ExternalTransformation = Matrix.CreateRotationY(rotations);
+            obstacule.SetPositionFromOrigin(last.Center + new Vector3(0, GameParams.ObstacleAltitudeOffset, 0) + obstacule.InitialOffset);
+            models.Add(obstacule);
+            return this;
+
+
+        }
+
+        public CustomBuilder addCheckpoint(float checkpointWidth)
+        {
+            Tramo last = (Tramo)Last();
+            models.Add(new Checkpoint(this.contentManager, last.Center, checkpointWidth));
             return this;
         }
     }
