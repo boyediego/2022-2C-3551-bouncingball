@@ -92,7 +92,7 @@ namespace TGC.MonoGame.TP
         protected override void Initialize()
         {
             var screenSize = new Point(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height / 2);
-            FreeCamera = new FreeCamera(GraphicsDevice.Viewport.AspectRatio, new Vector3(0, 700, 5500), screenSize);
+            FreeCamera = new FreeCamera(GraphicsDevice.Viewport.AspectRatio, new Vector3(5000, 1500, 19000), screenSize);
 
             TargetCamera = new TargetCamera(GraphicsDevice.Viewport.AspectRatio, Vector3.One * 100f, Vector3.Zero);
 
@@ -227,7 +227,7 @@ namespace TGC.MonoGame.TP
             LoadScenarioSimulation();
 
             //Create player  
-            player = new Ball(Content, new Vector3(0, 150, 0), Simulation);
+            player = new Ball(Content, new Vector3(300, 350, 400), Simulation);
             player.Graphics = Graphics;
 
             //Add to games model list

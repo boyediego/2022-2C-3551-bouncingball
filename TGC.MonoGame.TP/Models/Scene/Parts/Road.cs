@@ -101,9 +101,6 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts
             
             ConvexHull r =new ConvexHull(points.Span.Slice(points.Count), simulation.BufferPool, out _);
 
-            /*StaticDescription sta = new StaticDescription(new NumericVector3(Position.X, Position.Y, Position.Z),
-                 new CollidableDescription(simulation.Shapes.Add(new Box(size.X, size.Y, size.Z)), 0.1f));*/
-
             StaticDescription sta = new StaticDescription(new NumericVector3(Position.X, Position.Y, Position.Z),
                  new CollidableDescription(simulation.Shapes.Add(r), 0.1f));
 

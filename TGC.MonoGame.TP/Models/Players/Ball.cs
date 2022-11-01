@@ -64,12 +64,13 @@ namespace TGC.MonoGame.TP.Models.Players
             var position = new NumericVector3(startPosition.X, startPosition.Y, startPosition.Z);
             CreatePhysics(position);
             this.ReSpawnPosition = startPosition;
+            base.ScaleMatrix = Matrix.CreateScale(0.4f);
         }
 
         private void CreatePhysics(NumericVector3 position)
         {
             var boundingPlayer = this.GetBoundingSphere();
-            var simulationPlayer = new Sphere(boundingPlayer.Radius - 80);
+            var simulationPlayer = new Sphere(boundingPlayer.Radius - 90);
             this.BodyDescription = BodyDescription.CreateConvexDynamic(position, 1f, simulation.Shapes, simulationPlayer);
             this.playerHanle = simulation.Bodies.Add(this.BodyDescription);
             base.CurrentMovementDirection = new Vector3(0, 0, 0);

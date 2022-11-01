@@ -57,9 +57,9 @@ namespace TGC.MonoGame.TP.Cameras
 
             var currentMovementSpeed = MovementSpeed;
             if (keyboardState.IsKeyDown(Keys.LeftShift))
-                currentMovementSpeed *= 5f;
+                currentMovementSpeed *= 10f;
 
-            if (keyboardState.IsKeyDown(Keys.A) || keyboardState.IsKeyDown(Keys.Left))
+            if (keyboardState.IsKeyDown(Keys.A) || keyboardState.IsKeyDown(Keys.Left) || keyboardState.IsKeyDown(Keys.X))
             {
                 Position += -RightDirection * currentMovementSpeed * elapsedTime;
                 changed = true;

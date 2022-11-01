@@ -13,13 +13,14 @@ using NumericVector3 = System.Numerics.Vector3;
 using System.Runtime.Serialization.Formatters;
 using TGC.MonoGame.TP.Utilities;
 using BepuUtilities.Collections;
-
+using TGC.MonoGame.TP.Models.Commons;
 
 namespace TGC.MonoGame.TP.Models.Scene.Parts
 {
-    internal class CustomRoad : Ground
+    internal class CustomRoad : Ground, Tramo
     {
         private GraphicsDevice graphicsDevice;
+        private ContentManager content;
 
         Vector3 u1;
         Vector3 u2;
@@ -31,10 +32,25 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts
         Vector3 d3;
         Vector3 d4;
 
-        private List<TrianglePrimitive> triangles = new List<TrianglePrimitive>();
-        public CustomRoad(ContentManager content, GraphicsDevice graphicsDevice, float w, float l, float h, float elevation, float baseElevationOffset) : base(content, null)
+
+        public override Boolean IsRoad { get { return true; } }
+        public float ActualWidth { get; private set; }
+        public float ActualRotation { get; private set; }
+        public float ActualElevation { get; private set; }
+        public Vector3 StartPoint { get; private set; }
+        public Vector3 EndPoint { get; private set; }
+        public Vector3 Center 
         {
-            this.graphicsDevice = graphicsDevice;
+            get
+            {
+                return Vector3.Transform(new Vector3(w / 2, h, l / 2), base.WorldMatrix);
+            }
+        }
+
+        private float w, l, h, elevation, baseElevationOffset;
+
+        public Tramo Build()
+        {
             float x = 0;
             float y = h;
             float z = 0;
@@ -63,8 +79,8 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts
             triangles.Add(new TrianglePrimitive(graphicsDevice, d2, d4, d3, Vector3.Backward, new List<Vector2>() { Vector2.Zero, Vector2.UnitX, Vector2.UnitY }, boxTexture));
 
             //Front face
-            triangles.Add(new TrianglePrimitive(graphicsDevice, d1, u1, d2,Vector3.Forward, new List<Vector2>() { Vector2.Zero, Vector2.UnitX, Vector2.UnitY }, boxTexture));
-            triangles.Add(new TrianglePrimitive(graphicsDevice, u1, u2, d2,  Vector3.Forward, new List<Vector2>() { Vector2.One, Vector2.UnitX, Vector2.UnitY }, boxTexture));
+            triangles.Add(new TrianglePrimitive(graphicsDevice, d1, u1, d2, Vector3.Forward, new List<Vector2>() { Vector2.Zero, Vector2.UnitX, Vector2.UnitY }, boxTexture));
+            triangles.Add(new TrianglePrimitive(graphicsDevice, u1, u2, d2, Vector3.Forward, new List<Vector2>() { Vector2.One, Vector2.UnitX, Vector2.UnitY }, boxTexture));
 
             //Back face
             triangles.Add(new TrianglePrimitive(graphicsDevice, d3, u3, d4, Vector3.Backward, new List<Vector2>() { Vector2.Zero, Vector2.UnitX, Vector2.UnitY }, boxTexture));
@@ -72,15 +88,61 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts
 
             //Left face
             triangles.Add(new TrianglePrimitive(graphicsDevice, d1, u1, u3, Vector3.Left, new List<Vector2>() { Vector2.Zero, Vector2.UnitX, Vector2.UnitY }, boxTexture));
-            triangles.Add(new TrianglePrimitive(graphicsDevice, d1, u3, d3,  Vector3.Left, new List<Vector2>() { Vector2.Zero, Vector2.UnitY, Vector2.One }, boxTexture));
+            triangles.Add(new TrianglePrimitive(graphicsDevice, d1, u3, d3, Vector3.Left, new List<Vector2>() { Vector2.Zero, Vector2.UnitY, Vector2.One }, boxTexture));
 
             // Rigth face
             triangles.Add(new TrianglePrimitive(graphicsDevice, d2, u2, u4, Vector3.Right, new List<Vector2>() { Vector2.Zero, Vector2.UnitX, Vector2.UnitY }, boxTexture));
             triangles.Add(new TrianglePrimitive(graphicsDevice, d2, u4, d4, Vector3.Right, new List<Vector2>() { Vector2.Zero, Vector2.UnitY, Vector2.One }, boxTexture));
 
+
+            this.ActualWidth = w;
+            this.ActualRotation = 0f;
+            this.ActualElevation = elevation;
+            this.StartPoint = new Vector3(x, y, z);
+            this.EndPoint = new Vector3(x, elevation, z + l);
+
+            return this;
+        }
+
+        public Model3D To3DModel()
+        {
+            return (Model3D)this;
+        }
+
+        public Tramo SetWidth(float width)
+        {
+            this.w = width;
+            return this;
+        }
+
+        public Tramo SetRotation(float radians)
+        {
+            base.RotationMatrix = Matrix.CreateRotationY(radians);
+            return this;
+        }
+
+        public Tramo SetTranslation(Vector3 translation)
+        {
+            base.TranslationMatrix = Matrix.CreateTranslation(translation);
+            return this;
+        }
+
+        private List<TrianglePrimitive> triangles = new List<TrianglePrimitive>();
+        
+        public CustomRoad(ContentManager content, GraphicsDevice graphicsDevice, float w, float l, float h, float elevation, float baseElevationOffset) : base(content, null)
+        {
+            this.content = content;
+            this.graphicsDevice = graphicsDevice;
+            this.w = w;
+            this.l = l;
+            this.h = h;
+            this.elevation = elevation;
+            this.baseElevationOffset = baseElevationOffset;
         }
 
 
+
+        
         //No cargamos ningun modelo
         public override void CreateModel(ContentManager content)
         {
@@ -115,7 +177,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts
             NumericVector3 center=new NumericVector3();
             ConvexHull r = new ConvexHull(points.Span.Slice(points.Count), simulation.BufferPool, out center);
 
-
+            
             StaticDescription sta = new StaticDescription(new NumericVector3(center.X, center.Y, center.Z),
                new CollidableDescription(simulation.Shapes.Add(r), 0.0001f));
 
@@ -150,5 +212,6 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts
         {
             base.TranslationMatrix = Matrix.CreateTranslation(v1, v2, v3);
         }
+
     }
 }

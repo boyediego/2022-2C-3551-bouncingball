@@ -39,8 +39,10 @@ namespace TGC.MonoGame.TP.Models.Scene.Builder
         public override SceneBuilder StartRoad()
         {
             Road road = new Road(this.contentManager);
-            this.CurrentCenter = new Vector3(0, 0, 0);
+            this.CurrentCenter = new Vector3(-7000, -7000, -7000);
+
             this.CurrentRoadDirection = Vector3.Forward;
+            road.SetPositionFromOrigin(this.CurrentCenter);
             models.Add(road);
             return this;
         }
@@ -49,7 +51,9 @@ namespace TGC.MonoGame.TP.Models.Scene.Builder
         public override SceneBuilder StartRoad(Vector3 initialPosition)
         {
             Road road = new Road(this.contentManager);
+            
             this.CurrentCenter = initialPosition;
+
             this.CurrentRoadDirection = Vector3.Forward;
             models.Add(road);
             return this;

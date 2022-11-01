@@ -121,7 +121,7 @@ namespace TGC.MonoGame.TP.Physics
         {
             pairMaterial = new PairMaterialProperties 
             {
-                FrictionCoefficient = 1, 
+                FrictionCoefficient = 1f, 
                 MaximumRecoveryVelocity = 2, 
                 SpringSettings = new SpringSettings(30, 1) 
             };

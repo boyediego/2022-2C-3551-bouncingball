@@ -64,7 +64,7 @@ namespace TGC.MonoGame.TP.Cameras
 
         public void UpdateCamera(Vector3 translation, Vector3 direction)
         {
-            Position = translation + new Vector3(0, 550, 0) + direction * 1000f;
+            Position = translation + new Vector3(0, 200, 0) + direction * 600f;
             
             View = Matrix.CreateLookAt(
               Position,
