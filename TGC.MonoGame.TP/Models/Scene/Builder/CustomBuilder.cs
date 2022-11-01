@@ -133,8 +133,6 @@ namespace TGC.MonoGame.TP.Models.Scene.Builder
             obstacule.SetPositionFromOrigin(last.Center + new Vector3(0, GameParams.ObstacleAltitudeOffset, 0) + obstacule.InitialOffset);
             models.Add(obstacule);
             return this;
-
-
         }
 
         public CustomBuilder addCheckpoint(float checkpointWidth)
