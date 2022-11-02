@@ -50,7 +50,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts
 
         public Tramo Build()
         {
-            int sign =(int) (w / MathF.Abs(w));
+            int sign = (int)(w / MathF.Abs(w));
             BezierPath path = new BezierPath();
             Vector3 controlPoint1 = new Vector3(startPosition.X + (startPosition.Length() * 1f / 4f) - 1000 * sign, startPosition.Y, startPosition.Z + (startPosition.Length() * 1f / 4f) + 1000);
             Vector3 controlPoint3 = new Vector3(startPosition.X + (startPosition.Length() * 3f / 4f) - 1000 * sign, startPosition.Y, startPosition.Z + (startPosition.Length() * 3f / 4f) + 1000);
@@ -90,16 +90,59 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts
                 lastPosition = p6;
             }
 
+            float totalDistance = 0f;
+            float totalDistanceC2 = 0f;
             var cut = false;
+            var lastDistance = 0f;
             for (int index = 0; index < points.Count - 1; index++)
             {
                 var current = points[index];
                 var next = points[index + 1];
 
-                Vector2 texturaP1 = Vector2.Zero;
-                Vector2 texturaP2P5 = Vector2.UnitX;
-                Vector2 texturaP3P4 = Vector2.UnitY;
-                Vector2 texturaP6 = Vector2.One;
+                var distance = (next - current).LengthSquared();
+                totalDistance += distance;
+
+                distance = ((next + new Vector3(w, 0, 0)) - (current + new Vector3(w, 0, 0))).LengthSquared();
+                totalDistanceC2 += distance;
+
+                Vector3 p6 = next + new Vector3(w, 0, 0);
+
+                if (Math.Abs(p6.X) > Math.Abs(lastPosition.X))
+                {
+                    lastDistance = (endPosition - next).LengthSquared();
+                    totalDistance += lastDistance;
+                    break;
+                }
+
+                if (index == points.Count - 2 && !cut)
+                {
+                    lastDistance = ((lastPosition) - (current + new Vector3(w, 0, 0))).LengthSquared();
+                    totalDistanceC2 += lastDistance;
+                }
+            }
+
+            cut = false;
+            float yOffset = 0f;
+            float yOffsetC2 = 0f;
+            preLastPosition = new Vector3();
+            for (int index = 0; index < points.Count - 1; index++)
+            {
+                var current = points[index];
+                var next = points[index + 1];
+
+                var distance = (next - current).LengthSquared();
+                var distanceC2 = ((next + new Vector3(w, 0, 0)) - (current + new Vector3(w, 0, 0))).LengthSquared();
+
+                var fraction = distance / totalDistance;
+                var fraction2 = distanceC2 / totalDistanceC2;
+
+                Vector2 texturaP1 = new Vector2(0, yOffset);
+                Vector2 texturaP2P5 = new Vector2(0, yOffset + fraction);
+                Vector2 texturaP3P4 = new Vector2(1, yOffsetC2);
+                Vector2 texturaP6 = new Vector2(1, yOffsetC2 + fraction2);
+
+                yOffset += fraction;
+                yOffsetC2 += fraction2;
 
                 Vector3 vectorW = new Vector3(w, 0, 0);
                 Vector3 p1 = current;
@@ -139,6 +182,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts
 
                 //Face up
                 triangles.Add(new TrianglePrimitive(graphicsDevice, p4, p5, p6, Vector3.Up, new List<Vector2>() { texturaP3P4, texturaP2P5, texturaP6 }, boxTexture));
+                //triangles.Add(new TrianglePrimitive(graphicsDevice, p4, p5, p6, Color.Red, Color.Green, Color.Blue, Vector3.Up));
                 //Face down
                 triangles.Add(new TrianglePrimitive(graphicsDevice, p4 - new Vector3(0, h, 0), p5 - new Vector3(0, h, 0), p6 - new Vector3(0, h, 0), Vector3.Down, new List<Vector2>() { Vector2.UnitY, Vector2.UnitX, Vector2.One }, boxTexture));
                 trianglesPhysics.Add(triangles[triangles.Count - 2]);
@@ -157,10 +201,24 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts
                 {
                     break;
                 }
+
+
+            }
+
+            List<Vector2> textMapping = new List<Vector2>();
+            if (!cut)
+            {
+                textMapping = new List<Vector2>() { Vector2.One, Vector2.UnitY, new Vector2(1, (totalDistanceC2 - lastDistance) / totalDistanceC2) };
+            }
+            else
+            {
+                textMapping = new List<Vector2>() { Vector2.One, Vector2.UnitY, new Vector2(0, (totalDistance - lastDistance) / totalDistance) };
             }
 
             //End up face
-            triangles.Add(new TrianglePrimitive(graphicsDevice, lastPosition, endPosition, preLastPosition, Vector3.Up, new List<Vector2>() { Vector2.Zero, Vector2.UnitX, Vector2.UnitY }, boxTexture1));
+            triangles.Add(new TrianglePrimitive(graphicsDevice, lastPosition, endPosition, preLastPosition, Vector3.Up, textMapping, boxTexture));
+
+          // triangles.Add(new TrianglePrimitive(graphicsDevice, lastPosition, endPosition, preLastPosition, Color.Red, Color.Green, Color.Blue, Vector3.Up));
             trianglesPhysics.Add(triangles[triangles.Count - 1]);
 
             //End down face

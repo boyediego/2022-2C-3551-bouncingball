@@ -27,28 +27,29 @@ namespace TGC.MonoGame.TP.Models.Scene
         public void CreateModel(ContentManager content)
         {
             //TODO
-                SceneBuilder builder = new SimpleSceneBuilder(content);
-                builder
-                    .StartRoad()
-                    .AddForward(5)
-                    .AddLeft(1)
-                    .AddBackward(80)
-                    .AddLeft(1)
-                    .AddForward(80)
-                    .AddLeft(1)
-                    .AddBackward(80)
-                    .AddLeft(1)
-                    .AddForward(80)
-                    .AddLeft(1)
-                    .AddBackward(80)
-                    .AddLeft(1)
-                    .AddForward(80)
-                    .AddLeft(1)
-                    .AddBackward(80)
-                    .AddLeft(1)
-                    .AddForward(40);
-           sceneObjects = builder.GetScene();
+               SceneBuilder builder = new SimpleSceneBuilder(content);
+              builder
+                   .StartRoad()
+                   .AddForward(5)
+                   .AddLeft(1)
+                   .AddBackward(80)
+                   .AddLeft(1)
+                   .AddForward(80)
+                   .AddLeft(1)
+                   .AddBackward(80)
+                   .AddLeft(1)
+                   .AddForward(80)
+                   .AddLeft(1)
+                   .AddBackward(80)
+                   .AddLeft(1)
+                   .AddForward(80)
+                   .AddLeft(1)
+                   .AddBackward(80)
+                   .AddLeft(1)
+                   .AddForward(40);
+          sceneObjects = builder.GetScene();
 
+            //sceneObjects = new List<Model3D>();
             /*
               .AddObstacule(new CubeObstacule(content).SetMovementDirection(Vector3.Right).SetSpeed(12500).SetMaxMovement(750).SetInitialOffset(new Vector3(400, 0, 0)))
                  .AddPowerup(new ExtraJump(content))
@@ -56,6 +57,7 @@ namespace TGC.MonoGame.TP.Models.Scene
 
             CustomBuilder customBuilder = new CustomBuilder(content);
             customBuilder
+                .addTramo(new CustomRoad(content, TGCGame.Graphics.GraphicsDevice, 2000, 100, 100, 0, 0))
                 .addTramo(new CustomRoad(content, TGCGame.Graphics.GraphicsDevice, 2000, 500, 100, 0, 0))
                 .addTramo(new CustomRoad(content, TGCGame.Graphics.GraphicsDevice, 2000, 5000, 100, 0, 0))
                 .addPowerup(new ExtraJump(content))
@@ -64,7 +66,7 @@ namespace TGC.MonoGame.TP.Models.Scene
                 .addTramo(new CustomRoad(content, TGCGame.Graphics.GraphicsDevice, 2000, 5000, 100, 0, 0))
                 .addTramo(new CustomRoad(content, TGCGame.Graphics.GraphicsDevice, 2000, 2500, 100, 1000, 0))
                 .addTramo(new CustomRoad(content, TGCGame.Graphics.GraphicsDevice, 2000, 3000, 100, 0, 0))
-                .addTramo(new CustomCurvedRoad(content, TGCGame.Graphics.GraphicsDevice, new Vector3(0, 100, 0), new Vector3(-5000, 1400, 3000), 2000, 100))
+                .addTramo(new CustomCurvedRoad(content, TGCGame.Graphics.GraphicsDevice, new Vector3(0, 100, 0), new Vector3(5000, 100, 3000), 2000, 100))
                 .addSideSpace(Vector3.Right,145 )
                 .addPlataform(new CustomRoad(content, TGCGame.Graphics.GraphicsDevice, 800, 800, 100, 0, 0))
                 .addVerticalSpace(450)
