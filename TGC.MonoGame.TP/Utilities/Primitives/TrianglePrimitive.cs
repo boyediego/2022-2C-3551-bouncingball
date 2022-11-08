@@ -1,8 +1,10 @@
+using BepuPhysics.Constraints;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using TGC.MonoGame.TP.Cameras;
 using TGC.MonoGame.TP.Utilities.Geometries;
 
 namespace TGC.MonoGame.TP.Utilities.Geometries
@@ -83,10 +85,13 @@ namespace TGC.MonoGame.TP.Utilities.Geometries
 
         public TrianglePrimitive(GraphicsDevice graphicsDevice, Vector3 vertex1, Vector3 vertex2, Vector3 vertex3,Vector3 normal, List<Vector2> textureCoordinates, Texture2D texture)
         {
-            Effect = new BasicEffect(graphicsDevice);
-            Effect.TextureEnabled = true;
-            Effect.Texture = texture;
-            Effect.EnableDefaultLighting();
+              Effect = new BasicEffect(graphicsDevice);
+              Effect.TextureEnabled = true;
+              Effect.Texture = texture;
+              Effect.EnableDefaultLighting();
+
+
+
 
             AddIndex(CurrentVertex + 0);
             AddIndex(CurrentVertex + 1);

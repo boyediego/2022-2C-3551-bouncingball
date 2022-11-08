@@ -14,6 +14,7 @@ using System.Runtime.Serialization.Formatters;
 using TGC.MonoGame.TP.Utilities;
 using BepuUtilities.Collections;
 using TGC.MonoGame.TP.Models.Commons;
+using BepuPhysics.Constraints;
 
 namespace TGC.MonoGame.TP.Models.Scene.Parts
 {
@@ -39,7 +40,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts
         public float ActualElevation { get; private set; }
         public Vector3 StartPoint { get; private set; }
         public Vector3 EndPoint { get; private set; }
-        public Vector3 Center 
+        public Vector3 Center
         {
             get
             {
@@ -48,6 +49,10 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts
         }
 
         private float w, l, h, elevation, baseElevationOffset;
+
+
+        private Texture2D boxTexture;
+        private Texture2D normalTexture;
 
         public Tramo Build()
         {
@@ -67,8 +72,6 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts
             d2 = new Vector3(x + w, 0, z);
             d3 = new Vector3(x, 0 + baseElevationOffset, z + l);
             d4 = new Vector3(x + w, 0 + baseElevationOffset, z + l);
-
-            var boxTexture = content.Load<Texture2D>(TGCGame.ContentFolderTextures + "extras/basev2");
 
             //Face up
             triangles.Add(new TrianglePrimitive(graphicsDevice, u1, u2, u3, Vector3.Up, new List<Vector2>() { Vector2.Zero, Vector2.UnitX, Vector2.UnitY }, boxTexture));
@@ -128,7 +131,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts
         }
 
         private List<TrianglePrimitive> triangles = new List<TrianglePrimitive>();
-        
+
         public CustomRoad(ContentManager content, GraphicsDevice graphicsDevice, float w, float l, float h, float elevation, float baseElevationOffset) : base(content, null)
         {
             this.content = content;
@@ -138,11 +141,13 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts
             this.h = h;
             this.elevation = elevation;
             this.baseElevationOffset = baseElevationOffset;
+            boxTexture = content.Load<Texture2D>(TGCGame.ContentFolderTextures + "extras/cemento");
+            normalTexture = content.Load<Texture2D>(TGCGame.ContentFolderTextures + "extras/cemento-normal-map");
         }
 
 
 
-        
+
         //No cargamos ningun modelo
         public override void CreateModel(ContentManager content)
         {
@@ -174,10 +179,10 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts
             points.AllocateUnsafely() = new System.Numerics.Vector3(vertex7.X, vertex7.Y, vertex7.Z);
             points.AllocateUnsafely() = new System.Numerics.Vector3(vertex8.X, vertex8.Y, vertex8.Z);
 
-            NumericVector3 center=new NumericVector3();
+            NumericVector3 center = new NumericVector3();
             ConvexHull r = new ConvexHull(points.Span.Slice(points.Count), simulation.BufferPool, out center);
 
-            
+
             StaticDescription sta = new StaticDescription(new NumericVector3(center.X, center.Y, center.Z),
                new CollidableDescription(simulation.Shapes.Add(r), 0.0001f));
 
@@ -198,11 +203,32 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts
             graphicsDevice.RasterizerState = RasterizerState.CullNone;
             foreach (TrianglePrimitive triangle in triangles)
             {
-                var triangleEffect = triangle.Effect;
+               /* var triangleEffect = triangle.Effect;
                 triangleEffect.View = view;
                 triangleEffect.Projection = projection;
                 triangleEffect.World = this.WorldMatrix;
-                triangleEffect.LightingEnabled = false;
+                triangleEffect.LightingEnabled = false;*/
+
+                 var triangleEffect = TGCGame.LightEffects;
+
+                triangleEffect.Parameters["ModelTexture"].SetValue(boxTexture);
+                triangleEffect.Parameters["NormalTexture"].SetValue(normalTexture);
+                triangleEffect.Parameters["World"].SetValue(this.WorldMatrix);
+                triangleEffect.Parameters["InverseTransposeWorld"].SetValue(Matrix.Invert(Matrix.Transpose(this.WorldMatrix)));
+                triangleEffect.Parameters["WorldViewProjection"].SetValue(this.WorldMatrix * view * projection);
+                triangleEffect.Parameters["Tiling"].SetValue(Vector2.One);
+                triangleEffect.Parameters["eyePosition"].SetValue(TGCGame.Camera.Position);
+                
+                triangleEffect.Parameters["lightPosition"].SetValue(new Vector3(Center.X+16000, Center.Y+14000f, 8000));
+                triangleEffect.Parameters["ambientColor"].SetValue(new Vector3(1f, 1f, 1f));
+                triangleEffect.Parameters["diffuseColor"].SetValue(new Vector3(0.5f, 0.1f, 0f));
+                triangleEffect.Parameters["specularColor"].SetValue(new Vector3(0.5f, 0.1f, 0f));
+                triangleEffect.Parameters["KAmbient"].SetValue(0.4f);
+                triangleEffect.Parameters["KDiffuse"].SetValue(0.7f);
+                triangleEffect.Parameters["KSpecular"].SetValue(0.9f);
+                triangleEffect.Parameters["shininess"].SetValue(16.0f);
+                triangleEffect.CurrentTechnique = triangleEffect.Techniques["NormalMapping"];
+
                 triangle.Draw(triangleEffect);
             }
             graphicsDevice.RasterizerState = oldRasterizerState;

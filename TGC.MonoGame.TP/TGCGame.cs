@@ -67,14 +67,14 @@ namespace TGC.MonoGame.TP
         public static GraphicsDeviceManager Graphics { get; set; }
 
         //Cameras
-        private Camera Camera { get; set; }
+        public static Camera Camera { get; set; }//FIXME
         private FreeCamera FreeCamera { get; set; }
         private TargetCamera TargetCamera { get; set; }
 
         //Game objects
         private SkyBox SkyBox { get; set; }
         private List<IGameModel> gamesModels = new List<IGameModel>();
-        private Ball player;
+        public static Ball player;
         private Scenario scenario;
 
         //Collision info
@@ -178,13 +178,16 @@ namespace TGC.MonoGame.TP
         private void PreloadResources()
         {
             LoadSkybox();
+            
         }
 
+        public static Effect LightEffects;
         private void LoadSkybox()
         {
             var skyBox = Content.Load<Model>(ContentFolder3D + "skybox/cube");
             var skyBoxTexture = Content.Load<TextureCube>(ContentFolderTextures + "/skyboxes/skybox/skybox");
             var skyBoxEffect = Content.Load<Effect>(ContentFolderEffects + "SkyBox");
+            LightEffects = Content.Load<Effect>(ContentFolderEffects + "LightEffect");
             SkyBox = new SkyBox(skyBox, skyBoxTexture, skyBoxEffect, 5000);
         }
 

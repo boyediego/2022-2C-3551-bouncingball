@@ -66,7 +66,7 @@ namespace TGC.MonoGame.TP.Models.Scene
                 .addTramo(new CustomRoad(content, TGCGame.Graphics.GraphicsDevice, 2000, 5000, 100, 0, 0))
                 .addTramo(new CustomRoad(content, TGCGame.Graphics.GraphicsDevice, 2000, 2500, 100, 1000, 0))
                 .addTramo(new CustomRoad(content, TGCGame.Graphics.GraphicsDevice, 2000, 3000, 100, 0, 0))
-                .addTramo(new CustomCurvedRoad(content, TGCGame.Graphics.GraphicsDevice, new Vector3(0, 100, 0), new Vector3(5000, 100, 3000), 2000, 100))
+                .addTramo(new CustomCurvedRoad(content, TGCGame.Graphics.GraphicsDevice, new Vector3(0, 100, 0), new Vector3(-5000, 100, 3000), 2000, 100))
                 .addSideSpace(Vector3.Right,145 )
                 .addPlataform(new CustomRoad(content, TGCGame.Graphics.GraphicsDevice, 800, 800, 100, 0, 0))
                 .addVerticalSpace(450)

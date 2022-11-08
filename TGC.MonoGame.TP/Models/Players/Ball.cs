@@ -25,7 +25,7 @@ namespace TGC.MonoGame.TP.Models.Players
 {
     public class Ball : Model3D
     {
-        private static Texture2D texture;//FIXME
+        //private static Texture2D texture;//FIXME
         public GraphicsDeviceManager Graphics;
         private Simulation simulation;
         public BodyDescription BodyDescription { get; set; }
@@ -58,6 +58,10 @@ namespace TGC.MonoGame.TP.Models.Players
         private float IncreaseJumpValue=0;
         private float ExtraImpulse { get { return JumpImpulse*(IncreaseJumpValue/100f); } }
 
+        private Texture2D boxTexture;
+        private Texture2D normalTexture;
+
+
         public Ball(ContentManager content, Vector3 startPosition, Simulation Simulation) : base(content, "balls/sphere1")
         {
             this.simulation = Simulation;
@@ -87,23 +91,23 @@ namespace TGC.MonoGame.TP.Models.Players
 
         public override void CreateModel(ContentManager content)
         {
-            Effect = content.Load<Effect>(ContentFolderEffects + "TextureShader");
-            var effect = Model.Meshes.FirstOrDefault().Effects.FirstOrDefault() as BasicEffect;
-            if (effect != null)
-            {
-                texture = effect.Texture;
-            }
+            /*   Effect = content.Load<Effect>(ContentFolderEffects + "TextureShader");
+               var effect = Model.Meshes.FirstOrDefault().Effects.FirstOrDefault() as BasicEffect;
+               if (effect != null)
+               {
+                   texture = effect.Texture;
+               }*/
 
+            boxTexture = content.Load<Texture2D>(TGCGame.ContentFolder3D + "balls/metal");
+            normalTexture = content.Load<Texture2D>(TGCGame.ContentFolder3D + "balls/metal-normal");
+
+            Effect = TGCGame.LightEffects;
             SetEffect(Effect);
-        }
-
-        public override void SetCustomEffectParameters(Effect effect)
-        {
-            Effect.Parameters["ModelTexture"].SetValue(texture);
         }
 
         private Boolean init = false;
         private TimeSpan lastJump=TimeSpan.Zero;
+        private Vector3 applyImpulse;
         public override void Update(GameTime gameTime, KeyboardState keyboardState, List<IGameModel> otherInteractiveObjects)
         {
             
@@ -146,7 +150,6 @@ namespace TGC.MonoGame.TP.Models.Players
 
             nVelocityVector.Normalize();
 
-            temp = velocityDirection;
 
             var dv = velocityVector.Length() / 500;
             if (dv <= 1)
@@ -233,70 +236,31 @@ namespace TGC.MonoGame.TP.Models.Players
         }
 
 
-        private Vector3 temp;
-        private Vector3 applyImpulse;
 
-
-        private void DrawLine(Vector3 vector, Color color, Color color2, Matrix view, Matrix projection, Vector3 offset)
+        public override void SetCustomEffectParameters(Effect effect)
         {
-            BasicEffect basicEffect = new BasicEffect(Graphics.GraphicsDevice);
-            BasicEffect Effect = new BasicEffect(Graphics.GraphicsDevice)
-            {
-                World = Matrix.CreateTranslation(base.WorldMatrix.Translation),
-                View = view,
-                Projection = projection,
-                VertexColorEnabled = true
-            };
-
-            var triangleVertices = new[]
-            {
-                new VertexPositionColor(new Vector3(vector.X,vector.Y,vector.Z)*500 + offset,color),
-                new VertexPositionColor(vector*-500f +offset, color2),
-            };
-
-            VertexBuffer Vertices;
-            IndexBuffer Indices;
-
-            Vertices = new VertexBuffer(Graphics.GraphicsDevice, VertexPositionColor.VertexDeclaration, triangleVertices.Length,
-              BufferUsage.WriteOnly);
-            Vertices.SetData(triangleVertices);
-
-            // Array of indices
-            var triangleIndices = new ushort[]
-            {
-                0, 1
-            };
-
-            Indices = new IndexBuffer(Graphics.GraphicsDevice, IndexElementSize.SixteenBits, 3, BufferUsage.None);
-            Indices.SetData(triangleIndices);
-
-            // Set our vertex buffer.
-            Graphics.GraphicsDevice.SetVertexBuffer(Vertices);
-
-            // Set our index buffer
-            Graphics.GraphicsDevice.Indices = Indices;
-
-            foreach (var pass in Effect.CurrentTechnique.Passes)
-            {
-                pass.Apply();
-
-                Graphics.GraphicsDevice.DrawIndexedPrimitives(
-                    // We’ll be rendering one triangles.
-                    PrimitiveType.LineList,
-                    // The offset, which is 0 since we want to start at the beginning of the Vertices array.
-                    0,
-                    // The start index in the Vertices array.
-                    0,
-                    // The number of triangles to draw.
-                    1);
-            }
-
+            //Effect.Parameters["ModelTexture"].SetValue(texture);
+            effect.Parameters["ModelTexture"].SetValue(boxTexture);
+            effect.Parameters["NormalTexture"].SetValue(normalTexture);
+            effect.Parameters["Tiling"].SetValue(Microsoft.Xna.Framework.Vector2.One);
+            effect.Parameters["eyePosition"].SetValue(TGCGame.Camera.Position);
+            effect.Parameters["World"].SetValue(this.WorldMatrix);
+            effect.Parameters["InverseTransposeWorld"].SetValue(Matrix.Invert(Matrix.Transpose(this.WorldMatrix)));
+            effect.Parameters["lightPosition"].SetValue(new Vector3(this.Position.X + 16000, this.Position.Y + 14000f, this.Position.Z));
+            effect.Parameters["ambientColor"].SetValue(new Vector3(1f, 1f, 1f));
+            effect.Parameters["diffuseColor"].SetValue(new Vector3(0.5f, 0.1f, 0f));
+            effect.Parameters["specularColor"].SetValue(new Vector3(0.5f, 0.1f, 0f));
+            effect.Parameters["KAmbient"].SetValue(0.4f);
+            effect.Parameters["KDiffuse"].SetValue(0.7f);
+            effect.Parameters["KSpecular"].SetValue(0.4f);
+            effect.Parameters["shininess"].SetValue(4.0f);
+            effect.CurrentTechnique = effect.Techniques["NormalMapping"];
         }
 
         public override void Draw(GameTime gameTime, Matrix view, Matrix projection)
         {
-            base.Draw(gameTime, view, projection);
-            DrawLine(temp, Color.Red, Color.Yellow, view, projection, new Vector3(5, 20, 5));
+            Effect.Parameters["WorldViewProjection"].SetValue(this.WorldMatrix * view * projection);
+            base.Draw(gameTime, view, projection);    
         }
 
 

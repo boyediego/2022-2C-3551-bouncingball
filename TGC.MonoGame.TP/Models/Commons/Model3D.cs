@@ -73,7 +73,7 @@ namespace TGC.MonoGame.TP.Models.Commons
             {
                 foreach (var meshPart in mesh.MeshParts)
                 {
-                    meshPart.Effect = Effect;
+                    meshPart.Effect = effect;
                 }
             }
         }
@@ -87,8 +87,11 @@ namespace TGC.MonoGame.TP.Models.Commons
 
         public virtual void Draw(GameTime gameTime, Matrix view, Matrix projection)
         {
-            Effect.Parameters["View"].SetValue(view);
-            Effect.Parameters["Projection"].SetValue(projection);
+            if (Effect.Parameters["View"]!=null)
+                Effect.Parameters["View"].SetValue(view);
+
+            if (Effect.Parameters["Projection"] != null)
+                Effect.Parameters?["Projection"].SetValue(projection);
             var modelMeshesBaseTransforms = new Matrix[Model.Bones.Count];
             Model.CopyAbsoluteBoneTransformsTo(modelMeshesBaseTransforms);
 
@@ -101,7 +104,8 @@ namespace TGC.MonoGame.TP.Models.Commons
 
 
                 // We set the main matrices for each mesh to draw
-                Effect.Parameters["World"].SetValue(meshWorld * WorldMatrix);
+                if (Effect.Parameters["World"] != null)
+                    Effect.Parameters?["World"].SetValue(meshWorld * WorldMatrix);
 
 
                 // Draw the mesh
