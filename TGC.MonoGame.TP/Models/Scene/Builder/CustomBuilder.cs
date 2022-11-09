@@ -8,21 +8,21 @@ using System.Linq;
 using System.Text;
 using TGC.MonoGame.TP.Models.Commons;
 using TGC.MonoGame.TP.Models.Scene.Parts;
+using TGC.MonoGame.TP.Models.Scene.Parts.Checkpoints;
 using TGC.MonoGame.TP.Models.Scene.Parts.Obstacule.Base;
 using TGC.MonoGame.TP.Models.Scene.Parts.Powerups;
+using TGC.MonoGame.TP.Models.Scene.Parts.Roads;
 
 namespace TGC.MonoGame.TP.Models.Scene.Builder
 {
     public class CustomBuilder
     {
         protected List<Model3D> models;
-        protected ContentManager contentManager;
 
         private Vector3 LastPosition;
 
-        public CustomBuilder(ContentManager contentManager)
+        public CustomBuilder()
         {
-            this.contentManager = contentManager;
             models = new List<Model3D>();
         }
 
@@ -138,7 +138,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Builder
         public CustomBuilder addCheckpoint(float checkpointWidth)
         {
             Tramo last = (Tramo)Last();
-            models.Add(new Checkpoint(this.contentManager, last.Center, checkpointWidth));
+            models.Add(new Checkpoint(last.Center, checkpointWidth));
             return this;
         }
     }

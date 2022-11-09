@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
@@ -9,6 +10,7 @@ using TGC.MonoGame.TP.Models.Scene.Builder;
 using TGC.MonoGame.TP.Models.Scene.Parts;
 using TGC.MonoGame.TP.Models.Scene.Parts.Obstacule;
 using TGC.MonoGame.TP.Models.Scene.Parts.Powerups;
+using TGC.MonoGame.TP.Models.Scene.Parts.Roads;
 using Vector3 = Microsoft.Xna.Framework.Vector3;
 
 namespace TGC.MonoGame.TP.Models.Scene
@@ -19,67 +21,68 @@ namespace TGC.MonoGame.TP.Models.Scene
 
         public List<Model3D> models { get { return this.sceneObjects; } }
 
-        public Scenario(ContentManager content)
+        public Scenario()
         {
-            CreateModel(content);
+            SetEffectAndTextures(null);
         }
 
-        public void CreateModel(ContentManager content)
+        public void SetEffectAndTextures(Model model)
         {
             //TODO
-               SceneBuilder builder = new SimpleSceneBuilder(content);
-              builder
-                   .StartRoad()
-                   .AddForward(5)
-                   .AddLeft(1)
-                   .AddBackward(80)
-                   .AddLeft(1)
-                   .AddForward(80)
-                   .AddLeft(1)
-                   .AddBackward(80)
-                   .AddLeft(1)
-                   .AddForward(80)
-                   .AddLeft(1)
-                   .AddBackward(80)
-                   .AddLeft(1)
-                   .AddForward(80)
-                   .AddLeft(1)
-                   .AddBackward(80)
-                   .AddLeft(1)
-                   .AddForward(40);
-          sceneObjects = builder.GetScene();
+            /*  SceneBuilder builder = new SimpleSceneBuilder();
+             builder
+                    .StartRoad()
+                  .AddForward(5)
+                  .AddLeft(1)
+                  .AddBackward(80)
+                  .AddLeft(1)
+                  .AddForward(80)
+                  .AddLeft(1)
+                  .AddBackward(80)
+                  .AddLeft(1)
+                  .AddForward(80)
+                  .AddLeft(1)
+                  .AddBackward(80)
+                  .AddLeft(1)
+                  .AddForward(80)
+                  .AddLeft(1)
+                  .AddBackward(80)
+                  .AddLeft(1)
+                  .AddForward(40);
+           ;
+         sceneObjects = builder.GetScene();*/
 
-            //sceneObjects = new List<Model3D>();
+            sceneObjects = new List<Model3D>();
             /*
               .AddObstacule(new CubeObstacule(content).SetMovementDirection(Vector3.Right).SetSpeed(12500).SetMaxMovement(750).SetInitialOffset(new Vector3(400, 0, 0)))
                  .AddPowerup(new ExtraJump(content))
              */
 
-            CustomBuilder customBuilder = new CustomBuilder(content);
+            CustomBuilder customBuilder = new CustomBuilder();
             customBuilder
-                .addTramo(new CustomRoad(content, TGCGame.Graphics.GraphicsDevice, 2000, 5600, 100, 0, 0))
-                .addPowerup(new ExtraJump(content))
-                .addForwardSpace(1000)
-                .addVerticalSpace(450)
-                .addTramo(new CustomRoad(content, TGCGame.Graphics.GraphicsDevice, 2000, 5000, 100, 0, 0))
-                .addTramo(new CustomRoad(content, TGCGame.Graphics.GraphicsDevice, 2000, 2500, 100, 1000, 0))
-                .addTramo(new CustomRoad(content, TGCGame.Graphics.GraphicsDevice, 2000, 3000, 100, 0, 0))
-                .addTramo(new CustomCurvedRoad(content, TGCGame.Graphics.GraphicsDevice, new Vector3(0, 100, 0), new Vector3(-5000, 100, 3000), 2000, 100))
-                .addSideSpace(Vector3.Right,145 )
-                .addPlataform(new CustomRoad(content, TGCGame.Graphics.GraphicsDevice, 800, 800, 100, 0, 0))
-                .addVerticalSpace(450)
-                .addForwardSpace(300)
-                .addPlataform(new CustomRoad(content, TGCGame.Graphics.GraphicsDevice, 800, 800, 100, 0, 0))
-                .addObstacule(new CubeObstacule(content).SetMovementDirection(Vector3.Right).SetSpeed(12500).SetMaxMovement(1750).SetInitialOffset(new Vector3(400, 0, 0)))
-                .addVerticalSpace(450)
-                .addForwardSpace(300)
-                .addPlataform(new CustomRoad(content, TGCGame.Graphics.GraphicsDevice, 800, 800, 100, 0, 0))
-                .addVerticalSpace(450)
-                .addForwardSpace(300)
-                .addPlataform(new CustomRoad(content, TGCGame.Graphics.GraphicsDevice, 800, 800, 100, 0, 0))
-                .addTramo(new CustomRoad(content, TGCGame.Graphics.GraphicsDevice, 2000, 9000, 100, 0, 0))
-                .addCheckpoint(2000)
-                .addTramo(new CustomCurvedRoad(content, TGCGame.Graphics.GraphicsDevice, new Vector3(0, 100, 0), new Vector3(-5000, 100, 3000), 2000, 100));
+                    .addTramo(new CustomRoad(2000, 5600, 100, 0, 0))
+                    .addPowerup(new ExtraJump())
+                    .addForwardSpace(1000)
+                    .addVerticalSpace(450)
+                    .addTramo(new CustomRoad(2000, 5000, 100, 0, 0))
+                    .addTramo(new CustomRoad(2000, 2500, 100, 1000, 0))
+                    .addTramo(new CustomRoad(2000, 3000, 100, 0, 0))
+                    .addTramo(new CustomCurvedRoad(new Vector3(0, 100, 0), new Vector3(-5000, 100, 3000), 2000, 100))
+                    .addSideSpace(Vector3.Right, 145)
+                    .addPlataform(new CustomRoad(800, 800, 100, 0, 0))
+                    .addVerticalSpace(450)
+                    .addForwardSpace(300)
+                    .addPlataform(new CustomRoad(800, 800, 100, 0, 0))
+                    .addObstacule(new CubeObstacule().SetMovementDirection(Vector3.Right).SetSpeed(12500).SetMaxMovement(1750).SetInitialOffset(new Vector3(400, 0, 0)))
+                    .addVerticalSpace(450)
+                    .addForwardSpace(300)
+                    .addPlataform(new CustomRoad(800, 800, 100, 0, 0))
+                    .addVerticalSpace(450)
+                    .addForwardSpace(300)
+                    .addPlataform(new CustomRoad(800, 800, 100, 0, 0))
+                    .addTramo(new CustomRoad(2000, 9000, 100, 0, 0))
+                    .addCheckpoint(2000)
+                    .addTramo(new CustomCurvedRoad(new Vector3(0, 100, 0), new Vector3(-5000, 100, 3000), 2000, 100));
             sceneObjects.AddRange(customBuilder.GetScene());
 
             /*
@@ -148,12 +151,14 @@ namespace TGC.MonoGame.TP.Models.Scene
             }
         }
 
-        public void Update(GameTime gameTime, KeyboardState keyboardState, List<IGameModel> otherInteractiveObjects)
+        public void Update(GameTime gameTime, KeyboardState keyboardState)
         {
             foreach (Model3D model in sceneObjects)
             {
-                model.Update(gameTime, keyboardState, otherInteractiveObjects);
+                model.Update(gameTime, keyboardState);
             }
         }
+
+
     }
 }

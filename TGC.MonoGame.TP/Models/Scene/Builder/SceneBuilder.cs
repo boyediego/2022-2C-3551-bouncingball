@@ -13,7 +13,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Builder
     public abstract class SceneBuilder
     {
         protected List<Model3D> models;
-        protected ContentManager contentManager;
+        
 
 
         public abstract SceneBuilder StartRoad(Vector3 initialPosition);
@@ -68,9 +68,8 @@ namespace TGC.MonoGame.TP.Models.Scene.Builder
             return this;
         }
 
-        public SceneBuilder(ContentManager contentManager)
+        public SceneBuilder()
         {
-            this.contentManager = contentManager;
             models = new List<Model3D>();
         }
 

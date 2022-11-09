@@ -21,7 +21,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Obstacule.Base
         public Vector3 InitialOffset;
         public virtual Matrix ExternalTransformation { get; set; }
 
-        protected Obstacule(ContentManager content, string pathModel) : base(content, pathModel)
+        protected Obstacule(Model model) : base(model)
         {
             InitialOffset = new Vector3(0, 0, 0);
             startPosition = new Vector3(0, 0, 0);

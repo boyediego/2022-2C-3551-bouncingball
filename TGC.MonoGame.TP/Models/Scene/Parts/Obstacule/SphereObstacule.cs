@@ -12,44 +12,44 @@ using System.Reflection.Metadata;
 using System.Text;
 using TGC.MonoGame.TP.Models.Commons;
 using TGC.MonoGame.TP.Models.Scene.Parts.Obstacule.Base;
+using TGC.MonoGame.TP.Shared;
 using TGC.MonoGame.TP.Utilities;
 
 namespace TGC.MonoGame.TP.Models.Scene.Parts.Obstacule
 {
     public class SphereObstacule : BouncingObstacule
-    {        
-        public SphereObstacule(ContentManager content) : base(content, "balls/sphere")
+    {
+        protected Vector3 color;
+        public SphereObstacule() : base(ModelsHolder.Get("SphereObstacule"))
         {
             base.ScaleMatrix = Matrix.CreateScale(1.5f);
+            base.Effect = EffectsHolder.Get("BasicShader");
+            color = new Vector3(0, 1, 0);
         }
 
-        public override bool IsGround { get { return false; } }
-
-        protected override void LoadEffectAndParameters(ContentManager content)
+        public override void SetEffectAndTextures(Model model)
         {
-            Effect = content.Load<Effect>(ContentFolderEffects + "BasicShader");
-            color = new Vector3(0, 0, 1);
+            base.Effect = EffectsHolder.Get("BasicShader");
+            color = new Vector3(0, 1, 0);
         }
 
-        protected override bool CheckCollision(GameTime gameTime, List<IGameModel> otherInteractiveObjects)
-        {
-            //TODO IMPLEMENT
-            return false;
-        }
 
-        public override int PhysicsType
-        {
-            get { return PhysicsTypeHome.Kinematic; }
-        }
 
-        public override StaticDescription GetStaticDescription(Simulation simulation)
+        public override void Draw(GameTime gameTime, Matrix view, Matrix projection)
         {
-            throw new NotSupportedException();
-        }
+            Effect.Parameters["DiffuseColor"].SetValue(color);
+            Effect.Parameters["View"].SetValue(view);
+            Effect.Parameters?["Projection"].SetValue(projection);
 
-        public override BodyDescription GetBodyDescription(Simulation simulation)
-        {
-            throw new NotSupportedException();
+            var modelMeshesBaseTransforms = new Matrix[Model.Bones.Count];
+            Model.CopyAbsoluteBoneTransformsTo(modelMeshesBaseTransforms);
+
+            foreach (var mesh in Model.Meshes)
+            {
+                var meshWorld = modelMeshesBaseTransforms[mesh.ParentBone.Index];
+                Effect.Parameters?["World"].SetValue(meshWorld * WorldMatrix);
+                mesh.Draw();
+            }
         }
 
     }

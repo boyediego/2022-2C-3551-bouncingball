@@ -14,13 +14,12 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Powerups
     public abstract class Powerup : Model3D
     {
 
-        protected Vector3 color;
         private Boolean taked = false;
         protected Simulation simulation;
         protected BodyDescription bodyDescription;
         protected BodyHandle bodyHandle;
 
-        protected Powerup(ContentManager content, string pathModel) : base(content, pathModel)
+        protected Powerup(Model model) : base(model)
         {
             base.TranslationMatrix = Matrix.Identity;
             base.RotationMatrix = Matrix.Identity;
@@ -31,20 +30,6 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Powerups
             base.TranslationMatrix = Matrix.CreateTranslation(position);
         }
 
-
-        public override void CreateModel(ContentManager content)
-        {
-
-            LoadEffectAndParameters(content);
-            SetEffect(Effect);
-        }
-
-        public override void SetCustomEffectParameters(Effect effect)
-        {
-            effect.Parameters["DiffuseColor"].SetValue(color);
-        }
-
-        protected abstract void LoadEffectAndParameters(ContentManager content);
 
         public override bool IsGround { get { return false; } }
         public override int PhysicsType { get { return PhysicsTypeHome.Kinematic; } }
@@ -64,9 +49,10 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Powerups
         public override void Draw(GameTime gameTime, Matrix view, Matrix projection)
         {
             if(!taked)
-                base.Draw(gameTime, view, projection);
+                this.DrawPowerUp(gameTime, view, projection);
         }
 
+        public abstract void DrawPowerUp(GameTime gameTime, Matrix view, Matrix projection);
         public abstract void ApplyPowerUp(Ball ball);
 
     }

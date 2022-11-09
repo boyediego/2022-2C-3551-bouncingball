@@ -1,15 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Reflection.Metadata;
 using BepuPhysics;
 using BepuPhysics.Collidables;
 using BepuPhysics.CollisionDetection;
-using BepuUtilities;
 using BepuUtilities.Memory;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using TGC.MonoGame.TP.Cameras;
@@ -19,62 +14,33 @@ using TGC.MonoGame.TP.Models.Scene;
 using TGC.MonoGame.TP.Models.SkyBox;
 using TGC.MonoGame.TP.Physics;
 using NumericVector3 = System.Numerics.Vector3;
-using Matrix = Microsoft.Xna.Framework.Matrix;
 using TGC.MonoGame.TP.Utilities;
 using System.Drawing;
 using Point = Microsoft.Xna.Framework.Point;
 using Color = Microsoft.Xna.Framework.Color;
 using static TGC.MonoGame.TP.Physics.Collider;
 using BepuUtilities.Collections;
-using TGC.MonoGame.TP.Models.Scene.Parts;
+using TGC.MonoGame.TP.Models.Scene.Parts.Roads;
+using TGC.MonoGame.TP.Shared;
+using Extreme.Mathematics;
+using BepuPhysics.Constraints;
+using TGC.MonoGame.TP.Models.Scene.Parts.Obstacule;
 
 namespace TGC.MonoGame.TP
 {
     public class TGCGame : Game
     {
-        public class CollisionData
-        {
-            public Model3D player;
-            public Model3D sceneObject;
-            public Boolean procesed;
-
-            public CollisionData(Model3D player, Model3D sceneObject)
-            {
-                this.player = player;
-                this.sceneObject = sceneObject;
-
-            }
-        }
-
-
-        public const string ContentFolder3D = "Models/";
-        public const string ContentFolderEffects = "Effects/";
-        public const string ContentFolderMusic = "Music/";
-        public const string ContentFolderSounds = "Sounds/";
-        public const string ContentFolderSpriteFonts = "SpriteFonts/";
-        public const string ContentFolderTextures = "Textures/";
-
-
-
-        public TGCGame()
-        {
-            Graphics = new GraphicsDeviceManager(this);
-            Content.RootDirectory = "Content";
-            IsMouseVisible = true;
-        }
-
-
-        public static GraphicsDeviceManager Graphics { get; set; }
+        
 
         //Cameras
-        public static Camera Camera { get; set; }//FIXME
+        public  Camera Camera { get; set; }       
         private FreeCamera FreeCamera { get; set; }
         private TargetCamera TargetCamera { get; set; }
 
         //Game objects
         private SkyBox SkyBox { get; set; }
         private List<IGameModel> gamesModels = new List<IGameModel>();
-        public static Ball player;
+        public static Ball player;  //FIXME static
         private Scenario scenario;
 
         //Collision info
@@ -86,83 +52,48 @@ namespace TGC.MonoGame.TP
         public BufferPool BufferPool { get; private set; }
         public SimpleThreadDispatcher ThreadDispatcher { get; private set; }
 
-        CustomRoad road = null;
-        CustomRoad road1 = null;
+        #region Initialize GameParams & Content
+        public TGCGame()
+        {
+            SharedObjects.graphicsDeviceManager = new GraphicsDeviceManager(this);
+            Content.RootDirectory = "Content";
+            IsMouseVisible = true;
+        }
 
         protected override void Initialize()
         {
+            //Get Viewport screen size
             var screenSize = new Point(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height / 2);
+
+            //Create free camera object
             FreeCamera = new FreeCamera(GraphicsDevice.Viewport.AspectRatio, new Vector3(5000, 1500, 19000), screenSize);
 
+            //Create Target camera object
             TargetCamera = new TargetCamera(GraphicsDevice.Viewport.AspectRatio, Vector3.One * 100f, Vector3.Zero);
 
-            Camera = TargetCamera;
+            //Set inital camera
+             Camera = TargetCamera;
             // Camera = FreeCamera;
 
+            SharedObjects.CurrentCamera = Camera;
+
+            //Set rasterizerState
             var rasterizerState = new RasterizerState();
             rasterizerState.CullMode = CullMode.CullCounterClockwiseFace;
             GraphicsDevice.RasterizerState = rasterizerState;
             GraphicsDevice.BlendState = BlendState.Opaque;
 
             // Configuro el tamaño de la pantalla
-            Graphics.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width - 100;
-            Graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height - 100;
-            Graphics.ApplyChanges();
+            SharedObjects.graphicsDeviceManager.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width - 100;
+            SharedObjects.graphicsDeviceManager.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height - 100;
+            SharedObjects.graphicsDeviceManager.ApplyChanges();
 
+            //Attach to detection collider events
             Collider.CollisionDetected += Collider_CollisionDetected;
 
+            //Init buffer & threads for physic engine
             InitPhysics();
             base.Initialize();
-        }
-
-        private void Collider_CollisionDetected(CollidablePair pair, CollisionInformation info)
-        {
-            if (!PlayerPresent(pair))
-            {
-                return;
-            }
-
-            CollidableReference collisionObject = GetCollisionObject(pair);
-            int handle = collisionObject.Mobility == CollidableMobility.Static ? collisionObject.StaticHandle.Value : collisionObject.BodyHandle.Value;
-
-
-
-            Model3D x = scenario.models.Find(x => (
-                    (x.SimulationHandle == handle && x.PhysicsType == PhysicsTypeHome.Static && collisionObject.Mobility == CollidableMobility.Static) ||
-                    (x.SimulationHandle == handle && x.PhysicsType != PhysicsTypeHome.Static && collisionObject.Mobility != CollidableMobility.Static)
-            ));
-
-            if (x == null)
-            {
-                return;
-            }
-
-            lock (CollisionSemaphoreList)
-            {
-                // Debug.WriteLine("Collision with : " + x.GetType());
-                CollisionData data = collisionInnfo.Find(y => y.sceneObject == x);
-                if (data == null)
-                {
-                    collisionInnfo.Add(new CollisionData(player, x));
-                }
-            }
-
-        }
-
-        //Check Before is player isPresent
-        private CollidableReference GetCollisionObject(CollidablePair pair)
-        {
-            if (pair.A.BodyHandle.Value == player.playerHanle.Value && pair.A.Mobility == CollidableMobility.Dynamic)
-            {
-                return pair.B;
-            }
-
-            return pair.A;
-        }
-
-        private bool PlayerPresent(CollidablePair pair)
-        {
-            return (pair.A.BodyHandle.Value == player.playerHanle.Value && pair.A.Mobility == CollidableMobility.Dynamic) || (pair.B.BodyHandle.Value == player.playerHanle.Value && pair.B.Mobility == CollidableMobility.Dynamic);
         }
 
         private void InitPhysics()
@@ -172,23 +103,81 @@ namespace TGC.MonoGame.TP
             var targetThreadCount = Math.Max(1,
               Environment.ProcessorCount > 4 ? Environment.ProcessorCount - 2 : Environment.ProcessorCount - 1);
             ThreadDispatcher = new SimpleThreadDispatcher(targetThreadCount);
-
         }
 
+        protected override void LoadContent()
+        {
+            //Load resources
+            PreloadResources();
+
+            //Create skybox
+            CreteSkybox();
+
+            //Create scenario         
+            scenario = new Scenario();
+
+            //Add to games model list
+            gamesModels.Add(scenario);
+
+            //Load physics simulationn
+            LoadScenarioSimulation();
+
+            //Create player  
+            player = new MetalBall(Simulation, new Vector3(300, 350, 400));
+
+            //Add to games model list
+            gamesModels.Add(player);
+
+            //Set camera to target player
+            TargetCamera.Target = player;
+
+            base.LoadContent();
+        }
+        
         private void PreloadResources()
         {
-            LoadSkybox();
-            
+            LoadModels();
+            LoadTextures();
+            LoadEffects();
         }
 
-        public static Effect LightEffects;
-        private void LoadSkybox()
+        private void CreteSkybox()
         {
-            var skyBox = Content.Load<Model>(ContentFolder3D + "skybox/cube");
-            var skyBoxTexture = Content.Load<TextureCube>(ContentFolderTextures + "/skyboxes/skybox/skybox");
-            var skyBoxEffect = Content.Load<Effect>(ContentFolderEffects + "SkyBox");
-            LightEffects = Content.Load<Effect>(ContentFolderEffects + "LightEffect");
+            var skyBox = ModelsHolder.Get("SkyBoxCube");
+            var skyBoxTexture = TexturesHolder<TextureCube>.Get("SkyBox");
+            var skyBoxEffect = EffectsHolder.Get("SkyBox");
             SkyBox = new SkyBox(skyBox, skyBoxTexture, skyBoxEffect, 5000);
+        }
+        private void LoadModels()
+        {
+            ModelsHolder.Load(Content, "SkyBoxCube", "skybox/cube");
+            ModelsHolder.Load(Content, "Sphere", "balls/sphere");
+            ModelsHolder.Load(Content, "SphereObstacule", "balls/sphere1");
+            ModelsHolder.Load(Content, "Platform", "scene/basics/road2");
+            ModelsHolder.Load(Content, "CubeModel", "scene/basics/cubo");
+            ModelsHolder.Load(Content, "Powerup", "scene/basics/powerup");
+        }
+
+        private void LoadTextures()
+        {
+            //Skybox textures
+            TexturesHolder<TextureCube>.Load(Content, "SkyBox", "skyboxes/skybox/skybox");
+
+            //Balls Textures
+            TexturesHolder<Texture2D>.Load(Content, "Test", "extras/test");
+            TexturesHolder<Texture2D>.Load(Content, "Test-Normal", "extras/test-norma");
+
+            //Roads Textures
+            TexturesHolder<Texture2D>.Load(Content, "Cemento", "extras/cemento");
+            TexturesHolder<Texture2D>.Load(Content, "Cemento-Normal-Map", "extras/cemento-normal-map");
+        }
+
+        private void LoadEffects()
+        {
+            EffectsHolder.Load(Content, "BasicShader", "BasicShader");
+            EffectsHolder.Load(Content, "TextureShader", "TextureShader");
+            EffectsHolder.Load(Content, "SkyBox", "SkyBox");
+            EffectsHolder.Load(Content, "LightEffect", "LightEffect");
         }
 
         private void LoadScenarioSimulation()
@@ -213,39 +202,60 @@ namespace TGC.MonoGame.TP
             }
         }
 
+        #endregion
 
-        protected override void LoadContent()
+        #region Collide Event Handler
+        private void Collider_CollisionDetected(CollidablePair pair, CollisionInformation info)
         {
+            if (!PlayerPresent(pair))
+            {
+                return;
+            }
 
-            //Load resources
-            PreloadResources();
-
-            //Create scenario         
-            scenario = new Scenario(Content);
-
-            //Add to games model list
-            gamesModels.Add(scenario);
-
-            //Load physics simulationn
-            LoadScenarioSimulation();
-
-            //Create player  
-            player = new Ball(Content, new Vector3(300, 350, 400), Simulation);
-            player.Graphics = Graphics;
-
-            //Add to games model list
-            gamesModels.Add(player);
-
-
-            //Set camera to target player
-            TargetCamera.Target = player;
+            CollidableReference collisionObject = GetCollisionObject(pair);
+            int handle = collisionObject.Mobility == CollidableMobility.Static ? collisionObject.StaticHandle.Value : collisionObject.BodyHandle.Value;
 
 
 
-            base.LoadContent();
+            Model3D x = scenario.models.Find(x => (
+                    (x.SimulationHandle == handle && x.PhysicsType == PhysicsTypeHome.Static && collisionObject.Mobility == CollidableMobility.Static) ||
+                    (x.SimulationHandle == handle && x.PhysicsType != PhysicsTypeHome.Static && collisionObject.Mobility != CollidableMobility.Static)
+            ));
+
+            if (x == null)
+            {
+                return;
+            }
+
+            lock (CollisionSemaphoreList)
+            {
+                CollisionData data = collisionInnfo.Find(y => y.sceneObject == x);
+                if (data == null)
+                {
+                    collisionInnfo.Add(new CollisionData(player, x));
+                }
+            }
+
         }
 
+        //Check Before is player isPresent
+        private CollidableReference GetCollisionObject(CollidablePair pair)
+        {
+            if (pair.A.BodyHandle.Value == player.playerHanle.Value && pair.A.Mobility == CollidableMobility.Dynamic)
+            {
+                return pair.B;
+            }
 
+            return pair.A;
+        }
+
+        private bool PlayerPresent(CollidablePair pair)
+        {
+            return (pair.A.BodyHandle.Value == player.playerHanle.Value && pair.A.Mobility == CollidableMobility.Dynamic) || (pair.B.BodyHandle.Value == player.playerHanle.Value && pair.B.Mobility == CollidableMobility.Dynamic);
+        }
+        #endregion
+
+        #region Update game
         protected override void Update(GameTime gameTime)
         {
             //Gametime
@@ -261,10 +271,12 @@ namespace TGC.MonoGame.TP
             if (Keyboard.GetState().IsKeyDown(Keys.T) && (Camera is FreeCamera))
             {
                 Camera = TargetCamera;
+                SharedObjects.CurrentCamera = Camera;
             }
             else if (Keyboard.GetState().IsKeyDown(Keys.F) && (Camera is TargetCamera))
             {
                 Camera = FreeCamera;
+                SharedObjects.CurrentCamera = Camera;
             }
 
 
@@ -283,7 +295,7 @@ namespace TGC.MonoGame.TP
             //Update each model in the game
             foreach (IGameModel m in gamesModels)
             {
-                m.Update(gameTime, Keyboard.GetState(), gamesModels);
+                m.Update(gameTime, Keyboard.GetState());
             }
 
             //Update camera position.
@@ -291,6 +303,9 @@ namespace TGC.MonoGame.TP
             base.Update(gameTime);
         }
 
+        #endregion
+
+        #region Draw
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.Black);
@@ -311,11 +326,13 @@ namespace TGC.MonoGame.TP
             var originalRasterizerState = GraphicsDevice.RasterizerState;
             var rasterizerState = new RasterizerState();
             rasterizerState.CullMode = CullMode.None;
-            Graphics.GraphicsDevice.RasterizerState = rasterizerState;
+            SharedObjects.graphicsDeviceManager.GraphicsDevice.RasterizerState = rasterizerState;
             SkyBox.Draw(Camera.View, Camera.Projection, Camera.Position);
             GraphicsDevice.RasterizerState = originalRasterizerState;
         }
+        #endregion
 
+        #region Unload content
         protected override void UnloadContent()
         {
             Simulation.Dispose();
@@ -327,6 +344,21 @@ namespace TGC.MonoGame.TP
             // Libero los recursos.
             Content.Unload();
             base.UnloadContent();
+        }
+        #endregion
+
+        public class CollisionData
+        {
+            public Model3D player;
+            public Model3D sceneObject;
+            public Boolean procesed;
+
+            public CollisionData(Model3D player, Model3D sceneObject)
+            {
+                this.player = player;
+                this.sceneObject = sceneObject;
+
+            }
         }
     }
 }

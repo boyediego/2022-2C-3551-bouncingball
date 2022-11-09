@@ -11,25 +11,43 @@ using System.Reflection.Metadata;
 using System.Text;
 using TGC.MonoGame.TP.Models.Commons;
 using TGC.MonoGame.TP.Models.Scene.Parts.Obstacule.Base;
+using TGC.MonoGame.TP.Shared;
 using TGC.MonoGame.TP.Utilities;
 
 namespace TGC.MonoGame.TP.Models.Scene.Parts.Obstacule
 {
     public class CubeObstacule : BouncingObstacule
-    {        
-        public CubeObstacule(ContentManager content) : base(content, "scene/basics/cubo")
+    {
+        protected Vector3 color;
+
+        public CubeObstacule() : base(ModelsHolder.Get("CubeModel"))
         {
+           
         }
 
-        protected override void LoadEffectAndParameters(ContentManager content)
+
+        public override void SetEffectAndTextures(Model model)
         {
-            Effect = content.Load<Effect>(ContentFolderEffects + "BasicShader");
+            base.Effect = EffectsHolder.Get("BasicShader");
             color = new Vector3(0, 1, 0);
         }
 
-        protected override bool CheckCollision(GameTime gameTime, List<IGameModel> otherInteractiveObjects)
+
+        public override void Draw(GameTime gameTime, Matrix view, Matrix projection)
         {
-            return false;
+            Effect.Parameters["DiffuseColor"].SetValue(color);
+            Effect.Parameters["View"].SetValue(view);
+            Effect.Parameters?["Projection"].SetValue(projection);
+
+            var modelMeshesBaseTransforms = new Matrix[Model.Bones.Count];
+            Model.CopyAbsoluteBoneTransformsTo(modelMeshesBaseTransforms);
+
+            foreach (var mesh in Model.Meshes)
+            {
+                var meshWorld = modelMeshesBaseTransforms[mesh.ParentBone.Index];
+                Effect.Parameters?["World"].SetValue(meshWorld * WorldMatrix);
+                mesh.Draw();
+            }
         }
 
         

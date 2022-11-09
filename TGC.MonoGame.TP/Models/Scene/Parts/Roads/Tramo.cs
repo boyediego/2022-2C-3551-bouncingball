@@ -1,9 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using TGC.MonoGame.TP.Models.Commons;
 
-namespace TGC.MonoGame.TP.Models.Scene.Parts
+namespace TGC.MonoGame.TP.Models.Scene.Parts.Roads
 {
-    public interface Tramo 
+    public interface Tramo
     {
         float ActualWidth { get; }
         float ActualRotation { get; }

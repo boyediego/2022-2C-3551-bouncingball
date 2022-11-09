@@ -12,19 +12,19 @@ using TGC.MonoGame.TP.Utilities;
 namespace TGC.MonoGame.TP.Models.Commons
 {
     public abstract class Model3D : IGameModel
-    {
-        protected const string ContentFolder3D = "Models/";
-        protected const string ContentFolderEffects = "Effects/";
-
+    {        
         public abstract int PhysicsType { get; }
         public abstract Boolean IsGround { get; }
-
         public virtual Boolean IsRoad { get { return false; } }
-
         public int SimulationHandle { get; set; }
 
         protected Model Model { get; set; }
+
+        protected Matrix ScaleMatrix;
+        protected Matrix TranslationMatrix;
+        protected Matrix RotationMatrix;
         protected Effect Effect { get; set; }
+
         public Matrix WorldMatrix
         {
             get
@@ -32,9 +32,6 @@ namespace TGC.MonoGame.TP.Models.Commons
                 return ScaleMatrix * RotationMatrix * TranslationMatrix;
             }
         }
-        protected Matrix ScaleMatrix;
-        protected Matrix TranslationMatrix;
-        protected Matrix RotationMatrix;
 
         public Vector3 CurrentMovementDirection { get; set; }
         public Vector3 Position
@@ -54,78 +51,37 @@ namespace TGC.MonoGame.TP.Models.Commons
             }
         }
 
-        public Model3D(ContentManager content, String pathModel)
-        {
-            if (!String.IsNullOrEmpty(pathModel))
-                Model = content.Load<Model>(ContentFolder3D + pathModel);
-            
-            ScaleMatrix = Matrix.Identity;
-            TranslationMatrix = Matrix.Identity;
-            RotationMatrix = Matrix.Identity;
-
-            if (!String.IsNullOrEmpty(pathModel))
-                CreateModel(content);
-        }
-
-        protected void SetEffect(Effect effect)
-        {
-            foreach (var mesh in Model.Meshes)
-            {
-                foreach (var meshPart in mesh.MeshParts)
-                {
-                    meshPart.Effect = effect;
-                }
-            }
-        }
-
         public Vector3 GetModelSize()
         {
             return this.Model.GetBoundingBox(RotationMatrix).Max - this.Model.GetBoundingBox(RotationMatrix).Min;
         }
 
-        public abstract void CreateModel(ContentManager content);
-
-        public virtual void Draw(GameTime gameTime, Matrix view, Matrix projection)
+        public Model3D(Model model)
         {
-            if (Effect.Parameters["View"]!=null)
-                Effect.Parameters["View"].SetValue(view);
-
-            if (Effect.Parameters["Projection"] != null)
-                Effect.Parameters?["Projection"].SetValue(projection);
-            var modelMeshesBaseTransforms = new Matrix[Model.Bones.Count];
-            Model.CopyAbsoluteBoneTransformsTo(modelMeshesBaseTransforms);
-
-            // For each mesh in the model,
-            foreach (var mesh in Model.Meshes)
+            this.Model = model;
+            ScaleMatrix = Matrix.Identity;
+            TranslationMatrix = Matrix.Identity;
+            RotationMatrix = Matrix.Identity;
+            SetEffectAndTextures(model);
+            if(model!=null && Effect != null)
             {
-                // Obtain the world matrix for that mesh (relative to the parent)
-                var meshWorld = modelMeshesBaseTransforms[mesh.ParentBone.Index];
-                SetCustomEffectParameters(Effect);
-
-
-                // We set the main matrices for each mesh to draw
-                if (Effect.Parameters["World"] != null)
-                    Effect.Parameters?["World"].SetValue(meshWorld * WorldMatrix);
-
-
-                // Draw the mesh
-                mesh.Draw();
+                foreach (var mesh in Model.Meshes)
+                {
+                    foreach (var meshPart in mesh.MeshParts)
+                    {
+                        meshPart.Effect = this.Effect;
+                    }
+                }
             }
         }
 
-        public abstract void SetCustomEffectParameters(Effect effect);
 
-        public virtual void Update(GameTime gameTime, KeyboardState keyboardState, List<IGameModel> otherInteractiveObjects)
-        {
-            //TODO IMPLEMTS IN CHILD CLASESS
-        }
+        public abstract void SetEffectAndTextures(Model content);
+        public abstract void Update(GameTime gameTime, KeyboardState keyboardState);
+        public abstract void Draw(GameTime gameTime, Matrix view, Matrix projection);
+        public abstract void Collide(Model3D sceneObject);
 
         public abstract StaticDescription GetStaticDescription(Simulation simulation);
         public abstract BodyDescription GetBodyDescription(Simulation simulation);
-
-        public virtual void Collide(Model3D sceneObject)
-        {
-            Debug.WriteLine("YES " + sceneObject.GetType());
-        }
     }
 }

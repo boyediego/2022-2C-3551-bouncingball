@@ -1,17 +1,14 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using System;
-using System.Collections.Generic;
-using System.Reflection.Metadata;
-using System.Text;
-using TGC.MonoGame.TP.Models.Commons;
-using TGC.MonoGame.TP.Models.Scene.Parts;
+using TGC.MonoGame.TP.Models.Scene.Parts.Checkpoints;
+using TGC.MonoGame.TP.Models.Scene.Parts.Deprecated;
 using TGC.MonoGame.TP.Models.Scene.Parts.Obstacule.Base;
 using TGC.MonoGame.TP.Models.Scene.Parts.Powerups;
 
 namespace TGC.MonoGame.TP.Models.Scene.Builder
 {
+    [Obsolete("Use Custom Builder")]
     public class SimpleSceneBuilder : SceneBuilder
     {
 
@@ -19,7 +16,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Builder
         private Vector3 CurrentCenter;
         
 
-        public SimpleSceneBuilder(ContentManager contentManager) : base(contentManager)
+        public SimpleSceneBuilder() : base()
         {
             
         }
@@ -38,8 +35,8 @@ namespace TGC.MonoGame.TP.Models.Scene.Builder
 
         public override SceneBuilder StartRoad()
         {
-            Road road = new Road(this.contentManager);
-            this.CurrentCenter = new Vector3(-7000, -7000, -7000);
+            Road road = new Road();
+            this.CurrentCenter = new Vector3(0, 0, 0);
 
             this.CurrentRoadDirection = Vector3.Forward;
             road.SetPositionFromOrigin(this.CurrentCenter);
@@ -50,7 +47,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Builder
 
         public override SceneBuilder StartRoad(Vector3 initialPosition)
         {
-            Road road = new Road(this.contentManager);
+            Road road = new Road();
             
             this.CurrentCenter = initialPosition;
 
@@ -62,7 +59,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Builder
         public override SceneBuilder AddForward()
         {
             Vector3 newDirection = Vector3.Forward;
-            Road road = new Road(this.contentManager);
+            Road road = new Road();
 
             if (newDirection != CurrentRoadDirection)
             {
@@ -81,7 +78,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Builder
         public override SceneBuilder AddRight()
         {
             Vector3 newDirection = Vector3.Right;
-            Road road = new Road(this.contentManager);
+            Road road = new Road();
             road.RotateY(-MathHelper.PiOver2); //ROTATE 90° DEGREES TO RIGHT
             if (newDirection != CurrentRoadDirection)
             {
@@ -101,7 +98,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Builder
         public override SceneBuilder AddBackward()
         {
             Vector3 newDirection = Vector3.Backward;
-            Road road = new Road(this.contentManager);
+            Road road = new Road();
 
             if (newDirection != CurrentRoadDirection)
             {
@@ -120,7 +117,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Builder
         public override SceneBuilder AddLeft()
         {
             Vector3 newDirection = Vector3.Left;
-            Road road = new Road(this.contentManager);
+            Road road = new Road();
             road.RotateY(-MathHelper.PiOver2); //ROTATE 90° DEGREES TO RIGHT
             if (newDirection != CurrentRoadDirection)
             {
@@ -146,7 +143,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Builder
 
         public override SceneBuilder AddCheckpoint(float checkpointWidth)
         {
-            models.Add(new Checkpoint(this.contentManager, CurrentCenter, checkpointWidth));
+            models.Add(new Checkpoint(CurrentCenter, checkpointWidth));
             return this;
         }
 

@@ -18,48 +18,38 @@ using Matrix = Microsoft.Xna.Framework.Matrix;
 using Vector3 = Microsoft.Xna.Framework.Vector3;
 using Quaternion = Microsoft.Xna.Framework.Quaternion;
 using TGC.MonoGame.TP.Cameras;
-using TGC.MonoGame.TP.Models.Scene.Parts;
 using TGC.MonoGame.TP.Models.Scene.Parts.Powerups;
+using TGC.MonoGame.TP.Models.Scene.Parts.Checkpoints;
+using TGC.MonoGame.TP.Shared;
 
 namespace TGC.MonoGame.TP.Models.Players
 {
-    public class Ball : Model3D
+    public abstract class Ball : Model3D
     {
-        private static Texture2D texture;//FIXME
-        private static Texture2D textureNormal;//FIXME
-        public GraphicsDeviceManager Graphics;
         private Simulation simulation;
+        private Vector3 PreviousVelocityDirection;
+        private Boolean OnGround = false;
+        private Vector3 ReSpawnPosition;
+        private Vector3 applyImpulse;
+
         public BodyDescription BodyDescription { get; set; }
         public BodyHandle playerHanle { get; set; }
-        private Vector3 PreviousVelocityDirection;
-        protected Boolean OnGround = false;
-        protected Vector3 ReSpawnPosition;
 
-        protected float ForwardImpulse
-        {
-            get { return 30f; }
-        }
-
-        protected float BrakeForce
-        {
-            get { return 30f; }
-        }
-
-        protected float RotateForce
-        {
-            get { return 25f; }
-        }
+        protected abstract float ForwardImpulse { get; }
+        protected abstract float BrakeForce { get; }
+        protected abstract float RotateForce { get; }
+        protected abstract float JumpImpulse { get; }
 
         public override int PhysicsType
         {
             get { return PhysicsTypeHome.Dynamic; }
         }
 
-        protected virtual float JumpImpulse { get { return 1000f; } }
+
         private float IncreaseJumpValue = 0;
         private float ExtraImpulse { get { return JumpImpulse * (IncreaseJumpValue / 100f); } }
 
-        public Ball(ContentManager content, Vector3 startPosition, Simulation Simulation) : base(content, "balls/sphere")
+        public Ball(Simulation Simulation, Model model, Vector3 startPosition) : base(model)
         {
             this.simulation = Simulation;
             var position = new NumericVector3(startPosition.X, startPosition.Y, startPosition.Z);
@@ -86,24 +76,9 @@ namespace TGC.MonoGame.TP.Models.Players
             return this.Model.GetSphereFrom();
         }
 
-
-
-        public override void CreateModel(ContentManager content)
-        {
-            Effect = TGCGame.LightEffects;
-            texture = content.Load<Texture2D>(TGCGame.ContentFolderTextures + "extras/test");
-            textureNormal = content.Load<Texture2D>(TGCGame.ContentFolderTextures + "extras/test-norma");
-            SetEffect(Effect);
-        }
-
-        public override void SetCustomEffectParameters(Effect effect)
-        {
-            Effect.Parameters["ModelTexture"].SetValue(texture);
-        }
-
         private Boolean init = false;
         private TimeSpan lastJump = TimeSpan.Zero;
-        public override void Update(GameTime gameTime, KeyboardState keyboardState, List<IGameModel> otherInteractiveObjects)
+        public override void Update(GameTime gameTime, KeyboardState keyboardState)
         {
 
             var bodyReference = simulation.Bodies.GetBodyReference(playerHanle);
@@ -229,56 +204,8 @@ namespace TGC.MonoGame.TP.Models.Players
 
         }
 
-
-        private Vector3 applyImpulse;
-
-
-        public override void Draw(GameTime gameTime, Matrix view, Matrix projection)
-        {
-
-            /*Effect.Parameters["Projection"].SetValue(projection);
-            Effect.Parameters["View"].SetValue(view);
-            Effect.Parameters["ModelTexture"].SetValue(texture);
-            Effect.Parameters["World"].SetValue(WorldMatrix);*/
-
-            Effect.Parameters["ModelTexture"].SetValue(texture);
-            Effect.Parameters["NormalTexture"].SetValue(textureNormal);
-
-
-
-            Effect.Parameters["Tiling"].SetValue(Microsoft.Xna.Framework.Vector2.One);
-            Effect.Parameters["eyePosition"].SetValue(TGCGame.Camera.Position);
-
-            Effect.Parameters["lightPosition"].SetValue(new Vector3(this.Position.X + 16000, this.Position.Y + 14000f, 8000));
-            Effect.Parameters["ambientColor"].SetValue(new Vector3(1f, 1f, 1f));
-            Effect.Parameters["diffuseColor"].SetValue(new Vector3(0.5f, 0.1f, 0f));
-            Effect.Parameters["specularColor"].SetValue(new Vector3(0.5f, 0.1f, 0f));
-            Effect.Parameters["KAmbient"].SetValue(0.7f);
-            Effect.Parameters["KDiffuse"].SetValue(0.7f);
-            Effect.Parameters["KSpecular"].SetValue(0.1f);
-            Effect.Parameters["shininess"].SetValue(16.0f);
-            Effect.CurrentTechnique = Effect.Techniques["NormalMapping"];
-
-            var modelMeshesBaseTransforms = new Matrix[Model.Bones.Count];
-            Model.CopyAbsoluteBoneTransformsTo(modelMeshesBaseTransforms);
-
-            // For each mesh in the model,
-            foreach (var mesh in Model.Meshes)
-            {
-                var meshWorld = modelMeshesBaseTransforms[mesh.ParentBone.Index];
-                Effect.Parameters["World"].SetValue(this.WorldMatrix);
-                Effect.Parameters["InverseTransposeWorld"].SetValue(Matrix.Invert(Matrix.Transpose(meshWorld * this.WorldMatrix)));
-                Effect.Parameters["WorldViewProjection"].SetValue(meshWorld * this.WorldMatrix * view * projection);
-                //Effect.Parameters?["World"].SetValue(meshWorld * WorldMatrix);
-                mesh.Draw();
-            }
-
-        }
-
-
         public void CheckpointReached(Checkpoint checkpoint)
         {
-            Debug.WriteLine("Checkpoint");
             this.ReSpawnPosition = checkpoint.Position + Vector3.Up * 550;
         }
 
