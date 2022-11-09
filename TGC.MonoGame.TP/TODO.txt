@@ -4,6 +4,8 @@
 * Checkpoints size
 * ReSpawn
 * PowerUps
+* Lights
+* Road or plataform with angle
 ------------------------------
 
 
@@ -13,7 +15,7 @@
 - PowerUps time
 - Respawn (Draw powerups and restore checkpoints)
 - StartRoad - End Road (Player Win)
-- Road or plataform with angle
+
 
 **************************
 - Mouse camera orbit
@@ -28,7 +30,7 @@
 
 
 ***Finish Stage***
-- Lights
+
 - Shadows maps
 - Enviroment Map per ball
 

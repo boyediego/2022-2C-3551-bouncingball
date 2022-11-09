@@ -216,14 +216,14 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts
                 triangleEffect.Parameters["World"].SetValue(this.WorldMatrix);
                 triangleEffect.Parameters["InverseTransposeWorld"].SetValue(Matrix.Invert(Matrix.Transpose(this.WorldMatrix)));
                 triangleEffect.Parameters["WorldViewProjection"].SetValue(this.WorldMatrix * view * projection);
-                triangleEffect.Parameters["Tiling"].SetValue(Vector2.One);
+                triangleEffect.Parameters["Tiling"].SetValue(new Vector2(1f,4f));
                 triangleEffect.Parameters["eyePosition"].SetValue(TGCGame.Camera.Position);
                 
-                triangleEffect.Parameters["lightPosition"].SetValue(new Vector3(Center.X+16000, Center.Y+14000f, 8000));
+                triangleEffect.Parameters["lightPosition"].SetValue(new Vector3(16000, Center.Y+34000f, 8000));
                 triangleEffect.Parameters["ambientColor"].SetValue(new Vector3(1f, 1f, 1f));
                 triangleEffect.Parameters["diffuseColor"].SetValue(new Vector3(0.5f, 0.1f, 0f));
                 triangleEffect.Parameters["specularColor"].SetValue(new Vector3(0.5f, 0.1f, 0f));
-                triangleEffect.Parameters["KAmbient"].SetValue(0.4f);
+                triangleEffect.Parameters["KAmbient"].SetValue(0.3f);
                 triangleEffect.Parameters["KDiffuse"].SetValue(0.7f);
                 triangleEffect.Parameters["KSpecular"].SetValue(0.9f);
                 triangleEffect.Parameters["shininess"].SetValue(16.0f);

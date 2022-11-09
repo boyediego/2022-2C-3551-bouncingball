@@ -295,8 +295,9 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts
             this.endPosition = endPosition;
             this.w = w;
             this.h = h;
-            boxTexture = content.Load<Texture2D>(TGCGame.ContentFolderTextures + "extras/cemento");
-            normalTexture = content.Load<Texture2D>(TGCGame.ContentFolderTextures + "extras/cemento-normal-map");
+            boxTexture = content.Load<Texture2D>(TGCGame.ContentFolderTextures + "extras/metal-plataform");
+            normalTexture = content.Load<Texture2D>(TGCGame.ContentFolderTextures + "extras/metal-plataform-normal");
+
         }
 
         //No cargamos ningun modelo

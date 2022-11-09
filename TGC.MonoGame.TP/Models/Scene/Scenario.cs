@@ -57,9 +57,7 @@ namespace TGC.MonoGame.TP.Models.Scene
 
             CustomBuilder customBuilder = new CustomBuilder(content);
             customBuilder
-                .addTramo(new CustomRoad(content, TGCGame.Graphics.GraphicsDevice, 2000, 100, 100, 0, 0))
-                .addTramo(new CustomRoad(content, TGCGame.Graphics.GraphicsDevice, 2000, 500, 100, 0, 0))
-                .addTramo(new CustomRoad(content, TGCGame.Graphics.GraphicsDevice, 2000, 5000, 100, 0, 0))
+                .addTramo(new CustomRoad(content, TGCGame.Graphics.GraphicsDevice, 2000, 5600, 100, 0, 0))
                 .addPowerup(new ExtraJump(content))
                 .addForwardSpace(1000)
                 .addVerticalSpace(450)
