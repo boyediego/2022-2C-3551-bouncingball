@@ -268,7 +268,7 @@
 /processorParam:TextureFormat=Compressed
 /build:Models/skybox/cube.fbx
 
-#begin textures/extras/basev2-normal.jpg
+#begin textures/balls/metal-normal.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -278,9 +278,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/extras/basev2-normal.jpg
+/build:textures/balls/metal-normal.png
 
-#begin textures/extras/basev2.jpg
+#begin textures/balls/metal.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -290,9 +290,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/extras/basev2.jpg
+/build:textures/balls/metal.png
 
-#begin textures/extras/cemento-normal-map.jpg
+#begin textures/extras/Grass-Type-1-Normal.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -302,9 +302,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/extras/cemento-normal-map.jpg
+/build:textures/extras/Grass-Type-1-Normal.png
 
-#begin textures/extras/cemento.jpg
+#begin textures/extras/Grass-Type-1.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -314,9 +314,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/extras/cemento.jpg
+/build:textures/extras/Grass-Type-1.png
 
-#begin textures/extras/cemento2-normal-map.jpg
+#begin textures/obstacules/Stone-Type-1-Normal.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -326,9 +326,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/extras/cemento2-normal-map.jpg
+/build:textures/obstacules/Stone-Type-1-Normal.png
 
-#begin textures/extras/cemento2.jpg
+#begin textures/obstacules/Stone-Type-1.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -338,9 +338,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/extras/cemento2.jpg
+/build:textures/obstacules/Stone-Type-1.png
 
-#begin textures/extras/metal-plataform-normal.jpg
+#begin textures/roads/Plataform-Type-1-Normal.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -350,9 +350,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/extras/metal-plataform-normal.jpg
+/build:textures/roads/Plataform-Type-1-Normal.png
 
-#begin textures/extras/metal-plataform.jpg
+#begin textures/roads/Plataform-Type-1.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -362,9 +362,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/extras/metal-plataform.jpg
+/build:textures/roads/Plataform-Type-1.png
 
-#begin textures/extras/road-normal.jpg
+#begin textures/roads/road-type-1-normal.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -374,9 +374,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/extras/road-normal.jpg
+/build:textures/roads/road-type-1-normal.png
 
-#begin textures/extras/road.jpg
+#begin textures/roads/road-type-1.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -386,9 +386,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/extras/road.jpg
+/build:textures/roads/road-type-1.png
 
-#begin textures/extras/test-norma.jpg
+#begin textures/roads/Road-Type-2-Normal.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -398,9 +398,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/extras/test-norma.jpg
+/build:textures/roads/Road-Type-2-Normal.png
 
-#begin textures/extras/test.jpg
+#begin textures/roads/Road-Type-2.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -410,31 +410,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/extras/test.jpg
-
-#begin textures/extras/wood-normal.jpg
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/extras/wood-normal.jpg
-
-#begin textures/extras/wood.jpg
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/extras/wood.jpg
+/build:textures/roads/Road-Type-2.png
 
 #begin textures/skyboxes/empty-space/empty-space.dds
 /importer:TextureImporter

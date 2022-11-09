@@ -10,19 +10,24 @@
 
 
 ***Pending***
-
+- Obstacules form and texture
 - PowerUps form and texture
-- PowerUps time
-- Respawn (Draw powerups and restore checkpoints)
-- StartRoad - End Road (Player Win)
+- Shadows maps
+- Enviroment Map per ball
 
+- Texture mapping on curve 
+
+- StartRoad - End Road (Player Win)
+- Respawn (Draw powerups and restore checkpoints)
+
+-Change texture from sides and back of roads
 
 **************************
 - Mouse camera orbit
 - Sounds Music
 - 3 Type of balls
 - Map Object
-
+- PowerUps time
 
 - Create scenario
 
@@ -31,8 +36,6 @@
 
 ***Finish Stage***
 
-- Shadows maps
-- Enviroment Map per ball
 
 
 ***Optional***

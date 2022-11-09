@@ -32,7 +32,6 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Roads
         private List<TrianglePrimitive> triangles = new List<TrianglePrimitive>();
         private List<TrianglePrimitive> trianglesPhysics = new List<TrianglePrimitive>();
 
-
         public override bool IsRoad { get { return true; } }
         public float ActualWidth { get; private set; }
         public float ActualRotation { get; private set; }
@@ -126,6 +125,8 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Roads
             float yOffset = 0f;
             float yOffsetC2 = 0f;
             preLastPosition = new Vector3();
+            
+            float acum = 100;
             for (int index = 0; index < points.Count - 1; index++)
             {
                 var current = points[index];
@@ -140,7 +141,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Roads
                 Vector2 texturaP1 = new Vector2(0, yOffset);
                 Vector2 texturaP2P5 = new Vector2(0, yOffset + fraction);
                 Vector2 texturaP3P4 = new Vector2(1, yOffsetC2);
-                Vector2 texturaP6 = new Vector2(1, yOffsetC2 + fraction2);
+                Vector2 texturaP6 = new Vector2(1, yOffsetC2 + fraction);
 
                 yOffset += fraction;
                 yOffsetC2 += fraction2;
@@ -149,19 +150,20 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Roads
                 Vector3 p1 = current;
                 Vector3 p2 = next;
                 Vector3 p3 = current + vectorW;
+              
                 //Face up
-                triangles.Add(new TrianglePrimitive(graphicsDevice, p1, p2, p3, Vector3.Up, new List<Vector2>() { texturaP1, texturaP2P5, texturaP3P4 }, boxTexture));
+                triangles.Add(new TrianglePrimitive(graphicsDevice, p1, p2, p3, Vector3.Up, new List<Vector2>() { texturaP1, texturaP2P5, texturaP3P4 }, boxTexture, normalTexture));
                 //Face down
-                triangles.Add(new TrianglePrimitive(graphicsDevice, p1 - new Vector3(0, h, 0), p2 - new Vector3(0, h, 0), p3 - new Vector3(0, h, 0), Vector3.Down, new List<Vector2>() { Vector2.Zero, Vector2.UnitX, Vector2.UnitY }, boxTexture));
+                triangles.Add(new TrianglePrimitive(graphicsDevice, p1 - new Vector3(0, h, 0), p2 - new Vector3(0, h, 0), p3 - new Vector3(0, h, 0), Vector3.Down, new List<Vector2>() { Vector2.Zero, Vector2.UnitX, Vector2.UnitY }, boxTexture, normalTexture));
 
                 trianglesPhysics.Add(triangles[triangles.Count - 2]);
                 // trianglesPhysics.Add(triangles[triangles.Count - 1]);
 
 
-                Vector3 p4 = current + vectorW;
-                Vector3 p5 = next;
+                Vector3 p4 = p3;
+                Vector3 p5 = p2;
                 Vector3 p6 = next + new Vector3(w, 0, 0);
-
+                
 
                 if (Math.Abs(p6.X) > Math.Abs(lastPosition.X))
                 {
@@ -173,8 +175,8 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Roads
                 if (index == points.Count - 2 && !cut)
                 {
                     //Face Right
-                    triangles.Add(new TrianglePrimitive(graphicsDevice, p1, p1 - new Vector3(0, h, 0), p2 - new Vector3(0, h, 0), Vector3.Right, new List<Vector2>() { Vector2.Zero, Vector2.UnitX, Vector2.UnitY }, boxTexture));
-                    triangles.Add(new TrianglePrimitive(graphicsDevice, p2 - new Vector3(0, h, 0), p1, p2, Vector3.Right, new List<Vector2>() { Vector2.Zero, Vector2.UnitX, Vector2.UnitY }, boxTexture));
+                    triangles.Add(new TrianglePrimitive(graphicsDevice, p1, p1 - new Vector3(0, h, 0), p2 - new Vector3(0, h, 0), Vector3.Right, new List<Vector2>() { Vector2.Zero, Vector2.UnitX, Vector2.UnitY }, boxTexture, normalTexture));
+                    triangles.Add(new TrianglePrimitive(graphicsDevice, p2 - new Vector3(0, h, 0), p1, p2, Vector3.Right, new List<Vector2>() { Vector2.Zero, Vector2.UnitX, Vector2.UnitY }, boxTexture, normalTexture));
 
                     preLastPosition = p4;
                     break;
@@ -182,20 +184,20 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Roads
 
 
                 //Face up
-                triangles.Add(new TrianglePrimitive(graphicsDevice, p4, p5, p6, Vector3.Up, new List<Vector2>() { texturaP3P4, texturaP2P5, texturaP6 }, boxTexture));
+                triangles.Add(new TrianglePrimitive(graphicsDevice, p4, p5, p6, Vector3.Up, new List<Vector2>() { texturaP3P4, texturaP2P5, texturaP6,  }, boxTexture, normalTexture));
                 //triangles.Add(new TrianglePrimitive(graphicsDevice, p4, p5, p6, Color.Red, Color.Green, Color.Blue, Vector3.Up));
                 //Face down
-                triangles.Add(new TrianglePrimitive(graphicsDevice, p4 - new Vector3(0, h, 0), p5 - new Vector3(0, h, 0), p6 - new Vector3(0, h, 0), Vector3.Down, new List<Vector2>() { Vector2.UnitY, Vector2.UnitX, Vector2.One }, boxTexture));
+                triangles.Add(new TrianglePrimitive(graphicsDevice, p4 - new Vector3(0, h, 0), p5 - new Vector3(0, h, 0), p6 - new Vector3(0, h, 0), Vector3.Down, new List<Vector2>() { Vector2.UnitY, Vector2.UnitX, Vector2.One }, boxTexture, normalTexture));
                 trianglesPhysics.Add(triangles[triangles.Count - 2]);
                 //  trianglesPhysics.Add(triangles[triangles.Count - 1]);
 
                 //Face Left
-                triangles.Add(new TrianglePrimitive(graphicsDevice, p3, p3 - new Vector3(0, h, 0), p6 - new Vector3(0, h, 0), Vector3.Left, new List<Vector2>() { Vector2.Zero, Vector2.UnitX, Vector2.UnitY }, boxTexture));
-                triangles.Add(new TrianglePrimitive(graphicsDevice, p6 - new Vector3(0, h, 0), p3, p6, Vector3.Left, new List<Vector2>() { Vector2.Zero, Vector2.UnitX, Vector2.UnitY }, boxTexture));
+                triangles.Add(new TrianglePrimitive(graphicsDevice, p3, p3 - new Vector3(0, h, 0), p6 - new Vector3(0, h, 0), Vector3.Left, new List<Vector2>() { Vector2.Zero, Vector2.UnitX, Vector2.UnitY }, boxTexture, normalTexture));
+                triangles.Add(new TrianglePrimitive(graphicsDevice, p6 - new Vector3(0, h, 0), p3, p6, Vector3.Left, new List<Vector2>() { Vector2.Zero, Vector2.UnitX, Vector2.UnitY }, boxTexture, normalTexture));
 
                 //Face Right
-                triangles.Add(new TrianglePrimitive(graphicsDevice, p1, p1 - new Vector3(0, h, 0), p2 - new Vector3(0, h, 0), Vector3.Right, new List<Vector2>() { Vector2.Zero, Vector2.UnitX, Vector2.UnitY }, boxTexture));
-                triangles.Add(new TrianglePrimitive(graphicsDevice, p2 - new Vector3(0, h, 0), p1, p2, Vector3.Right, new List<Vector2>() { Vector2.Zero, Vector2.UnitX, Vector2.UnitY }, boxTexture));
+                triangles.Add(new TrianglePrimitive(graphicsDevice, p1, p1 - new Vector3(0, h, 0), p2 - new Vector3(0, h, 0), Vector3.Right, new List<Vector2>() { Vector2.Zero, Vector2.UnitX, Vector2.UnitY }, boxTexture, normalTexture));
+                triangles.Add(new TrianglePrimitive(graphicsDevice, p2 - new Vector3(0, h, 0), p1, p2, Vector3.Right, new List<Vector2>() { Vector2.Zero, Vector2.UnitX, Vector2.UnitY }, boxTexture, normalTexture));
 
 
                 if (cut)
@@ -217,38 +219,38 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Roads
             }
 
             //End up face
-            triangles.Add(new TrianglePrimitive(graphicsDevice, lastPosition, endPosition, preLastPosition, Vector3.Up, textMapping, boxTexture));
+            triangles.Add(new TrianglePrimitive(graphicsDevice, lastPosition, endPosition, preLastPosition, Vector3.Up, textMapping, boxTexture, normalTexture));
 
             // triangles.Add(new TrianglePrimitive(graphicsDevice, lastPosition, endPosition, preLastPosition, Color.Red, Color.Green, Color.Blue, Vector3.Up));
             trianglesPhysics.Add(triangles[triangles.Count - 1]);
 
             //End down face
-            triangles.Add(new TrianglePrimitive(graphicsDevice, lastPosition - new Vector3(0, h, 0), endPosition - new Vector3(0, h, 0), preLastPosition - new Vector3(0, h, 0), Vector3.Down, new List<Vector2>() { Vector2.Zero, Vector2.UnitX, Vector2.UnitY }, boxTexture));
+            triangles.Add(new TrianglePrimitive(graphicsDevice, lastPosition - new Vector3(0, h, 0), endPosition - new Vector3(0, h, 0), preLastPosition - new Vector3(0, h, 0), Vector3.Down, new List<Vector2>() { Vector2.Zero, Vector2.UnitX, Vector2.UnitY }, boxTexture, normalTexture));
             trianglesPhysics.Add(triangles[triangles.Count - 1]);
 
             if (!cut)
             {
                 //Face Left
-                triangles.Add(new TrianglePrimitive(graphicsDevice, lastPosition, lastPosition - new Vector3(0, h, 0), preLastPosition, Vector3.Left, new List<Vector2>() { Vector2.Zero, Vector2.UnitX, Vector2.UnitY }, boxTexture));
-                triangles.Add(new TrianglePrimitive(graphicsDevice, preLastPosition, preLastPosition - new Vector3(0, h, 0), lastPosition - new Vector3(0, h, 0), Vector3.Left, new List<Vector2>() { Vector2.Zero, Vector2.UnitX, Vector2.UnitY }, boxTexture));
+                triangles.Add(new TrianglePrimitive(graphicsDevice, lastPosition, lastPosition - new Vector3(0, h, 0), preLastPosition, Vector3.Left, new List<Vector2>() { Vector2.Zero, Vector2.UnitX, Vector2.UnitY }, boxTexture, normalTexture));
+                triangles.Add(new TrianglePrimitive(graphicsDevice, preLastPosition, preLastPosition - new Vector3(0, h, 0), lastPosition - new Vector3(0, h, 0), Vector3.Left, new List<Vector2>() { Vector2.Zero, Vector2.UnitX, Vector2.UnitY }, boxTexture, normalTexture));
             }
             else
             {
                 //Face Right
-                triangles.Add(new TrianglePrimitive(graphicsDevice, preLastPosition, endPosition - new Vector3(0, h, 0), endPosition, Vector3.Right, new List<Vector2>() { Vector2.Zero, Vector2.UnitX, Vector2.UnitY }, boxTexture));
-                triangles.Add(new TrianglePrimitive(graphicsDevice, preLastPosition - new Vector3(0, h, 0), preLastPosition, endPosition - new Vector3(0, h, 0), Vector3.Right, new List<Vector2>() { Vector2.Zero, Vector2.UnitX, Vector2.UnitY }, boxTexture));
+                triangles.Add(new TrianglePrimitive(graphicsDevice, preLastPosition, endPosition - new Vector3(0, h, 0), endPosition, Vector3.Right, new List<Vector2>() { Vector2.Zero, Vector2.UnitX, Vector2.UnitY }, boxTexture, normalTexture));
+                triangles.Add(new TrianglePrimitive(graphicsDevice, preLastPosition - new Vector3(0, h, 0), preLastPosition, endPosition - new Vector3(0, h, 0), Vector3.Right, new List<Vector2>() { Vector2.Zero, Vector2.UnitX, Vector2.UnitY }, boxTexture, normalTexture));
             }
 
             //Front face
-            triangles.Add(new TrianglePrimitive(graphicsDevice, startPosition, startPosition - new Vector3(0, h, 0), startPosition + new Vector3(w, 0, 0), Vector3.Forward, new List<Vector2>() { Vector2.Zero, Vector2.UnitX, Vector2.UnitY }, boxTexture));
-            triangles.Add(new TrianglePrimitive(graphicsDevice, startPosition - new Vector3(0, h, 0), startPosition + new Vector3(w, 0, 0), startPosition + new Vector3(w, -h, 0), Vector3.Forward, new List<Vector2>() { Vector2.One, Vector2.UnitX, Vector2.UnitY }, boxTexture));
+            triangles.Add(new TrianglePrimitive(graphicsDevice, startPosition, startPosition - new Vector3(0, h, 0), startPosition + new Vector3(w, 0, 0), Vector3.Forward, new List<Vector2>() { Vector2.Zero, Vector2.UnitX, Vector2.UnitY }, boxTexture, normalTexture));
+            triangles.Add(new TrianglePrimitive(graphicsDevice, startPosition - new Vector3(0, h, 0), startPosition + new Vector3(w, 0, 0), startPosition + new Vector3(w, -h, 0), Vector3.Forward, new List<Vector2>() { Vector2.One, Vector2.UnitX, Vector2.UnitY }, boxTexture, normalTexture));
 
 
             //Back face
-            // triangles.Add(new TrianglePrimitive(graphicsDevice, endPosition, endPosition - new Vector3(0, h, 0), endPosition + new Vector3(w, 0, 0), Vector3.Backward, new List<Vector2>() { Vector2.Zero, Vector2.UnitX, Vector2.UnitY }, boxTexture));
-            //triangles.Add(new TrianglePrimitive(graphicsDevice, endPosition - new Vector3(0, h, 0), endPosition + new Vector3(w, 0, 0), endPosition + new Vector3(w, -h, 0), Vector3.Backward, new List<Vector2>() { Vector2.One, Vector2.UnitX, Vector2.UnitY }, boxTexture));
-            triangles.Add(new TrianglePrimitive(graphicsDevice, endPosition, endPosition - new Vector3(0, h, 0), lastPosition, Color.Red, Color.Green, Color.Blue, Vector3.Backward));
-            triangles.Add(new TrianglePrimitive(graphicsDevice, endPosition - new Vector3(0, h, 0), lastPosition, lastPosition - new Vector3(0, h, 0), Color.Red, Color.Green, Color.Blue, Vector3.Backward));
+             triangles.Add(new TrianglePrimitive(graphicsDevice, endPosition, endPosition - new Vector3(0, h, 0), lastPosition, Vector3.Backward, new List<Vector2>() { Vector2.Zero, Vector2.UnitX, Vector2.UnitY }, boxTexture, normalTexture));
+             triangles.Add(new TrianglePrimitive(graphicsDevice, endPosition - new Vector3(0, h, 0), lastPosition, lastPosition - new Vector3(0, h, 0), Vector3.Backward, new List<Vector2>() { Vector2.One, Vector2.UnitX, Vector2.UnitY }, boxTexture, normalTexture));
+ //           triangles.Add(new TrianglePrimitive(graphicsDevice, endPosition, endPosition - new Vector3(0, h, 0), lastPosition, Color.Red, Color.Green, Color.Blue, Vector3.Backward));
+//            triangles.Add(new TrianglePrimitive(graphicsDevice, endPosition - new Vector3(0, h, 0), lastPosition, lastPosition - new Vector3(0, h, 0), Color.Red, Color.Green, Color.Blue, Vector3.Backward));
 
 
             ActualWidth = Vector3.Distance(endPosition, lastPosition);
@@ -287,20 +289,20 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Roads
             return this;
         }
 
-        public CustomCurvedRoad(Vector3 startPosition, Vector3 endPosition, float w, float h) : base(null)
+        public CustomCurvedRoad(Vector3 startPosition, Vector3 endPosition, float w, float h, String KeyTexture) : base(null)
         {
             this.startPosition = startPosition;
             this.endPosition = endPosition;
             this.w = w;
             this.h = h;
+            this.boxTexture = TexturesHolder<Texture2D>.Get(KeyTexture);
+            this.normalTexture = TexturesHolder<Texture2D>.Get(KeyTexture + "-Normal");
         }
 
         //No cargamos ningun modelo
         public override void SetEffectAndTextures(Model model)
         {
             base.Effect = EffectsHolder.Get("LightEffect");
-            this.boxTexture = TexturesHolder<Texture2D>.Get("Cemento");
-            this.normalTexture = TexturesHolder<Texture2D>.Get("Cemento-Normal-Map");
         }
 
         public override StaticDescription GetStaticDescription(Simulation simulation)
@@ -341,18 +343,17 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Roads
             foreach (TrianglePrimitive triangle in triangles)
             {
 
-                Effect.Parameters["ModelTexture"].SetValue(boxTexture);
-                Effect.Parameters["NormalTexture"].SetValue(normalTexture);
+                Effect.Parameters["ModelTexture"].SetValue(triangle.Texture);
+                Effect.Parameters["NormalTexture"].SetValue(triangle.TextureNormal);
                 Effect.Parameters["World"].SetValue(WorldMatrix);
                 Effect.Parameters["InverseTransposeWorld"].SetValue(Matrix.Invert(Matrix.Transpose(WorldMatrix)));
                 Effect.Parameters["WorldViewProjection"].SetValue(WorldMatrix * view * projection);
-                Effect.Parameters["Tiling"].SetValue(Vector2.One);
+                Effect.Parameters["Tiling"].SetValue(Vector2.One* new Vector2(1,25));
                 Effect.Parameters["eyePosition"].SetValue(SharedObjects.CurrentCamera.Position);
-
-                Effect.Parameters["lightPosition"].SetValue(new Vector3(Center.X + 16000, Center.Y + 14000f, TGCGame.player.Position.Z));
-                Effect.Parameters["ambientColor"].SetValue(new Vector3(1f, 1f, 1f));
-                Effect.Parameters["diffuseColor"].SetValue(new Vector3(0.5f, 0.1f, 0f));
-                Effect.Parameters["specularColor"].SetValue(new Vector3(0.5f, 0.1f, 0f));
+                Effect.Parameters["lightPosition"].SetValue(SharedObjects.CurrentScene.LightPosition + new Vector3(0, Center.Y, 0));
+                Effect.Parameters["ambientColor"].SetValue(SharedObjects.CurrentScene.AmbientLightColor);
+                Effect.Parameters["diffuseColor"].SetValue(SharedObjects.CurrentScene.DiffuseLightColor);
+                Effect.Parameters["specularColor"].SetValue(SharedObjects.CurrentScene.SpecularLightColor);
                 Effect.Parameters["KAmbient"].SetValue(0.4f);
                 Effect.Parameters["KDiffuse"].SetValue(0.7f);
                 Effect.Parameters["KSpecular"].SetValue(0.4f);

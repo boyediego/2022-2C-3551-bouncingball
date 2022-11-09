@@ -83,13 +83,18 @@ namespace TGC.MonoGame.TP.Utilities.Geometries
             InitializePrimitive(graphicsDevice);
         }
 
-        public TrianglePrimitive(GraphicsDevice graphicsDevice, Vector3 vertex1, Vector3 vertex2, Vector3 vertex3,Vector3 normal, List<Vector2> textureCoordinates, Texture2D texture)
+        public Texture2D Texture { get; set; }
+        public Texture2D TextureNormal { get; set; }
+
+        public TrianglePrimitive(GraphicsDevice graphicsDevice, Vector3 vertex1, Vector3 vertex2, Vector3 vertex3,Vector3 normal, List<Vector2> textureCoordinates, Texture2D texture, Texture2D textureNormal)
         {
               Effect = new BasicEffect(graphicsDevice);
               Effect.TextureEnabled = true;
               Effect.Texture = texture;
               Effect.EnableDefaultLighting();
 
+            this.Texture = texture;
+            this.TextureNormal = textureNormal;
 
 
 

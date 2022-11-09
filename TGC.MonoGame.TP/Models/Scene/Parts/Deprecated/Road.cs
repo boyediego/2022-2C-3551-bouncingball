@@ -37,7 +37,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Deprecated
         public override void SetEffectAndTextures(Model model)
         {
             base.Effect = EffectsHolder.Get("TextureShader");
-            this.texture = TexturesHolder<Texture2D>.Get("Platform-Texture");
+            this.texture = TexturesHolder<Texture2D>.Get("Road-type-1");
         }
 
         public void SetPositionFromOrigin(Vector3 position)

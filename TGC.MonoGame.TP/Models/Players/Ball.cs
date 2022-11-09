@@ -149,7 +149,7 @@ namespace TGC.MonoGame.TP.Models.Players
 
             }
 
-            if (keyboardState.IsKeyDown(Keys.X))
+            if (keyboardState.IsKeyDown(Keys.X) || keyboardState.IsKeyDown(Keys.D))
             {
                 bodyReference.Awake = true;
                 bodyReference.ApplyLinearImpulse(velocityDirection.PerpendicularClockwiseIn2D().ToNumericVector3() * RotateForce / velocityDirection.Length());
@@ -157,7 +157,7 @@ namespace TGC.MonoGame.TP.Models.Players
 
 
 
-            if (keyboardState.IsKeyDown(Keys.Space))
+           if (keyboardState.IsKeyDown(Keys.Space))
             {
                 TryJump(bodyReference, gameTime.TotalGameTime);
             }
@@ -193,8 +193,10 @@ namespace TGC.MonoGame.TP.Models.Players
             if (sceneObject.PhysicsType == PhysicsTypeHome.Static)
             {
                 if (!OnGround)
+                {
+                    OnGround = sceneObject.IsGround;
                     Debug.WriteLine("OnGround detected with " + sceneObject);
-                OnGround = sceneObject.IsGround;
+                }
 
             }
             else

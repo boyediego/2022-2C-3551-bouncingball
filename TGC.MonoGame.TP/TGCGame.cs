@@ -116,6 +116,9 @@ namespace TGC.MonoGame.TP
             //Create scenario         
             scenario = new Scenario();
 
+            //Set current scene
+            SharedObjects.CurrentScene = scenario;
+
             //Add to games model list
             gamesModels.Add(scenario);
 
@@ -164,12 +167,22 @@ namespace TGC.MonoGame.TP
             TexturesHolder<TextureCube>.Load(Content, "SkyBox", "skyboxes/skybox/skybox");
 
             //Balls Textures
-            TexturesHolder<Texture2D>.Load(Content, "Test", "extras/test");
-            TexturesHolder<Texture2D>.Load(Content, "Test-Normal", "extras/test-norma");
+            TexturesHolder<Texture2D>.Load(Content, "Metal", "balls/metal");
+            TexturesHolder<Texture2D>.Load(Content, "Metal-Normal", "balls/metal-normal");
 
             //Roads Textures
-            TexturesHolder<Texture2D>.Load(Content, "Cemento", "extras/cemento");
-            TexturesHolder<Texture2D>.Load(Content, "Cemento-Normal-Map", "extras/cemento-normal-map");
+            TexturesHolder<Texture2D>.Load(Content, "Road-Type-2", "roads/road-type-2");
+            TexturesHolder<Texture2D>.Load(Content, "Road-Type-2-Normal", "roads/road-type-2-normal");
+            TexturesHolder<Texture2D>.Load(Content, "Plataform-Type-1", "roads/Plataform-Type-1");
+            TexturesHolder<Texture2D>.Load(Content, "Plataform-Type-1-Normal", "roads/Plataform-Type-1-normal");
+
+            //Obstacule Textures
+            TexturesHolder<Texture2D>.Load(Content, "Stone-Type-1", "obstacules/Stone-Type-1");
+            TexturesHolder<Texture2D>.Load(Content, "Stone-Type-1-Normal", "obstacules/Stone-Type-1-normal");
+
+            //Extras
+            TexturesHolder<Texture2D>.Load(Content, "Grass-Type-1", "extras/Grass-Type-1");
+            TexturesHolder<Texture2D>.Load(Content, "Grass-Type-1-Normal", "extras/Grass-Type-1-normal");
         }
 
         private void LoadEffects()

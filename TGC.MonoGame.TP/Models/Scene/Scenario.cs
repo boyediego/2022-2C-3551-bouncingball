@@ -15,11 +15,19 @@ using Vector3 = Microsoft.Xna.Framework.Vector3;
 
 namespace TGC.MonoGame.TP.Models.Scene
 {
-    public class Scenario : IGameModel
+    public class Scenario : IGameModel, IScene
     {
         private List<Model3D> sceneObjects;
 
         public List<Model3D> models { get { return this.sceneObjects; } }
+
+        public Vector3 LightPosition { get { return new Vector3(16000f, 34000f, 8000f); } }
+
+        public Vector3 AmbientLightColor { get { return new Vector3(1, 1, 1); } }
+
+        public Vector3 DiffuseLightColor { get { return new Vector3(0.5f, 0.1f, 0f); } }
+
+        public Vector3 SpecularLightColor { get { return new Vector3(0.5f, 0.1f, 0f); } }
 
         public Scenario()
         {
@@ -60,29 +68,30 @@ namespace TGC.MonoGame.TP.Models.Scene
 
             CustomBuilder customBuilder = new CustomBuilder();
             customBuilder
-                    .addTramo(new CustomRoad(2000, 5600, 100, 0, 0))
+                    .addTramo(new CustomRoad(2000, 3600, 100, 0, 0, "Road-Type-2"))
                     .addPowerup(new ExtraJump())
+                    .addTramo(new CustomCurvedRoad(new Vector3(0, 100, 0), new Vector3(-5000, 100, 3000), 2000, 100, "Road-Type-2"))
                     .addForwardSpace(1000)
                     .addVerticalSpace(450)
-                    .addTramo(new CustomRoad(2000, 5000, 100, 0, 0))
-                    .addTramo(new CustomRoad(2000, 2500, 100, 1000, 0))
-                    .addTramo(new CustomRoad(2000, 3000, 100, 0, 0))
-                    .addTramo(new CustomCurvedRoad(new Vector3(0, 100, 0), new Vector3(-5000, 100, 3000), 2000, 100))
+                    .addTramo(new CustomRoad(2000, 5000, 100, 0, 0, "Road-Type-2"))
+                    .addTramo(new CustomRoad(2000, 2500, 100, 1000, 0, "Road-Type-2"))
+                    .addTramo(new CustomRoad(2000, 3000, 100, 0, 0, "Road-Type-2"))
+                    //  .addTramo(new CustomCurvedRoad(new Vector3(0, 100, 0), new Vector3(-5000, 100, 3000), 2000, 100))
                     .addSideSpace(Vector3.Right, 145)
-                    .addPlataform(new CustomRoad(800, 800, 100, 0, 0))
+                    .addPlataform(new CustomRoad(800, 800, 100, 0, 0, "Plataform-Type-1"))
                     .addVerticalSpace(450)
                     .addForwardSpace(300)
-                    .addPlataform(new CustomRoad(800, 800, 100, 0, 0))
+                    .addPlataform(new CustomRoad(800, 800, 100, 0, 0, "Plataform-Type-1"))
                     .addObstacule(new CubeObstacule().SetMovementDirection(Vector3.Right).SetSpeed(12500).SetMaxMovement(1750).SetInitialOffset(new Vector3(400, 0, 0)))
                     .addVerticalSpace(450)
                     .addForwardSpace(300)
-                    .addPlataform(new CustomRoad(800, 800, 100, 0, 0))
+                    .addPlataform(new CustomRoad(800, 800, 100, 0, 0, "Plataform-Type-1"))
                     .addVerticalSpace(450)
                     .addForwardSpace(300)
-                    .addPlataform(new CustomRoad(800, 800, 100, 0, 0))
-                    .addTramo(new CustomRoad(2000, 9000, 100, 0, 0))
-                    .addCheckpoint(2000)
-                    .addTramo(new CustomCurvedRoad(new Vector3(0, 100, 0), new Vector3(-5000, 100, 3000), 2000, 100));
+                    .addPlataform(new CustomRoad(800, 800, 100, 0, 0, "Plataform-Type-1"))
+                    .addTramo(new CustomRoad(2000, 9000, 100, 0, 0, "Road-Type-2"))
+                    .addCheckpoint(2000);
+                //    .addTramo(new CustomCurvedRoad(new Vector3(0, 100, 0), new Vector3(-5000, 100, 3000), 2000, 100));
             sceneObjects.AddRange(customBuilder.GetScene());
 
             /*

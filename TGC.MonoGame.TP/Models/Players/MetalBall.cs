@@ -27,8 +27,8 @@ namespace TGC.MonoGame.TP.Models.Players
         {
             base.Model = model;
             base.Effect = EffectsHolder.Get("LightEffect");
-            this.texture = TexturesHolder<Texture2D>.Get("Test");
-            this.textureNormal = TexturesHolder<Texture2D>.Get("Test-Normal");
+            this.texture = TexturesHolder<Texture2D>.Get("Metal");
+            this.textureNormal = TexturesHolder<Texture2D>.Get("Metal-Normal");
         }
 
         public override void Draw(GameTime gameTime, Matrix view, Matrix projection)
@@ -37,14 +37,14 @@ namespace TGC.MonoGame.TP.Models.Players
             Effect.Parameters["NormalTexture"].SetValue(textureNormal);
             Effect.Parameters["Tiling"].SetValue(Vector2.One);
             Effect.Parameters["eyePosition"].SetValue(SharedObjects.CurrentCamera.Position);
-            Effect.Parameters["lightPosition"].SetValue(new Vector3(this.Position.X + 16000, this.Position.Y + 14000f, 8000));
-            Effect.Parameters["ambientColor"].SetValue(new Vector3(1f, 1f, 1f));
-            Effect.Parameters["diffuseColor"].SetValue(new Vector3(0.5f, 0.1f, 0f));
-            Effect.Parameters["specularColor"].SetValue(new Vector3(0.5f, 0.1f, 0f));
-            Effect.Parameters["KAmbient"].SetValue(0.7f);
-            Effect.Parameters["KDiffuse"].SetValue(0.7f);
-            Effect.Parameters["KSpecular"].SetValue(0.1f);
-            Effect.Parameters["shininess"].SetValue(16.0f);
+            Effect.Parameters["lightPosition"].SetValue(SharedObjects.CurrentScene.LightPosition + new Vector3(this.Position.X, this.Position.Y, 0));
+            Effect.Parameters["ambientColor"].SetValue(SharedObjects.CurrentScene.AmbientLightColor);
+            Effect.Parameters["diffuseColor"].SetValue(SharedObjects.CurrentScene.DiffuseLightColor);
+            Effect.Parameters["specularColor"].SetValue(SharedObjects.CurrentScene.SpecularLightColor);
+            Effect.Parameters["KAmbient"].SetValue(0.3f);
+            Effect.Parameters["KDiffuse"].SetValue(0.5f);
+            Effect.Parameters["KSpecular"].SetValue(0.75f);
+            Effect.Parameters["shininess"].SetValue(4.0f);
             Effect.CurrentTechnique = Effect.Techniques["NormalMapping"];
 
             var modelMeshesBaseTransforms = new Matrix[Model.Bones.Count];
