@@ -40,7 +40,7 @@ namespace TGC.MonoGame.TP
         //Game objects
         private SkyBox SkyBox { get; set; }
         private List<IGameModel> gamesModels = new List<IGameModel>();
-        public static Ball player;  //FIXME static
+        private Ball player;
         private Scenario scenario;
 
         //Collision info

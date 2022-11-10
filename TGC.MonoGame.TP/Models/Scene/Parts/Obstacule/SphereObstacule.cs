@@ -33,6 +33,18 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Obstacule
             color = new Vector3(0, 1, 0);
         }
 
+        public override BodyDescription GetBodyDescription(Simulation simulation)
+        {
+            base.simulation = simulation;
+            var size = base.GetModelSize();
+            var shape = new Box(size.X, size.Y, size.Z);
+            var collidable = new CollidableDescription(simulation.Shapes.Add(shape), 0.1f);
+
+            base.bodyDescription = BodyDescription.CreateKinematic(new RigidPose(startPosition.ToNumericVector3()), collidable, new BodyActivityDescription(0.01f));
+            base.bodyHandle = simulation.Bodies.Add(bodyDescription);
+            base.SimulationHandle = bodyHandle.Value;
+            return bodyDescription;
+        }
 
 
         public override void Draw(GameTime gameTime, Matrix view, Matrix projection)

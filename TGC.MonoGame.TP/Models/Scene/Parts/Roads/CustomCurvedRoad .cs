@@ -38,8 +38,9 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Roads
         public float ActualElevation { get; private set; }
         public Vector3 StartPoint { get; private set; }
         public Vector3 EndPoint { get; private set; }
-        public Vector3 Center { get; set; }
+        public Vector3 Center { get { return Vector3.Transform(StartPoint + (EndPoint - StartPoint) / 2, WorldMatrix); } }
 
+        
 
         private Vector3 startPosition;
         private Vector3 endPosition;
@@ -52,7 +53,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Roads
         public Tramo Build()
         {
             var graphicsDevice = SharedObjects.graphicsDeviceManager.GraphicsDevice;
-            int sign = (int)(w / MathF.Abs(w));
+            int sign =- (int)(endPosition.X / MathF.Abs(endPosition.X));
             BezierPath path = new BezierPath();
             Vector3 controlPoint1 = new Vector3(startPosition.X + startPosition.Length() * 1f / 4f - 1000 * sign, startPosition.Y, startPosition.Z + startPosition.Length() * 1f / 4f + 1000);
             Vector3 controlPoint3 = new Vector3(startPosition.X + startPosition.Length() * 3f / 4f - 1000 * sign, startPosition.Y, startPosition.Z + startPosition.Length() * 3f / 4f + 1000);
@@ -125,7 +126,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Roads
             float yOffset = 0f;
             float yOffsetC2 = 0f;
             preLastPosition = new Vector3();
-            
+
             float acum = 100;
             for (int index = 0; index < points.Count - 1; index++)
             {
@@ -150,7 +151,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Roads
                 Vector3 p1 = current;
                 Vector3 p2 = next;
                 Vector3 p3 = current + vectorW;
-              
+
                 //Face up
                 triangles.Add(new TrianglePrimitive(graphicsDevice, p1, p2, p3, Vector3.Up, new List<Vector2>() { texturaP1, texturaP2P5, texturaP3P4 }, boxTexture, normalTexture));
                 //Face down
@@ -163,7 +164,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Roads
                 Vector3 p4 = p3;
                 Vector3 p5 = p2;
                 Vector3 p6 = next + new Vector3(w, 0, 0);
-                
+
 
                 if (Math.Abs(p6.X) > Math.Abs(lastPosition.X))
                 {
@@ -184,7 +185,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Roads
 
 
                 //Face up
-                triangles.Add(new TrianglePrimitive(graphicsDevice, p4, p5, p6, Vector3.Up, new List<Vector2>() { texturaP3P4, texturaP2P5, texturaP6,  }, boxTexture, normalTexture));
+                triangles.Add(new TrianglePrimitive(graphicsDevice, p4, p5, p6, Vector3.Up, new List<Vector2>() { texturaP3P4, texturaP2P5, texturaP6, }, boxTexture, normalTexture));
                 //triangles.Add(new TrianglePrimitive(graphicsDevice, p4, p5, p6, Color.Red, Color.Green, Color.Blue, Vector3.Up));
                 //Face down
                 triangles.Add(new TrianglePrimitive(graphicsDevice, p4 - new Vector3(0, h, 0), p5 - new Vector3(0, h, 0), p6 - new Vector3(0, h, 0), Vector3.Down, new List<Vector2>() { Vector2.UnitY, Vector2.UnitX, Vector2.One }, boxTexture, normalTexture));
@@ -247,10 +248,10 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Roads
 
 
             //Back face
-             triangles.Add(new TrianglePrimitive(graphicsDevice, endPosition, endPosition - new Vector3(0, h, 0), lastPosition, Vector3.Backward, new List<Vector2>() { Vector2.Zero, Vector2.UnitX, Vector2.UnitY }, boxTexture, normalTexture));
-             triangles.Add(new TrianglePrimitive(graphicsDevice, endPosition - new Vector3(0, h, 0), lastPosition, lastPosition - new Vector3(0, h, 0), Vector3.Backward, new List<Vector2>() { Vector2.One, Vector2.UnitX, Vector2.UnitY }, boxTexture, normalTexture));
- //           triangles.Add(new TrianglePrimitive(graphicsDevice, endPosition, endPosition - new Vector3(0, h, 0), lastPosition, Color.Red, Color.Green, Color.Blue, Vector3.Backward));
-//            triangles.Add(new TrianglePrimitive(graphicsDevice, endPosition - new Vector3(0, h, 0), lastPosition, lastPosition - new Vector3(0, h, 0), Color.Red, Color.Green, Color.Blue, Vector3.Backward));
+            triangles.Add(new TrianglePrimitive(graphicsDevice, endPosition, endPosition - new Vector3(0, h, 0), lastPosition, Vector3.Backward, new List<Vector2>() { Vector2.Zero, Vector2.UnitX, Vector2.UnitY }, boxTexture, normalTexture));
+            triangles.Add(new TrianglePrimitive(graphicsDevice, endPosition - new Vector3(0, h, 0), lastPosition, lastPosition - new Vector3(0, h, 0), Vector3.Backward, new List<Vector2>() { Vector2.One, Vector2.UnitX, Vector2.UnitY }, boxTexture, normalTexture));
+            //           triangles.Add(new TrianglePrimitive(graphicsDevice, endPosition, endPosition - new Vector3(0, h, 0), lastPosition, Color.Red, Color.Green, Color.Blue, Vector3.Backward));
+            //            triangles.Add(new TrianglePrimitive(graphicsDevice, endPosition - new Vector3(0, h, 0), lastPosition, lastPosition - new Vector3(0, h, 0), Color.Red, Color.Green, Color.Blue, Vector3.Backward));
 
 
             ActualWidth = Vector3.Distance(endPosition, lastPosition);
@@ -319,10 +320,10 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Roads
 
             NumericVector3 center = new NumericVector3();
             ConvexHull r = new ConvexHull(points.Span.Slice(points.Count), simulation.BufferPool, out center);
-            Center = new Vector3(center.X, center.Y, center.Z);
+            
 
             StaticDescription sta = new StaticDescription(new NumericVector3(center.X, center.Y, center.Z),
-               new CollidableDescription(simulation.Shapes.Add(r), 0.001f));
+               new CollidableDescription(simulation.Shapes.Add(r), 0.1f));
 
             StaticHandle handle = simulation.Statics.Add(sta);
             SimulationHandle = handle.Value;
@@ -348,7 +349,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Roads
                 Effect.Parameters["World"].SetValue(WorldMatrix);
                 Effect.Parameters["InverseTransposeWorld"].SetValue(Matrix.Invert(Matrix.Transpose(WorldMatrix)));
                 Effect.Parameters["WorldViewProjection"].SetValue(WorldMatrix * view * projection);
-                Effect.Parameters["Tiling"].SetValue(Vector2.One* new Vector2(1,25));
+                Effect.Parameters["Tiling"].SetValue(Vector2.One * new Vector2(1, 25));
                 Effect.Parameters["eyePosition"].SetValue(SharedObjects.CurrentCamera.Position);
                 Effect.Parameters["lightPosition"].SetValue(SharedObjects.CurrentScene.LightPosition + new Vector3(0, Center.Y, 0));
                 Effect.Parameters["ambientColor"].SetValue(SharedObjects.CurrentScene.AmbientLightColor);
@@ -365,10 +366,10 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Roads
             graphicsDevice.RasterizerState = oldRasterizerState;
         }
 
-        
+
         public override void Collide(Model3D sceneObject)
         {
-            
+
         }
     }
 }

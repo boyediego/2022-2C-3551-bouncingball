@@ -95,6 +95,18 @@ namespace TGC.MonoGame.TP.Models.Scene.Builder
             return this;
         }
 
+        public CustomBuilder Rotate90Degress()
+        {
+            this.rotations += MathHelper.PiOver2;
+            return this;
+        }
+
+        public CustomBuilder Rotate90DegressClockwise()
+        {
+            this.rotations -= MathHelper.PiOver2;
+            return this;
+        }
+
 
         public CustomBuilder addForwardSpace(float length)
         {
@@ -130,7 +142,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Builder
         {
             Tramo last = (Tramo)Last();
             obstacule.ExternalTransformation = Matrix.CreateRotationY(rotations);
-            obstacule.SetPositionFromOrigin(last.Center + new Vector3(0, GameParams.ObstacleAltitudeOffset, 0) + obstacule.InitialOffset);
+            obstacule.SetPositionFromOrigin(last.Center + obstacule.InitialOffset);
             models.Add(obstacule);
             return this;
         }

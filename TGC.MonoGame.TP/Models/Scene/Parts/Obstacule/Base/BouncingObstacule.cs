@@ -26,9 +26,9 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Obstacule.Base
         protected float speed;
         protected float maxMovementUnits;
 
-        private Simulation simulation;
-        private BodyDescription bodyDescription;
-        private BodyHandle bodyHandle;
+        protected Simulation simulation;
+        protected BodyDescription bodyDescription;
+        protected BodyHandle bodyHandle;
 
         protected BouncingObstacule(Model model) : base(model)
         {
@@ -57,6 +57,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Obstacule.Base
             {
                 _ExternalTransformation = value;
                 movementDirection = Vector3.Transform(movementDirection, ExternalTransformation);
+                base.RotationMatrix = _ExternalTransformation;
             }
         }
 
@@ -91,10 +92,10 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Obstacule.Base
 
 
             bodyReference.Velocity.Linear = movementDirection.ToNumericVector3() * speed * GameParams.ObstacleSpeedMultiplier * time;
-
+            
 
             this.currentPosition = new Vector3(position.X, position.Y, position.Z);
-            base.RotationMatrix = Matrix.CreateFromQuaternion(new Quaternion(quaternion.X, quaternion.Y, quaternion.Z, quaternion.W));
+            //base.RotationMatrix = Matrix.CreateFromQuaternion(new Quaternion(quaternion.X, quaternion.Y, quaternion.Z, quaternion.W));
             base.TranslationMatrix = Matrix.CreateTranslation(currentPosition);
         }
 
@@ -102,18 +103,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Obstacule.Base
 
         public override StaticDescription GetStaticDescription(Simulation simulation) { throw new NotSupportedException(); }
         public override int PhysicsType { get { return PhysicsTypeHome.Kinematic; } }
-        public override BodyDescription GetBodyDescription(Simulation simulation)
-        {
-            this.simulation = simulation;
-            var size = base.GetModelSize();
-            var shape = new Box(size.X, size.Y, size.Z);
-            var collidable = new CollidableDescription(simulation.Shapes.Add(shape), 0.1f);
-
-            bodyDescription = BodyDescription.CreateKinematic(new RigidPose(startPosition.ToNumericVector3()), collidable, new BodyActivityDescription(0.01f));
-            bodyHandle = simulation.Bodies.Add(bodyDescription);
-            SimulationHandle = bodyHandle.Value;
-            return bodyDescription;
-        }
+      
 
         public override void Collide(Model3D sceneObject)
         {

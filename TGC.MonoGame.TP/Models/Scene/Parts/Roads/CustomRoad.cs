@@ -10,6 +10,7 @@ using System.Linq;
 using System.Data;
 using System;
 using NumericVector3 = System.Numerics.Vector3;
+using TrianglePrimitive = TGC.MonoGame.TP.Utilities.Geometries.TrianglePrimitive;
 using System.Runtime.Serialization.Formatters;
 using TGC.MonoGame.TP.Utilities;
 using BepuUtilities.Collections;
@@ -22,7 +23,8 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Roads
 {
     internal class CustomRoad : Ground, Tramo
     {
-        
+
+        private List<TrianglePrimitive> triangles = new List<TrianglePrimitive>();
         private Vector3 u1;
         private Vector3 u2;
         private Vector3 u3;
@@ -128,7 +130,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Roads
             return this;
         }
 
-        private List<TrianglePrimitive> triangles = new List<TrianglePrimitive>();
+        
 
         public CustomRoad(float w, float l, float h, float elevation, float baseElevationOffset, String KeyTexture) : base(null)
         {

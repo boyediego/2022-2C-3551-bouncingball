@@ -20,9 +20,10 @@ using TGC.MonoGame.TP.Shared;
 using Microsoft.Xna.Framework.Input;
 using TGC.MonoGame.TP.Models.Scene.Parts.Obstacule.Base;
 
+
 namespace TGC.MonoGame.TP.Models.Scene.Parts.Obstacule
 {
-    public class CubeObstacule : BouncingObstacule
+    public class CubeFixedObstacule : TGC.MonoGame.TP.Models.Scene.Parts.Obstacule.Base.Obstacule
     {
         private Texture2D texture;
         private Texture2D textureNormal;
@@ -31,13 +32,12 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Obstacule
 
         private float Size;
 
+        public override int PhysicsType { get { return PhysicsTypeHome.Static; } }
 
-
-        public CubeObstacule() : base(null)
+        public CubeFixedObstacule() : base(null)
         {
 
         }
-
 
         public override void SetEffectAndTextures(Model model)
         {
@@ -46,7 +46,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Obstacule
             this.textureNormal = TexturesHolder<Texture2D>.Get("Stone-Type-1-Normal");
         }
 
-        public CubeObstacule Build(float size)
+        public CubeFixedObstacule Build(float size)
         {
             var graphicsDevice = SharedObjects.graphicsDeviceManager.GraphicsDevice;
 
@@ -95,16 +95,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Obstacule
         }
 
 
-        public override BodyDescription GetBodyDescription(Simulation simulation)
-        {
-            base.simulation = simulation;
-            var shape = new Box(this.Size, this.Size, this.Size);
-            var collidable = new CollidableDescription(simulation.Shapes.Add(shape), 0.1f);
-            base.bodyDescription = BodyDescription.CreateKinematic(new RigidPose(startPosition.ToNumericVector3()), collidable, new BodyActivityDescription(0.01f));
-            base.bodyHandle = simulation.Bodies.Add(bodyDescription);
-            base.SimulationHandle = bodyHandle.Value;
-            return bodyDescription;
-        }
+        public override BodyDescription GetBodyDescription(Simulation simulation){ throw new NotSupportedException(); }
 
         public override void Draw(GameTime gameTime, Matrix view, Matrix projection)
         {
@@ -135,7 +126,29 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Obstacule
             graphicsDevice.RasterizerState = oldRasterizerState;
         }
 
+        public override void Update(GameTime gameTime, KeyboardState keyboardState)
+        {
+            
+        }
 
+        public override void Collide(Model3D sceneObject)
+        {
+            
+        }
+
+        public override StaticDescription GetStaticDescription(Simulation simulation)
+        {
+            Vector3 center = Vector3.Transform(new Vector3(0, 0, 0), base.WorldMatrix);
+            var shape = new Box(this.Size, this.Size, this.Size);
+            StaticDescription sta = new StaticDescription(new NumericVector3(center.X, center.Y, center.Z),
+               new CollidableDescription(simulation.Shapes.Add(shape), 0.01f));
+
+            StaticHandle handle = simulation.Statics.Add(sta);
+            SimulationHandle = handle.Value;
+
+            return new StaticDescription();
+
+        }
     }
 
 }
