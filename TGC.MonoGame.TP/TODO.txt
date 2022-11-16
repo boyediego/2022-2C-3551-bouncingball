@@ -6,16 +6,17 @@
 * PowerUps
 * Lights
 * Road or plataform with angle
+* Obstacules form and texture
 ------------------------------
 
 
 ***Pending***
-- Obstacules form and texture
+
 - PowerUps form and texture
 - Shadows maps
 - Enviroment Map per ball
 
-- Texture mapping on curve 
+-  Side textures
 
 - StartRoad - End Road (Player Win)
 - Respawn (Draw powerups and restore checkpoints)

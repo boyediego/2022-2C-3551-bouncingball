@@ -66,7 +66,7 @@ namespace TGC.MonoGame.TP
             var screenSize = new Point(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height / 2);
 
             //Create free camera object
-            FreeCamera = new FreeCamera(GraphicsDevice.Viewport.AspectRatio, new Vector3(5000, 1500, 19000), screenSize);
+            FreeCamera = new FreeCamera(GraphicsDevice.Viewport.AspectRatio, new Vector3(0, 10, 0), screenSize);
 
             //Create Target camera object
             TargetCamera = new TargetCamera(GraphicsDevice.Viewport.AspectRatio, Vector3.One * 100f, Vector3.Zero);
@@ -169,12 +169,17 @@ namespace TGC.MonoGame.TP
             //Balls Textures
             TexturesHolder<Texture2D>.Load(Content, "Metal", "balls/metal");
             TexturesHolder<Texture2D>.Load(Content, "Metal-Normal", "balls/metal-normal");
+            TexturesHolder<Texture2D>.Load(Content, "Bronze", "balls/bronze");
+            TexturesHolder<Texture2D>.Load(Content, "Bronze-Normal", "balls/bronze-normal");
 
             //Roads Textures
             TexturesHolder<Texture2D>.Load(Content, "Road-Type-2", "roads/road-type-2");
             TexturesHolder<Texture2D>.Load(Content, "Road-Type-2-Normal", "roads/road-type-2-normal");
             TexturesHolder<Texture2D>.Load(Content, "Plataform-Type-1", "roads/Plataform-Type-1");
             TexturesHolder<Texture2D>.Load(Content, "Plataform-Type-1-Normal", "roads/Plataform-Type-1-normal");
+            TexturesHolder<Texture2D>.Load(Content, "Gravel", "roads/Gravel");
+            TexturesHolder<Texture2D>.Load(Content, "Gravel-Normal", "roads/Gravel-normal");
+
 
             //Obstacule Textures
             TexturesHolder<Texture2D>.Load(Content, "Stone-Type-1", "obstacules/Stone-Type-1");

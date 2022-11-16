@@ -27,8 +27,8 @@ namespace TGC.MonoGame.TP.Models.Players
         {
             base.Model = model;
             base.Effect = EffectsHolder.Get("LightEffect");
-            this.texture = TexturesHolder<Texture2D>.Get("Metal");
-            this.textureNormal = TexturesHolder<Texture2D>.Get("Metal-Normal");
+            this.texture = TexturesHolder<Texture2D>.Get("Bronze");
+            this.textureNormal = TexturesHolder<Texture2D>.Get("Bronze-Normal");
         }
 
         public override void Draw(GameTime gameTime, Matrix view, Matrix projection)
@@ -41,10 +41,10 @@ namespace TGC.MonoGame.TP.Models.Players
             Effect.Parameters["ambientColor"].SetValue(SharedObjects.CurrentScene.AmbientLightColor);
             Effect.Parameters["diffuseColor"].SetValue(SharedObjects.CurrentScene.DiffuseLightColor);
             Effect.Parameters["specularColor"].SetValue(SharedObjects.CurrentScene.SpecularLightColor);
-            Effect.Parameters["KAmbient"].SetValue(0.3f);
-            Effect.Parameters["KDiffuse"].SetValue(0.5f);
-            Effect.Parameters["KSpecular"].SetValue(0.75f);
-            Effect.Parameters["shininess"].SetValue(4.0f);
+            Effect.Parameters["KAmbient"].SetValue(0.6f);
+            Effect.Parameters["KDiffuse"].SetValue(0.2f);
+            Effect.Parameters["KSpecular"].SetValue(0.5f);
+            Effect.Parameters["shininess"].SetValue(24.0f);
             Effect.CurrentTechnique = Effect.Techniques["NormalMapping"];
 
             var modelMeshesBaseTransforms = new Matrix[Model.Bones.Count];

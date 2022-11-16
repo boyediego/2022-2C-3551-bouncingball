@@ -79,19 +79,19 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Roads
 
             //Face down
             triangles.Add(new TrianglePrimitive(graphicsDevice, d1, d2, d3, Vector3.Backward, new List<Vector2>() { Vector2.Zero, Vector2.UnitX, Vector2.UnitY }, boxSidesTexture, boxSidesNormalTexture));
-            triangles.Add(new TrianglePrimitive(graphicsDevice, d2, d4, d3, Vector3.Backward, new List<Vector2>() { Vector2.Zero, Vector2.UnitX, Vector2.UnitY }, boxSidesTexture, boxSidesNormalTexture));
+            triangles.Add(new TrianglePrimitive(graphicsDevice, d2, d4, d3, Vector3.Backward, new List<Vector2>() { Vector2.UnitX, Vector2.One, Vector2.UnitY }, boxSidesTexture, boxSidesNormalTexture));
 
             //Front face
             triangles.Add(new TrianglePrimitive(graphicsDevice, d1, u1, d2, Vector3.Forward, new List<Vector2>() { Vector2.Zero, Vector2.UnitX, Vector2.UnitY }, boxSidesTexture, boxSidesNormalTexture));
-            triangles.Add(new TrianglePrimitive(graphicsDevice, u1, u2, d2, Vector3.Forward, new List<Vector2>() { Vector2.One, Vector2.UnitX, Vector2.UnitY }, boxSidesTexture, boxSidesNormalTexture));
+            triangles.Add(new TrianglePrimitive(graphicsDevice, u1, u2, d2, Vector3.Forward, new List<Vector2>() { Vector2.UnitX, Vector2.One, Vector2.UnitY }, boxSidesTexture, boxSidesNormalTexture));
 
             //Back face
             triangles.Add(new TrianglePrimitive(graphicsDevice, d3, u3, d4, Vector3.Backward, new List<Vector2>() { Vector2.Zero, Vector2.UnitX, Vector2.UnitY }, boxSidesTexture, boxSidesNormalTexture));
             triangles.Add(new TrianglePrimitive(graphicsDevice, u3, u4, d4, Vector3.Backward, new List<Vector2>() { Vector2.UnitX, Vector2.One, Vector2.UnitY }, boxSidesTexture, boxSidesNormalTexture));
 
             //Left face
-            triangles.Add(new TrianglePrimitive(graphicsDevice, d1, u1, u3, Vector3.Left, new List<Vector2>() { Vector2.Zero, Vector2.UnitX, Vector2.UnitY }, boxSidesTexture, boxSidesNormalTexture));
-            triangles.Add(new TrianglePrimitive(graphicsDevice, d1, u3, d3, Vector3.Left, new List<Vector2>() { Vector2.Zero, Vector2.UnitY, Vector2.One }, boxSidesTexture, boxSidesNormalTexture));
+           triangles.Add(new TrianglePrimitive(graphicsDevice, d1, u1, u3, Vector3.Left, new List<Vector2>() { Vector2.Zero, Vector2.UnitX, Vector2.One }, boxSidesTexture, boxSidesNormalTexture));
+           triangles.Add(new TrianglePrimitive(graphicsDevice, d1, u3, d3, Vector3.Left, new List<Vector2>() { Vector2.Zero, Vector2.UnitY, Vector2.One }, boxSidesTexture, boxSidesNormalTexture));
 
             // Rigth face
             triangles.Add(new TrianglePrimitive(graphicsDevice, d2, u2, u4, Vector3.Right, new List<Vector2>() { Vector2.Zero, Vector2.UnitX, Vector2.UnitY }, boxSidesTexture, boxSidesNormalTexture));
@@ -204,7 +204,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Roads
                 Effect.Parameters["World"].SetValue(WorldMatrix);
                 Effect.Parameters["InverseTransposeWorld"].SetValue(Matrix.Invert(Matrix.Transpose(WorldMatrix)));
                 Effect.Parameters["WorldViewProjection"].SetValue(WorldMatrix * view * projection);
-                Effect.Parameters["Tiling"].SetValue(new Vector2(1f, 4f));
+                Effect.Parameters["Tiling"].SetValue(new Vector2(1f, 10f));
                 Effect.Parameters["eyePosition"].SetValue(SharedObjects.CurrentCamera.Position);
                 Effect.Parameters["lightPosition"].SetValue(SharedObjects.CurrentScene.LightPosition + new Vector3(0, Center.Y , 0));
                 Effect.Parameters["ambientColor"].SetValue(SharedObjects.CurrentScene.AmbientLightColor);
