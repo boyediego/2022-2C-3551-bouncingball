@@ -21,6 +21,8 @@ float shininess;
 float3 lightPosition;
 float3 eyePosition; // Camera position
 float2 Tiling;
+float hasEnviroment = 0;
+
 
 
 float4x4 LightViewProjection;
@@ -29,7 +31,7 @@ float2 shadowMapSize;
 
 static const float modulatedEpsilon = 0.00004;
 static const float maxEpsilon = 0.00002;
-
+static const float interpolationReflection = -0.06988f;
 
 texture ModelTexture;
 sampler2D textureSampler = sampler_state
@@ -69,6 +71,19 @@ sampler_state
     AddressU = Clamp;
     AddressV = Clamp;
 };
+
+
+//Textura enviroment map
+texture environmentMap;
+samplerCUBE environmentMapSampler = sampler_state
+{
+    Texture = (environmentMap);
+    MagFilter = Linear;
+    MinFilter = Linear;
+    AddressU = Clamp;
+    AddressV = Clamp;
+};
+
 
 
 //***************************DEPTH PASS************************************************************//
@@ -117,6 +132,7 @@ struct VertexShaderOutput
     float4 WorldSpacePosition : TEXCOORD1;
     float4 LightSpacePosition : TEXCOORD2;
     float4 Normal : TEXCOORD3;
+    float3 Reflection : TEXCOORD4;
 };
 //***************************END INPUT/OUTPUT STRUCTS************************************************************//
 
@@ -148,7 +164,7 @@ VertexShaderOutput NormalMapVS(in VertexShaderInput input)
     output.WorldSpacePosition = mul(input.Position, World);
     output.Normal = mul(input.Normal, InverseTransposeWorld);
     output.TextureCoordinates = input.TextureCoordinates * Tiling;
-	
+    output.Reflection = mul(input.Normal, InverseTransposeWorld).rgb;
     return output;
 }
 
@@ -194,9 +210,38 @@ VertexShaderOutput ShadowedVS(in VertexShaderInput input)
     output.WorldSpacePosition = mul(input.Position, World);
     output.LightSpacePosition = mul(output.WorldSpacePosition, LightViewProjection);
     output.Normal = mul(input.Normal, InverseTransposeWorld);
+    output.Reflection = mul(input.Normal, InverseTransposeWorld).rgb;
     return output;
 }
 
+float4 applyEnviromentMap(in VertexShaderOutput input, float3 baseColor)
+{
+     /*
+    float3 normal = normalize(input.Normal.xyz);
+    
+    baseColor = lerp(baseColor, float3(1, 1, 1), step(length(baseColor), 0.01));
+    
+    float3 view = normalize(eyePosition.xyz - input.WorldSpacePosition.xyz);
+    float3 reflection = reflect(view, normal);
+    float3 reflectionColor = texCUBE(environmentMapSampler, reflection).rgb;
+
+    float fresnel = saturate((1.0 - dot(normal, view)));
+
+    return float4(lerp(baseColor, reflectionColor, fresnel), 1);
+    */
+    
+    float3 normal = normalize(input.Normal.xyz);
+    float ratio = 1.00 / 1.68;
+    
+    float3 I = normalize(input.WorldSpacePosition.xyz - eyePosition.xyz);
+    float3 R = refract(I, normalize(normal), ratio);
+    
+    float fresnel = saturate((1.0 - dot(normal, -I)));
+    
+    float3 reflectionColor = texCUBE(environmentMapSampler, R).rgb;
+    return float4(lerp(baseColor, reflectionColor, interpolationReflection), 1);
+
+}
 
 float4 applyShadow(in VertexShaderOutput input, float4 baseColor)
 {
@@ -221,6 +266,11 @@ float4 applyShadow(in VertexShaderOutput input, float4 baseColor)
 	
     
     baseColor.rgb *= 0.5 + 0.5 * notInShadow;
+    if (hasEnviroment)
+    {
+        baseColor = applyEnviromentMap(input, baseColor.rgb);
+        //return baseColor * texCUBE(environmentMapSampler, normalize(input.Reflection));
+    }
     return baseColor;
 }
 
@@ -230,7 +280,7 @@ float4 ShadowedPCFPS(in VertexShaderOutput input) : COLOR
     float4 baseColor = tex2D(textureSampler, input.TextureCoordinates);    
     return applyShadow(input, baseColor);
 }
-//***************************END SHADOW EFFECTS************************************************************//
+//***************************END SHADOW EFFECTS************************************************************/ /
 
 //***************************Light and Shadow************************************************************//
 
@@ -242,6 +292,12 @@ VertexShaderOutput LightAndShadowVS(in VertexShaderInput input)
     output.WorldSpacePosition = mul(input.Position, World);
     output.LightSpacePosition = mul(output.WorldSpacePosition, LightViewProjection);
     output.Normal = mul(input.Normal, InverseTransposeWorld);
+
+    float4 VertexPosition = mul(input.Position, World);
+    float3 ViewDirection = eyePosition - VertexPosition.xyz;
+    float3 Normal = normalize(mul(input.Normal, InverseTransposeWorld));
+    output.Reflection = reflect(-normalize(ViewDirection), normalize(Normal));
+    
     return output;
 }
 
@@ -254,6 +310,13 @@ float4 LightAndShadowPS(VertexShaderOutput input) : COLOR
 
 
 //***************************END Light and Shadow************************************************************//
+
+
+float4 OnlyEnviromentPS(VertexShaderOutput input) : COLOR
+{
+    float4 baseColor = tex2D(textureSampler, input.TextureCoordinates);
+    return applyEnviromentMap(input, baseColor.rgb);
+}
 
 technique DepthPass
 {
@@ -290,5 +353,15 @@ technique LightAndShadow
     {
         VertexShader = compile VS_SHADERMODEL LightAndShadowVS();
         PixelShader = compile PS_SHADERMODEL LightAndShadowPS();
+    }
+};
+
+
+technique OnlyEnviroment
+{
+    pass Pass0
+    {
+        VertexShader = compile VS_SHADERMODEL LightAndShadowVS();
+        PixelShader = compile PS_SHADERMODEL OnlyEnviromentPS();
     }
 };

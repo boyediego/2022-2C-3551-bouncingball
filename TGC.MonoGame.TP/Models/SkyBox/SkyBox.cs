@@ -47,7 +47,7 @@ namespace TGC.MonoGame.TP.Models.SkyBox
         /// <summary>
         ///     The actual SkyBox texture
         /// </summary>
-        private TextureCube Texture { get; }
+        public TextureCube Texture { get; set; }
 
         /// <summary>
         ///     The SkyBox model, which will just be a cube

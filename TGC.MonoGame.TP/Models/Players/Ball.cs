@@ -31,6 +31,7 @@ namespace TGC.MonoGame.TP.Models.Players
         private Boolean OnGround = false;
         private Vector3 ReSpawnPosition;
         private Vector3 applyImpulse;
+        
 
         public BodyDescription BodyDescription { get; set; }
         public BodyHandle playerHanle { get; set; }
@@ -39,6 +40,7 @@ namespace TGC.MonoGame.TP.Models.Players
         protected abstract float BrakeForce { get; }
         protected abstract float RotateForce { get; }
         protected abstract float JumpImpulse { get; }
+        public abstract Boolean HasEnviromentMap { get; }
 
         public override int PhysicsType
         {
@@ -126,6 +128,17 @@ namespace TGC.MonoGame.TP.Models.Players
                 dv = 1;
             }
 
+            if (keyboardState.IsKeyDown(Keys.U))
+            {
+                interpolation += 0.001f;
+            }
+
+            if (keyboardState.IsKeyDown(Keys.J))
+            {
+                interpolation -= 0.001f;
+            }
+
+            Debug.WriteLine(interpolation);
 
             if (keyboardState.IsKeyDown(Keys.W))
             {

@@ -32,14 +32,17 @@ namespace TGC.MonoGame.TP
     {
 
         private const int ShadowmapSize = 2048;
+        private const int EnvironmentmapSize = 2048;
+
         private readonly float LightCameraFarPlaneDistance = 90000f;
         private readonly float LightCameraNearPlaneDistance = 1f;
 
 
         //Cameras
-        public Camera Camera { get; set; }
+        private Camera Camera { get; set; }
         private FreeCamera FreeCamera { get; set; }
         private TargetCamera TargetCamera { get; set; }
+        private StaticCamera CubeMapCamera { get; set; }
 
         private FixedTargetCamera LightCamera { get; set; }
 
@@ -54,9 +57,9 @@ namespace TGC.MonoGame.TP
         public static object CollisionSemaphoreList = new object();
 
         //Physics
-        public Simulation Simulation { get; protected set; }
-        public BufferPool BufferPool { get; private set; }
-        public SimpleThreadDispatcher ThreadDispatcher { get; private set; }
+        private Simulation Simulation { get;  set; }
+        private BufferPool BufferPool { get;  set; }
+        private SimpleThreadDispatcher ThreadDispatcher { get;  set; }
 
         #region Initialize GameParams & Content
         public TGCGame()
@@ -72,7 +75,7 @@ namespace TGC.MonoGame.TP
             var screenSize = new Point(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height / 2);
 
             //Create free camera object
-            FreeCamera = new FreeCamera(GraphicsDevice.Viewport.AspectRatio, new Vector3(0, 10, 0), screenSize);
+            FreeCamera = new FreeCamera(GraphicsDevice.Viewport.AspectRatio, new Vector3(0, 400, 0), screenSize);
 
             //Create Target camera object
             TargetCamera = new TargetCamera(GraphicsDevice.Viewport.AspectRatio, Vector3.One * 100f, Vector3.Zero);
@@ -82,6 +85,11 @@ namespace TGC.MonoGame.TP
             // Camera = FreeCamera;
 
             SharedObjects.CurrentCamera = Camera;
+
+            //Init cubeface camera
+            CubeMapCamera = new StaticCamera(1f, Vector3.Zero, Vector3.UnitX, Vector3.Up);
+            CubeMapCamera.BuildProjection(1f, 1f, 5000f, MathHelper.PiOver2);
+
 
             //Set rasterizerState
             var rasterizerState = new RasterizerState();
@@ -146,6 +154,10 @@ namespace TGC.MonoGame.TP
             LightCamera.BuildProjection(1f, LightCameraNearPlaneDistance, LightCameraFarPlaneDistance,
                 MathHelper.PiOver2);
             LightCamera.BuildView();
+
+            //Set render for cube enviroment
+            SharedObjects.CurrentEnvironmentMapRenderTarget = new RenderTargetCube(GraphicsDevice, EnvironmentmapSize, false,
+               SurfaceFormat.Color, DepthFormat.Depth24, 0, RenderTargetUsage.DiscardContents);
 
 
             base.LoadContent();
@@ -290,6 +302,7 @@ namespace TGC.MonoGame.TP
         }
         #endregion
 
+        
         #region Update game
         protected override void Update(GameTime gameTime)
         {
@@ -318,7 +331,13 @@ namespace TGC.MonoGame.TP
                 Camera = LightCamera;
                 SharedObjects.CurrentCamera = Camera;
             }
-
+            else if (Keyboard.GetState().IsKeyDown(Keys.C) && !(Camera is StaticCamera))
+            {
+                SetCubemapCameraForOrientation(CubeMapFace.PositiveY);
+                CubeMapCamera.BuildView();
+                Camera = CubeMapCamera;
+                SharedObjects.CurrentCamera = Camera;
+            }
 
             //Before update check collision
             lock (CollisionSemaphoreList)
@@ -348,6 +367,9 @@ namespace TGC.MonoGame.TP
             LightCamera.TargetPosition = player.Position;
             LightCamera.BuildView();
 
+            //Update cubmap camera
+            CubeMapCamera.Position = player.Position + new Vector3(0, 0, 0); 
+
 
             base.Update(gameTime);
         }
@@ -357,30 +379,35 @@ namespace TGC.MonoGame.TP
         #region Draw
 
         private RenderTarget2D ShadowMapRenderTarget;
+        
 
         protected override void Draw(GameTime gameTime)
         {
+            DrawGame(gameTime);
+        }
 
+        private void DrawGame(GameTime gameTime)
+        {
             //Draw depth for shadows
-            GraphicsDevice.DepthStencilState = DepthStencilState.Default;
-            GraphicsDevice.SetRenderTarget(ShadowMapRenderTarget);
-            GraphicsDevice.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.Black, 1f, 0);
+            DrawDepthPass(gameTime);
 
-
-            foreach (IGameModel m in gamesModels)
+            //Draw Enviroment map
+            if (player.HasEnviromentMap)
             {
-                m.Draw(gameTime, LightCamera.View, LightCamera.Projection, "DepthPass");
+                DrawEnviromentMap(gameTime);
             }
-
-            //Draw cubface for enviroment map
-
-            
-
             //Draw screen
+            DrawGameplay(gameTime);
+        }
+
+        private void DrawGameplay(GameTime gameTime)
+        {
             GraphicsDevice.SetRenderTarget(null);
             GraphicsDevice.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.Black, 1f, 0);
-
-            DrawSkyBox();
+            // SkyBox.Texture = SharedObjects.CurrentEnvironmentMapRenderTarget;
+            
+           
+            DrawSkyBox(this.Camera);
             foreach (IGameModel m in gamesModels)
             {
                 EffectsHolder.Get("LightEffect").Parameters["eyePosition"].SetValue(SharedObjects.CurrentCamera.Position);
@@ -391,11 +418,13 @@ namespace TGC.MonoGame.TP
                 EffectsHolder.Get("LightEffect").Parameters["shadowMap"].SetValue(ShadowMapRenderTarget);
                 EffectsHolder.Get("LightEffect").Parameters["shadowMapSize"].SetValue(Vector2.One * ShadowmapSize);
                 EffectsHolder.Get("LightEffect").Parameters["LightViewProjection"].SetValue(LightCamera.View * LightCamera.Projection);
+                EffectsHolder.Get("LightEffect").Parameters["hasEnviroment"].SetValue(0f);
+                EffectsHolder.Get("LightEffect").Parameters["environmentMap"].SetValue(SharedObjects.CurrentEnvironmentMapRenderTarget);
                 m.Draw(gameTime, Camera.View, Camera.Projection, "LightAndShadow");
             }
         }
 
-        private void DrawSkyBox()
+        private void DrawSkyBox(Camera Camera)
         {
             var originalRasterizerState = GraphicsDevice.RasterizerState;
             var rasterizerState = new RasterizerState();
@@ -403,6 +432,96 @@ namespace TGC.MonoGame.TP
             SharedObjects.graphicsDeviceManager.GraphicsDevice.RasterizerState = rasterizerState;
             SkyBox.Draw(Camera.View, Camera.Projection, Camera.Position);
             GraphicsDevice.RasterizerState = originalRasterizerState;
+        }
+
+        public void DrawDepthPass(GameTime gameTime)
+        {
+            GraphicsDevice.DepthStencilState = DepthStencilState.Default;
+            GraphicsDevice.SetRenderTarget(ShadowMapRenderTarget);
+            GraphicsDevice.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.Black, 1f, 0);
+
+
+            foreach (IGameModel m in gamesModels)
+            {
+                m.Draw(gameTime, LightCamera.View, LightCamera.Projection, "DepthPass");
+            }
+        }
+
+        public void DrawEnviromentMap(GameTime gameTime)
+        {
+            //Draw cubface for enviroment map
+            GraphicsDevice.DepthStencilState = DepthStencilState.Default;
+            // Draw to our cubemap from the robot position
+            for (var face = CubeMapFace.PositiveX; face <= CubeMapFace.NegativeZ; face++)
+            {
+                // Set the render target as our cubemap face, we are drawing the scene in this texture
+                GraphicsDevice.SetRenderTarget(SharedObjects.CurrentEnvironmentMapRenderTarget, face);
+                GraphicsDevice.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.White, 1f, 0);
+
+                //Set camera orientation
+                SetCubemapCameraForOrientation(face);
+                CubeMapCamera.BuildView();
+
+                // Draw our scene. Do not draw our bakl as it would be occluded by itself 
+                // (if it has backface culling on)
+                
+               // DrawSkyBox(CubeMapCamera);
+                foreach (IGameModel m in gamesModels)
+                {
+                    if (m != player)
+                    {
+                        EffectsHolder.Get("LightEffect").Parameters["eyePosition"].SetValue(player.Position);
+                        EffectsHolder.Get("LightEffect").Parameters["lightPosition"].SetValue(SharedObjects.CurrentScene.LightPosition);
+                        EffectsHolder.Get("LightEffect").Parameters["ambientColor"].SetValue(SharedObjects.CurrentScene.AmbientLightColor);
+                        EffectsHolder.Get("LightEffect").Parameters["diffuseColor"].SetValue(SharedObjects.CurrentScene.DiffuseLightColor);
+                        EffectsHolder.Get("LightEffect").Parameters["specularColor"].SetValue(SharedObjects.CurrentScene.SpecularLightColor);
+                        EffectsHolder.Get("LightEffect").Parameters["shadowMap"].SetValue(ShadowMapRenderTarget);
+                        EffectsHolder.Get("LightEffect").Parameters["shadowMapSize"].SetValue(Vector2.One * ShadowmapSize);
+                        EffectsHolder.Get("LightEffect").Parameters["LightViewProjection"].SetValue(LightCamera.View * LightCamera.Projection);
+                        EffectsHolder.Get("LightEffect").Parameters["hasEnviroment"].SetValue(0f);
+                        m.Draw(gameTime, CubeMapCamera.View, CubeMapCamera.Projection, "LightAndShadow");
+                    }
+                }
+
+              
+            }
+        }
+
+        private void SetCubemapCameraForOrientation(CubeMapFace face)
+        {
+            switch (face)
+            {
+                default:
+                case CubeMapFace.PositiveX:
+                    CubeMapCamera.FrontDirection = -Vector3.UnitX;
+                    CubeMapCamera.UpDirection = Vector3.Down;
+                    break;
+
+                case CubeMapFace.NegativeX:
+                    CubeMapCamera.FrontDirection = Vector3.UnitX;
+                    CubeMapCamera.UpDirection = Vector3.Down;
+                    break;
+
+                case CubeMapFace.PositiveY:
+                    CubeMapCamera.FrontDirection = Vector3.Down;
+                    CubeMapCamera.UpDirection = Vector3.UnitZ;
+                    break;
+
+                case CubeMapFace.NegativeY:
+                    CubeMapCamera.FrontDirection = Vector3.Up;
+                    CubeMapCamera.UpDirection = -Vector3.UnitZ;
+                    break;
+
+                case CubeMapFace.PositiveZ:
+                    CubeMapCamera.FrontDirection = -Vector3.UnitZ;
+                    CubeMapCamera.UpDirection = Vector3.Down;
+                    break;
+
+                case CubeMapFace.NegativeZ:
+                    CubeMapCamera.FrontDirection = Vector3.UnitZ;
+                    CubeMapCamera.UpDirection = Vector3.Down;
+                    break;
+            }
         }
         #endregion
 

@@ -17,6 +17,7 @@ namespace TGC.MonoGame.TP.Models.Players
         protected override float BrakeForce { get { return 30f; } }
         protected override float RotateForce { get { return 25f; } }
         protected override float JumpImpulse { get { return 1000f; } }
+        public override Boolean HasEnviromentMap { get { return true; } }
 
         public MetalBall(Simulation Simulation, Vector3 startPosition) : base(Simulation, ModelsHolder.Get("Sphere"), startPosition)
         {
@@ -37,11 +38,17 @@ namespace TGC.MonoGame.TP.Models.Players
             Effect.Parameters["ModelTexture"].SetValue(texture);
             Effect.Parameters["NormalTexture"].SetValue(textureNormal);
             Effect.Parameters["Tiling"].SetValue(Vector2.One);
-            Effect.Parameters["KAmbient"].SetValue(0.35f);
-            Effect.Parameters["KDiffuse"].SetValue(0.8f);
-            Effect.Parameters["KSpecular"].SetValue(0.75f);
-            Effect.Parameters["shininess"].SetValue(64.0f);
-            var modelMeshesBaseTransforms = new Matrix[Model.Bones.Count];
+            Effect.Parameters["KAmbient"].SetValue(0.5f);
+            Effect.Parameters["KDiffuse"].SetValue(0.9f);
+            Effect.Parameters["KSpecular"].SetValue(0.6f);
+            Effect.Parameters["shininess"].SetValue(32.0f);
+
+            Effect.Parameters["hasEnviroment"].SetValue(HasEnviromentMap ? 1f : 0f);
+            Effect.Parameters["environmentMap"].SetValue(SharedObjects.CurrentEnvironmentMapRenderTarget);
+            
+            
+
+                 var modelMeshesBaseTransforms = new Matrix[Model.Bones.Count];
             Model.CopyAbsoluteBoneTransformsTo(modelMeshesBaseTransforms);
 
             foreach (var mesh in Model.Meshes)
