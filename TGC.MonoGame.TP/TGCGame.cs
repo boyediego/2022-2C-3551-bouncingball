@@ -342,7 +342,7 @@ namespace TGC.MonoGame.TP
             Camera.Update(gameTime);
 
             //Update Light Position and Light camera
-            SharedObjects.CurrentScene.LightPosition = player.Position + new Vector3(4000, 900, 1400);
+            SharedObjects.CurrentScene.LightPosition = player.Position + new Vector3(4000, 1500, 1400);
 
             LightCamera.Position = SharedObjects.CurrentScene.LightPosition;
             LightCamera.TargetPosition = player.Position;
@@ -361,8 +361,8 @@ namespace TGC.MonoGame.TP
         protected override void Draw(GameTime gameTime)
         {
 
+            //Draw depth for shadows
             GraphicsDevice.DepthStencilState = DepthStencilState.Default;
-            // Set the render target as our shadow map, we are drawing the depth into this texture
             GraphicsDevice.SetRenderTarget(ShadowMapRenderTarget);
             GraphicsDevice.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.Black, 1f, 0);
 
@@ -372,14 +372,15 @@ namespace TGC.MonoGame.TP
                 m.Draw(gameTime, LightCamera.View, LightCamera.Projection, "DepthPass");
             }
 
+            //Draw cubface for enviroment map
 
             
+
+            //Draw screen
             GraphicsDevice.SetRenderTarget(null);
             GraphicsDevice.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.Black, 1f, 0);
 
             DrawSkyBox();
-
-          
             foreach (IGameModel m in gamesModels)
             {
                 EffectsHolder.Get("LightEffect").Parameters["eyePosition"].SetValue(SharedObjects.CurrentCamera.Position);
@@ -392,8 +393,6 @@ namespace TGC.MonoGame.TP
                 EffectsHolder.Get("LightEffect").Parameters["LightViewProjection"].SetValue(LightCamera.View * LightCamera.Projection);
                 m.Draw(gameTime, Camera.View, Camera.Projection, "LightAndShadow");
             }
-
-
         }
 
         private void DrawSkyBox()
