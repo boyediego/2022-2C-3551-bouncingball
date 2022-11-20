@@ -27,8 +27,8 @@ float4x4 LightViewProjection;
 float2 shadowMapSize;
 
 
-static const float modulatedEpsilon = 0.000041200182749889791011810302734375;
-static const float maxEpsilon = 0.000023200045689009130001068115234375;
+static const float modulatedEpsilon = 0.00004;
+static const float maxEpsilon = 0.00002;
 
 
 texture ModelTexture;

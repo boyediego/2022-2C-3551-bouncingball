@@ -206,10 +206,10 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Roads
                 Effect.Parameters["InverseTransposeWorld"].SetValue(Matrix.Invert(Matrix.Transpose(WorldMatrix)));
                 Effect.Parameters["WorldViewProjection"].SetValue(WorldMatrix * view * projection);
                 Effect.Parameters["Tiling"].SetValue(new Vector2(1f, 10f));
-                Effect.Parameters["KAmbient"].SetValue(0.7f);
+                Effect.Parameters["KAmbient"].SetValue(0.60f);
                 Effect.Parameters["KDiffuse"].SetValue(0.5f);
-                Effect.Parameters["KSpecular"].SetValue(0.6f);
-                Effect.Parameters["shininess"].SetValue(24.0f);
+                Effect.Parameters["KSpecular"].SetValue(0.4f);
+                Effect.Parameters["shininess"].SetValue(6.0f);
                 triangle.Draw(Effect);
             }
             graphicsDevice.RasterizerState = oldRasterizerState;

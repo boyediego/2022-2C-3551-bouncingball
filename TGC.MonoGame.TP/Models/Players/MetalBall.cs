@@ -37,10 +37,10 @@ namespace TGC.MonoGame.TP.Models.Players
             Effect.Parameters["ModelTexture"].SetValue(texture);
             Effect.Parameters["NormalTexture"].SetValue(textureNormal);
             Effect.Parameters["Tiling"].SetValue(Vector2.One);
-            Effect.Parameters["KAmbient"].SetValue(0.7f);
-            Effect.Parameters["KDiffuse"].SetValue(0.5f);
-            Effect.Parameters["KSpecular"].SetValue(0.6f);
-            Effect.Parameters["shininess"].SetValue(24.0f);
+            Effect.Parameters["KAmbient"].SetValue(0.35f);
+            Effect.Parameters["KDiffuse"].SetValue(0.8f);
+            Effect.Parameters["KSpecular"].SetValue(0.75f);
+            Effect.Parameters["shininess"].SetValue(64.0f);
             var modelMeshesBaseTransforms = new Matrix[Model.Bones.Count];
             Model.CopyAbsoluteBoneTransformsTo(modelMeshesBaseTransforms);
 

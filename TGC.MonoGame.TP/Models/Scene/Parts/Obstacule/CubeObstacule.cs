@@ -120,9 +120,9 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Obstacule
                 Effect.Parameters["InverseTransposeWorld"].SetValue(Matrix.Invert(Matrix.Transpose(WorldMatrix)));
                 Effect.Parameters["WorldViewProjection"].SetValue(WorldMatrix * view * projection);
                 Effect.Parameters["Tiling"].SetValue(new Vector2(1f, 4f));
-                Effect.Parameters["KAmbient"].SetValue(0.6f);
-                Effect.Parameters["KDiffuse"].SetValue(0.4f);
-                Effect.Parameters["KSpecular"].SetValue(0.1f);
+                Effect.Parameters["KAmbient"].SetValue(0.4f);
+                Effect.Parameters["KDiffuse"].SetValue(0.8f);
+                Effect.Parameters["KSpecular"].SetValue(0.2f);
                 Effect.Parameters["shininess"].SetValue(12.0f);
                 if (techniques == null)
                     Effect.CurrentTechnique = Effect.Techniques["NormalMapping"];

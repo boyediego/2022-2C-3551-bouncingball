@@ -341,15 +341,12 @@ namespace TGC.MonoGame.TP
             //Update camera position.
             Camera.Update(gameTime);
 
-            // return new Vector3(3000f, 1600f, 1800f);
             //Update Light Position and Light camera
-            SharedObjects.CurrentScene.LightPosition = player.Position + new Vector3(4000, 1400, 0);
+            SharedObjects.CurrentScene.LightPosition = player.Position + new Vector3(4000, 900, 1400);
 
             LightCamera.Position = SharedObjects.CurrentScene.LightPosition;
             LightCamera.TargetPosition = player.Position;
             LightCamera.BuildView();
-
-            
 
 
             base.Update(gameTime);
