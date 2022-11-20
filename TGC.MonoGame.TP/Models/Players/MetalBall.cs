@@ -31,22 +31,16 @@ namespace TGC.MonoGame.TP.Models.Players
             this.textureNormal = TexturesHolder<Texture2D>.Get("Bronze-Normal");
         }
 
-        public override void Draw(GameTime gameTime, Matrix view, Matrix projection)
+        public override void Draw(GameTime gameTime, Matrix view, Matrix projection, String techniques)
         {
+            Effect.CurrentTechnique = Effect.Techniques[techniques];
             Effect.Parameters["ModelTexture"].SetValue(texture);
             Effect.Parameters["NormalTexture"].SetValue(textureNormal);
             Effect.Parameters["Tiling"].SetValue(Vector2.One);
-            Effect.Parameters["eyePosition"].SetValue(SharedObjects.CurrentCamera.Position);
-            Effect.Parameters["lightPosition"].SetValue(SharedObjects.CurrentScene.LightPosition + new Vector3(this.Position.X, this.Position.Y, 0));
-            Effect.Parameters["ambientColor"].SetValue(SharedObjects.CurrentScene.AmbientLightColor);
-            Effect.Parameters["diffuseColor"].SetValue(SharedObjects.CurrentScene.DiffuseLightColor);
-            Effect.Parameters["specularColor"].SetValue(SharedObjects.CurrentScene.SpecularLightColor);
-            Effect.Parameters["KAmbient"].SetValue(0.6f);
-            Effect.Parameters["KDiffuse"].SetValue(0.2f);
-            Effect.Parameters["KSpecular"].SetValue(0.5f);
+            Effect.Parameters["KAmbient"].SetValue(0.7f);
+            Effect.Parameters["KDiffuse"].SetValue(0.5f);
+            Effect.Parameters["KSpecular"].SetValue(0.6f);
             Effect.Parameters["shininess"].SetValue(24.0f);
-            Effect.CurrentTechnique = Effect.Techniques["NormalMapping"];
-
             var modelMeshesBaseTransforms = new Matrix[Model.Bones.Count];
             Model.CopyAbsoluteBoneTransformsTo(modelMeshesBaseTransforms);
 

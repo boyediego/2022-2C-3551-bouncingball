@@ -22,6 +22,15 @@ float3 lightPosition;
 float3 eyePosition; // Camera position
 float2 Tiling;
 
+
+float4x4 LightViewProjection;
+float2 shadowMapSize;
+
+
+static const float modulatedEpsilon = 0.000041200182749889791011810302734375;
+static const float maxEpsilon = 0.000023200045689009130001068115234375;
+
+
 texture ModelTexture;
 sampler2D textureSampler = sampler_state
 {
@@ -47,6 +56,72 @@ sampler2D normalSampler = sampler_state
     MIPFILTER = LINEAR;
 };
 
+
+//Textura sombras
+texture shadowMap;
+sampler2D shadowMapSampler =
+sampler_state
+{
+    Texture = <shadowMap>;
+    MinFilter = Point;
+    MagFilter = Point;
+    MipFilter = Point;
+    AddressU = Clamp;
+    AddressV = Clamp;
+};
+
+
+//***************************DEPTH PASS************************************************************//
+struct DepthPassVertexShaderInput
+{
+    float4 Position : POSITION0;
+};
+
+struct DepthPassVertexShaderOutput
+{
+    float4 Position : SV_POSITION;
+    float4 ScreenSpacePosition : TEXCOORD1;
+};
+
+
+DepthPassVertexShaderOutput DepthVS(in DepthPassVertexShaderInput input)
+{
+    DepthPassVertexShaderOutput output;
+    output.Position = mul(input.Position, WorldViewProjection);
+    output.ScreenSpacePosition = mul(input.Position, WorldViewProjection);
+    return output;
+}
+
+float4 DepthPS(in DepthPassVertexShaderOutput input) : COLOR
+{
+    float depth = input.ScreenSpacePosition.z / input.ScreenSpacePosition.w;
+    return float4(depth, depth, depth, 1.0);
+}
+
+//***************************END DEPTH PASS************************************************************//
+
+
+
+//***************************INPUT/OUTPUT STRUCTS************************************************************//
+struct VertexShaderInput
+{
+    float4 Position : POSITION0;
+    float4 Normal : NORMAL;
+    float2 TextureCoordinates : TEXCOORD0;
+};
+
+struct VertexShaderOutput
+{
+    float4 Position : SV_POSITION;
+    float2 TextureCoordinates : TEXCOORD0;
+    float4 WorldSpacePosition : TEXCOORD1;
+    float4 LightSpacePosition : TEXCOORD2;
+    float4 Normal : TEXCOORD3;
+};
+//***************************END INPUT/OUTPUT STRUCTS************************************************************//
+
+
+//***************************NORMAL MAPPING************************************************************//
 float3 getNormalFromMap(float2 textureCoordinates, float3 worldPosition, float3 worldNormal)
 {
     float3 tangentNormal = tex2D(normalSampler, textureCoordinates).xyz * 2.0 - 1.0;
@@ -64,78 +139,27 @@ float3 getNormalFromMap(float2 textureCoordinates, float3 worldPosition, float3 
     return normalize(mul(tangentNormal, TBN));
 }
 
-struct VertexShaderInput
-{
-    float4 Position : POSITION0;
-    float4 Normal : NORMAL;
-    float2 TextureCoordinates : TEXCOORD0;
-};
-
-struct VertexShaderOutput
-{
-    float4 Position : SV_POSITION;
-    float2 TextureCoordinates : TEXCOORD0;
-    float4 WorldPosition : TEXCOORD1;
-    float4 Normal : TEXCOORD2;
-};
-
-VertexShaderOutput MainVS(in VertexShaderInput input)
-{
-    VertexShaderOutput output = (VertexShaderOutput) 0;
-
-    output.Position = mul(input.Position, WorldViewProjection);
-    output.WorldPosition = mul(input.Position, World);
-    output.Normal = mul(float4(normalize(input.Normal.xyz), 1.0), InverseTransposeWorld);
-    output.TextureCoordinates = input.TextureCoordinates * Tiling;
-	
-    return output;
-}
-
-float4 MainPS(VertexShaderOutput input) : COLOR
-{
-    // Base vectors
-    float3 lightDirection = normalize(lightPosition - input.WorldPosition.xyz);
-    float3 viewDirection = normalize(eyePosition - input.WorldPosition.xyz);
-    float3 halfVector = normalize(lightDirection + viewDirection);
-    float3 normal = normalize(input.Normal.xyz);
-    
-	// Get the texture texel
-    float4 texelColor = tex2D(textureSampler, input.TextureCoordinates);
-    
-	// Calculate the diffuse light
-    float NdotL = saturate(dot(normal, lightDirection));
-    float3 diffuseLight = KDiffuse * diffuseColor * NdotL;
-
-	// Calculate the specular light
-    float NdotH = dot(normal, halfVector);
-    float3 specularLight = KSpecular * specularColor * pow(saturate(NdotH), shininess);
-    
-    // Final calculation
-    float4 finalColor = float4(saturate(ambientColor * KAmbient + diffuseLight) * texelColor.rgb + specularLight, texelColor.a);
-     
-    return finalColor;
-
-}
 
 VertexShaderOutput NormalMapVS(in VertexShaderInput input)
 {
     VertexShaderOutput output = (VertexShaderOutput) 0;
 
     output.Position = mul(input.Position, WorldViewProjection);
-    output.WorldPosition = mul(input.Position, World);
+    output.WorldSpacePosition = mul(input.Position, World);
     output.Normal = mul(input.Normal, InverseTransposeWorld);
     output.TextureCoordinates = input.TextureCoordinates * Tiling;
 	
     return output;
 }
 
-float4 NormalMapPS(VertexShaderOutput input) : COLOR
+
+
+float4 iluminatePixel(VertexShaderOutput input)
 {
-    // Base vectors
-    float3 lightDirection = normalize(lightPosition - input.WorldPosition.xyz);
-    float3 viewDirection = normalize(eyePosition - input.WorldPosition.xyz);
+    float3 lightDirection = normalize(lightPosition - input.WorldSpacePosition.xyz);
+    float3 viewDirection = normalize(eyePosition - input.WorldSpacePosition.xyz);
     float3 halfVector = normalize(lightDirection + viewDirection);
-    float3 normal = getNormalFromMap(input.TextureCoordinates, input.WorldPosition.xyz, normalize(input.Normal.xyz));
+    float3 normal = getNormalFromMap(input.TextureCoordinates, input.WorldSpacePosition.xyz, normalize(input.Normal.xyz));
 
 	// Get the texture texel
     float4 texelColor = tex2D(textureSampler, input.TextureCoordinates);
@@ -151,84 +175,94 @@ float4 NormalMapPS(VertexShaderOutput input) : COLOR
     // Final calculation
     float4 finalColor = float4(saturate(ambientColor * KAmbient + diffuseLight) * texelColor.rgb + specularLight, texelColor.a);
     return finalColor;
-
 }
 
-
-struct GouraudVertexShaderInput
+float4 NormalMapPS(VertexShaderOutput input) : COLOR
 {
-    float4 Position : POSITION0;
-    float4 Normal : NORMAL;
-    float2 TextureCoordinates : TEXCOORD0;
-};
+    return iluminatePixel(input);
+}
 
-struct GouraudVertexShaderOutput
+//***************************END NORMAL MAPPING************************************************************//
+
+
+//***************************SHADOW EFFECTS************************************************************//
+VertexShaderOutput ShadowedVS(in VertexShaderInput input)
 {
-    float4 Position : SV_POSITION;
-    float2 TextureCoordinates : TEXCOORD0;
-    float3 Diffuse : TEXCOORD1;
-    float3 Specular : TEXCOORD2;
-};
-
-GouraudVertexShaderOutput GouraudVS(in GouraudVertexShaderInput input)
-{
-    GouraudVertexShaderOutput output = (GouraudVertexShaderOutput) 0;
-
+    VertexShaderOutput output;
     output.Position = mul(input.Position, WorldViewProjection);
-    
-    
-    float3 worldPosition = mul(input.Position, World);
-    float3 lightDirection = normalize(lightPosition - worldPosition.xyz);
-    float3 viewDirection = normalize(eyePosition - worldPosition.xyz);
-    float3 halfVector = normalize(lightDirection + viewDirection);
-    float3 normal = normalize(mul(input.Normal, InverseTransposeWorld).xyz);
-    
-	// Calculate the diffuse light
-    float NdotL = saturate(dot(normal, lightDirection));
-    float3 diffuseLight = KDiffuse * diffuseColor * NdotL;
-    
-	// Calculate the specular light
-    float NdotH = dot(normal, halfVector);
-    float3 specularLight = KSpecular * specularColor * pow(saturate(NdotH), shininess);
-    
-
-    output.Diffuse = saturate(diffuseLight + ambientColor * KAmbient);
-    output.Specular = specularLight;
-    
     output.TextureCoordinates = input.TextureCoordinates;
-	
+    output.WorldSpacePosition = mul(input.Position, World);
+    output.LightSpacePosition = mul(output.WorldSpacePosition, LightViewProjection);
+    output.Normal = mul(input.Normal, InverseTransposeWorld);
     return output;
 }
 
-float4 GouraudPS(GouraudVertexShaderOutput input) : COLOR
+
+float4 applyShadow(in VertexShaderOutput input, float4 baseColor)
 {
-	// Get the texture texel
-    float4 texelColor = tex2D(textureSampler, input.TextureCoordinates);
+    float3 lightSpacePosition = input.LightSpacePosition.xyz / input.LightSpacePosition.w;
+    float2 shadowMapTextureCoordinates = 0.5 * lightSpacePosition.xy + float2(0.5, 0.5);
+    shadowMapTextureCoordinates.y = 1.0f - shadowMapTextureCoordinates.y;
+	
+    float3 normal = normalize(input.Normal.rgb);
+    float3 lightDirection = normalize(lightPosition - input.WorldSpacePosition.xyz);
+    float inclinationBias = max(modulatedEpsilon * (1.0 - dot(normal, lightDirection)), maxEpsilon);
+	
+	// Sample and smooth the shadowmap
+	// Also perform the comparison inside the loop and average the result
+    float notInShadow = 0.0;
+    float2 texelSize = 1.0 / shadowMapSize;
+    for (int x = -1; x <= 1; x++)
+        for (int y = -1; y <= 1; y++)
+        {
+            float pcfDepth = tex2D(shadowMapSampler, shadowMapTextureCoordinates + float2(x, y) * texelSize).r + inclinationBias;
+            notInShadow += step(lightSpacePosition.z, pcfDepth) / 9.0;
+        }
+	
     
-    // Final calculation
-    float4 finalColor = float4(input.Diffuse * texelColor.rgb + input.Specular, texelColor.a);
-     
-    return finalColor;
-
+    baseColor.rgb *= 0.5 + 0.5 * notInShadow;
+    return baseColor;
 }
-technique Default
+
+
+float4 ShadowedPCFPS(in VertexShaderOutput input) : COLOR
+{
+    float4 baseColor = tex2D(textureSampler, input.TextureCoordinates);    
+    return applyShadow(input, baseColor);
+}
+//***************************END SHADOW EFFECTS************************************************************//
+
+//***************************Light and Shadow************************************************************//
+
+VertexShaderOutput LightAndShadowVS(in VertexShaderInput input)
+{
+    VertexShaderOutput output;
+    output.Position = mul(input.Position, WorldViewProjection);
+    output.TextureCoordinates = input.TextureCoordinates;
+    output.WorldSpacePosition = mul(input.Position, World);
+    output.LightSpacePosition = mul(output.WorldSpacePosition, LightViewProjection);
+    output.Normal = mul(input.Normal, InverseTransposeWorld);
+    return output;
+}
+
+
+float4 LightAndShadowPS(VertexShaderOutput input) : COLOR
+{
+    float4 iluminatedColor = iluminatePixel(input);
+    return applyShadow(input, iluminatedColor);
+}
+
+
+//***************************END Light and Shadow************************************************************//
+
+technique DepthPass
 {
     pass Pass0
     {
-        VertexShader = compile VS_SHADERMODEL MainVS();
-        PixelShader = compile PS_SHADERMODEL MainPS();
+        VertexShader = compile VS_SHADERMODEL DepthVS();
+        PixelShader = compile PS_SHADERMODEL DepthPS();
     }
 };
-
-technique Gouraud
-{
-    pass Pass0
-    {
-        VertexShader = compile VS_SHADERMODEL GouraudVS();
-        PixelShader = compile PS_SHADERMODEL GouraudPS();
-    }
-};
-
 
 technique NormalMapping
 {
@@ -236,5 +270,25 @@ technique NormalMapping
     {
         VertexShader = compile VS_SHADERMODEL NormalMapVS();
         PixelShader = compile PS_SHADERMODEL NormalMapPS();
+    }
+};
+
+
+technique DrawShadowedPCF
+{
+    pass Pass0
+    {
+        VertexShader = compile VS_SHADERMODEL ShadowedVS();
+        PixelShader = compile PS_SHADERMODEL ShadowedPCFPS();
+    }
+};
+
+
+technique LightAndShadow
+{
+    pass Pass0
+    {
+        VertexShader = compile VS_SHADERMODEL LightAndShadowVS();
+        PixelShader = compile PS_SHADERMODEL LightAndShadowPS();
     }
 };

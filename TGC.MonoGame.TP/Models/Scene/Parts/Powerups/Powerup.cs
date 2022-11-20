@@ -46,9 +46,9 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Powerups
             }
         }
 
-        public override void Draw(GameTime gameTime, Matrix view, Matrix projection)
+        public override void Draw(GameTime gameTime, Matrix view, Matrix projection, String techniques)
         {
-            if(!taked)
+            if (!taked)
                 this.DrawPowerUp(gameTime, view, projection);
         }
 

@@ -59,7 +59,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Checkpoints
             //Nothing
         }
 
-        public override void Draw(GameTime gameTime, Matrix view, Matrix projection)
+        public override void Draw(GameTime gameTime, Matrix view, Matrix projection, String techniques)
         {
             //Only for debug 
             //var world = Matrix.CreateTranslation(new Vector3(checkpointPosition.X, checkpointPosition.Y + (checkpointWidth / 2), checkpointPosition.Z));

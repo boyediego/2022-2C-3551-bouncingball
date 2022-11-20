@@ -21,7 +21,7 @@ namespace TGC.MonoGame.TP.Models.Scene
 
         public List<Model3D> models { get { return this.sceneObjects; } }
 
-        public Vector3 LightPosition { get { return new Vector3(16000f, 34000f, 8000f); } }
+        public Vector3 LightPosition { get; set; }
 
         public Vector3 AmbientLightColor { get { return new Vector3(1, 1, 1); } }
 
@@ -39,7 +39,7 @@ namespace TGC.MonoGame.TP.Models.Scene
             CustomBuilder customBuilder = new CustomBuilder();
             customBuilder
                     .addTramo(new CustomRoad(2000, 7600, 100, 0, 0, "Road-Type-2"))
-                    .addObstacule(new CubeObstacule().Build(500).SetMovementDirection(Vector3.Left).SetSpeed(7000).SetMaxMovement(1500).SetInitialOffset(new Vector3(-1500 / 2f, 250, -650)))
+                    .addObstacule(new CubeObstacule().Build(500).SetMovementDirection(Vector3.Left).SetSpeed(7000).SetMaxMovement(1500).SetInitialOffset(new Vector3(-1500 / 2f, 250, -1650)))
                     .addObstacule(new CubeObstacule().Build(500).SetMovementDirection(Vector3.Right).SetSpeed(5000).SetMaxMovement(1500).SetInitialOffset(new Vector3(1500 / 2f, 250, 0)))
                     .addObstacule(new CubeObstacule().Build(500).SetMovementDirection(Vector3.Left).SetSpeed(3000).SetMaxMovement(1500).SetInitialOffset(new Vector3(-1500 / 2f, 250, 650)))
                     .addPlataform(new CustomRoad(3000, 2000, 100, 0, 0, "Plataform-Type-1"))
@@ -58,11 +58,11 @@ namespace TGC.MonoGame.TP.Models.Scene
 
         }
 
-        public void Draw(GameTime gameTime, Matrix view, Matrix projection)
+        public void Draw(GameTime gameTime, Matrix view, Matrix projection, String technique)
         {
             foreach (Model3D model in sceneObjects)
             {
-                model.Draw(gameTime, view, projection);
+                model.Draw(gameTime, view, projection, technique);
             }
         }
 

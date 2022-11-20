@@ -105,7 +105,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Deprecated
             //Nothing
         }
 
-        public override void Draw(GameTime gameTime, Matrix view, Matrix projection)
+        public override void Draw(GameTime gameTime, Matrix view, Matrix projection, String techniques)
         {
             Effect.Parameters["ModelTexture"].SetValue(texture);
             Effect.Parameters["View"].SetValue(view);

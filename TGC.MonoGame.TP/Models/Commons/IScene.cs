@@ -10,7 +10,7 @@ namespace TGC.MonoGame.TP.Models.Commons
 {
     public interface IScene
     {
-        Vector3 LightPosition { get; }
+        Vector3 LightPosition { get; set; }
         Vector3 AmbientLightColor { get; }
         Vector3 DiffuseLightColor { get; }
         Vector3 SpecularLightColor { get; }

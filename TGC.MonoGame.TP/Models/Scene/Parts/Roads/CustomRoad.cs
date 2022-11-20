@@ -192,30 +192,24 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Roads
             return new StaticDescription();
         }
 
-        public override void Draw(GameTime gameTime, Matrix view, Matrix projection)
+        public override void Draw(GameTime gameTime, Matrix view, Matrix projection, String techniques)
         {
             var graphicsDevice = SharedObjects.graphicsDeviceManager.GraphicsDevice;
             var oldRasterizerState = graphicsDevice.RasterizerState;
             graphicsDevice.RasterizerState = RasterizerState.CullNone;
             foreach (TrianglePrimitive triangle in triangles)
             {
+                Effect.CurrentTechnique = Effect.Techniques[techniques];
                 Effect.Parameters["ModelTexture"].SetValue(triangle.Texture);
                 Effect.Parameters["NormalTexture"].SetValue(triangle.TextureNormal);
                 Effect.Parameters["World"].SetValue(WorldMatrix);
                 Effect.Parameters["InverseTransposeWorld"].SetValue(Matrix.Invert(Matrix.Transpose(WorldMatrix)));
                 Effect.Parameters["WorldViewProjection"].SetValue(WorldMatrix * view * projection);
                 Effect.Parameters["Tiling"].SetValue(new Vector2(1f, 10f));
-                Effect.Parameters["eyePosition"].SetValue(SharedObjects.CurrentCamera.Position);
-                Effect.Parameters["lightPosition"].SetValue(SharedObjects.CurrentScene.LightPosition + new Vector3(0, Center.Y , 0));
-                Effect.Parameters["ambientColor"].SetValue(SharedObjects.CurrentScene.AmbientLightColor);
-                Effect.Parameters["diffuseColor"].SetValue(SharedObjects.CurrentScene.DiffuseLightColor);
-                Effect.Parameters["specularColor"].SetValue(SharedObjects.CurrentScene.SpecularLightColor);
-                Effect.Parameters["KAmbient"].SetValue(0.4f);
-                Effect.Parameters["KDiffuse"].SetValue(0.85f);
-                Effect.Parameters["KSpecular"].SetValue(0.8f);
+                Effect.Parameters["KAmbient"].SetValue(0.7f);
+                Effect.Parameters["KDiffuse"].SetValue(0.5f);
+                Effect.Parameters["KSpecular"].SetValue(0.6f);
                 Effect.Parameters["shininess"].SetValue(24.0f);
-                Effect.CurrentTechnique = Effect.Techniques["NormalMapping"];
-
                 triangle.Draw(Effect);
             }
             graphicsDevice.RasterizerState = oldRasterizerState;

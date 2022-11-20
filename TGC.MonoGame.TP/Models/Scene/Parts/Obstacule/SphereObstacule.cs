@@ -47,7 +47,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Obstacule
         }
 
 
-        public override void Draw(GameTime gameTime, Matrix view, Matrix projection)
+        public override void Draw(GameTime gameTime, Matrix view, Matrix projection, String t)
         {
             Effect.Parameters["DiffuseColor"].SetValue(color);
             Effect.Parameters["View"].SetValue(view);

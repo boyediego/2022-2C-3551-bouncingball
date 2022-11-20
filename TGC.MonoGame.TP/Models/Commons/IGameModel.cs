@@ -12,6 +12,6 @@ namespace TGC.MonoGame.TP.Models.Commons
     {
         void SetEffectAndTextures(Model model);
         void Update(GameTime gameTime, KeyboardState keyboardState);
-        void Draw(GameTime gameTime, Matrix view, Matrix projection);
+        void Draw(GameTime gameTime, Matrix view, Matrix projection, String techniques);
     }
 }

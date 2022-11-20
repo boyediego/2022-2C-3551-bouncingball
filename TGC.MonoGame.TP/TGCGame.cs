@@ -30,12 +30,18 @@ namespace TGC.MonoGame.TP
 {
     public class TGCGame : Game
     {
-        
+
+        private const int ShadowmapSize = 2048;
+        private readonly float LightCameraFarPlaneDistance = 90000f;
+        private readonly float LightCameraNearPlaneDistance = 1f;
+
 
         //Cameras
-        public  Camera Camera { get; set; }       
+        public Camera Camera { get; set; }
         private FreeCamera FreeCamera { get; set; }
         private TargetCamera TargetCamera { get; set; }
+
+        private FixedTargetCamera LightCamera { get; set; }
 
         //Game objects
         private SkyBox SkyBox { get; set; }
@@ -72,7 +78,7 @@ namespace TGC.MonoGame.TP
             TargetCamera = new TargetCamera(GraphicsDevice.Viewport.AspectRatio, Vector3.One * 100f, Vector3.Zero);
 
             //Set inital camera
-             Camera = TargetCamera;
+            Camera = TargetCamera;
             // Camera = FreeCamera;
 
             SharedObjects.CurrentCamera = Camera;
@@ -134,11 +140,22 @@ namespace TGC.MonoGame.TP
             //Set camera to target player
             TargetCamera.Target = player;
 
+
+            //Set Light Position
+            LightCamera = new FixedTargetCamera(1f, SharedObjects.CurrentScene.LightPosition, player.Position);
+            LightCamera.BuildProjection(1f, LightCameraNearPlaneDistance, LightCameraFarPlaneDistance,
+                MathHelper.PiOver2);
+            LightCamera.BuildView();
+
+
             base.LoadContent();
         }
-        
+
         private void PreloadResources()
         {
+            ShadowMapRenderTarget = new RenderTarget2D(GraphicsDevice, ShadowmapSize, ShadowmapSize, false,
+                        SurfaceFormat.Single, DepthFormat.Depth24, 0, RenderTargetUsage.PlatformContents);
+
             LoadModels();
             LoadTextures();
             LoadEffects();
@@ -286,14 +303,19 @@ namespace TGC.MonoGame.TP
                 Exit();
 
             //Camera controls 
-            if (Keyboard.GetState().IsKeyDown(Keys.T) && (Camera is FreeCamera))
+            if (Keyboard.GetState().IsKeyDown(Keys.T) && !(Camera is TargetCamera))
             {
                 Camera = TargetCamera;
                 SharedObjects.CurrentCamera = Camera;
             }
-            else if (Keyboard.GetState().IsKeyDown(Keys.F) && (Camera is TargetCamera))
+            else if (Keyboard.GetState().IsKeyDown(Keys.F) && !(Camera is FreeCamera))
             {
                 Camera = FreeCamera;
+                SharedObjects.CurrentCamera = Camera;
+            }
+            else if (Keyboard.GetState().IsKeyDown(Keys.L) && !(Camera is FixedTargetCamera))
+            {
+                Camera = LightCamera;
                 SharedObjects.CurrentCamera = Camera;
             }
 
@@ -318,23 +340,61 @@ namespace TGC.MonoGame.TP
 
             //Update camera position.
             Camera.Update(gameTime);
+
+            // return new Vector3(3000f, 1600f, 1800f);
+            //Update Light Position and Light camera
+            SharedObjects.CurrentScene.LightPosition = player.Position + new Vector3(4000, 1400, 0);
+
+            LightCamera.Position = SharedObjects.CurrentScene.LightPosition;
+            LightCamera.TargetPosition = player.Position;
+            LightCamera.BuildView();
+
+            
+
+
             base.Update(gameTime);
         }
 
         #endregion
 
         #region Draw
+
+        private RenderTarget2D ShadowMapRenderTarget;
+
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.Black);
 
-            DrawSkyBox();
+            GraphicsDevice.DepthStencilState = DepthStencilState.Default;
+            // Set the render target as our shadow map, we are drawing the depth into this texture
+            GraphicsDevice.SetRenderTarget(ShadowMapRenderTarget);
+            GraphicsDevice.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.Black, 1f, 0);
+
 
             foreach (IGameModel m in gamesModels)
             {
-                m.Draw(gameTime, Camera.View, Camera.Projection);
+                m.Draw(gameTime, LightCamera.View, LightCamera.Projection, "DepthPass");
             }
 
+
+            
+            GraphicsDevice.SetRenderTarget(null);
+            GraphicsDevice.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.Black, 1f, 0);
+
+            DrawSkyBox();
+
+          
+            foreach (IGameModel m in gamesModels)
+            {
+                EffectsHolder.Get("LightEffect").Parameters["eyePosition"].SetValue(SharedObjects.CurrentCamera.Position);
+                EffectsHolder.Get("LightEffect").Parameters["lightPosition"].SetValue(SharedObjects.CurrentScene.LightPosition);
+                EffectsHolder.Get("LightEffect").Parameters["ambientColor"].SetValue(SharedObjects.CurrentScene.AmbientLightColor);
+                EffectsHolder.Get("LightEffect").Parameters["diffuseColor"].SetValue(SharedObjects.CurrentScene.DiffuseLightColor);
+                EffectsHolder.Get("LightEffect").Parameters["specularColor"].SetValue(SharedObjects.CurrentScene.SpecularLightColor);
+                EffectsHolder.Get("LightEffect").Parameters["shadowMap"].SetValue(ShadowMapRenderTarget);
+                EffectsHolder.Get("LightEffect").Parameters["shadowMapSize"].SetValue(Vector2.One * ShadowmapSize);
+                EffectsHolder.Get("LightEffect").Parameters["LightViewProjection"].SetValue(LightCamera.View * LightCamera.Projection);
+                m.Draw(gameTime, Camera.View, Camera.Projection, "LightAndShadow");
+            }
 
 
         }
