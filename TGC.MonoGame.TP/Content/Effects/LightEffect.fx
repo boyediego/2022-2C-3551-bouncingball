@@ -216,20 +216,6 @@ VertexShaderOutput ShadowedVS(in VertexShaderInput input)
 
 float4 applyEnviromentMap(in VertexShaderOutput input, float3 baseColor)
 {
-     /*
-    float3 normal = normalize(input.Normal.xyz);
-    
-    baseColor = lerp(baseColor, float3(1, 1, 1), step(length(baseColor), 0.01));
-    
-    float3 view = normalize(eyePosition.xyz - input.WorldSpacePosition.xyz);
-    float3 reflection = reflect(view, normal);
-    float3 reflectionColor = texCUBE(environmentMapSampler, reflection).rgb;
-
-    float fresnel = saturate((1.0 - dot(normal, view)));
-
-    return float4(lerp(baseColor, reflectionColor, fresnel), 1);
-    */
-    
     float3 normal = normalize(input.Normal.xyz);
     float ratio = 1.00 / 1.68;
     

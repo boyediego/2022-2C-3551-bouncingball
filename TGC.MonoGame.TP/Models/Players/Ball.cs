@@ -128,18 +128,6 @@ namespace TGC.MonoGame.TP.Models.Players
                 dv = 1;
             }
 
-            if (keyboardState.IsKeyDown(Keys.U))
-            {
-                interpolation += 0.001f;
-            }
-
-            if (keyboardState.IsKeyDown(Keys.J))
-            {
-                interpolation -= 0.001f;
-            }
-
-            Debug.WriteLine(interpolation);
-
             if (keyboardState.IsKeyDown(Keys.W))
             {
                 bodyReference.Awake = true;
