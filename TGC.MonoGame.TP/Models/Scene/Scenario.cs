@@ -92,5 +92,10 @@ namespace TGC.MonoGame.TP.Models.Scene
 
             }
         }
+
+        public void End()
+        {
+            //TODO END GAME
+        }
     }
 }

@@ -15,6 +15,9 @@ namespace TGC.MonoGame.TP.Models.Commons
         Vector3 AmbientLightColor { get; }
         Vector3 DiffuseLightColor { get; }
         Vector3 SpecularLightColor { get; }
+
+        
         void RestorePowerups(Checkpoint current);
+        void End();
     }
 }

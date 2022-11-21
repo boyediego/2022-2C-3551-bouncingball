@@ -12,25 +12,25 @@
 * 3 Type of balls
 * PowerUps form and texture
 * PowerUps time
+* Respawn (Draw powerups and restore checkpoints)
+
 ------------------------------
 ***Pending***
 
 - HUD, menú con fondo 3D (una sola ventana) , música y sonidos
-- StartRoad - End Road (Player Win)
+- End Road (Player Win)
 
 - Si bien parece haber checkpoints, lo único que lo distinguen son las texturas y no hay un efecto asociado.
 
 - Create scenario
-- Respawn (Draw powerups and restore checkpoints)
-- Change texture from sides and back of roads
 
 
-**************************
+
+***Others***
 - Mouse camera orbit
 - Map Object
+- Change texture from sides and back of roads
 
-------------------------------
-***Finish Stage***
 
 
 ***Optional***

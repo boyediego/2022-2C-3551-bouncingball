@@ -23,7 +23,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Checkpoints
     public class Checkpoint : Model3D
     {
         private Simulation simulation;
-        private bool playerPassCheckPoint = false;
+        protected bool playerPassCheckPoint = false;
         private Vector3 checkpointPosition;
         private float checkpointWidth;
         private BodyDescription bodyDescription;
@@ -71,12 +71,17 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Checkpoints
             //Only when player collide with the objetct
             if (!playerPassCheckPoint)
             {
-                playerPassCheckPoint = true;
-                ((Ball)sceneObject).CheckpointReached(this);
-                simulation.Bodies.Remove(bodyHandle);
+                CheckpointReached((Ball)sceneObject);
             }
         }
 
+
+        protected void CheckpointReached(Ball byPlayer)
+        {
+            playerPassCheckPoint = true;
+            byPlayer.CheckpointReached(this);
+            simulation.Bodies.Remove(bodyHandle);
+        }
      
     }
 }
