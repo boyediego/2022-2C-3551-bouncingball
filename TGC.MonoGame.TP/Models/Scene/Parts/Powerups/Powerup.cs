@@ -1,6 +1,7 @@
 ﻿using BepuPhysics;
 using BepuPhysics.Collidables;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -29,10 +30,17 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Powerups
         protected BodyDescription bodyDescription;
         protected BodyHandle bodyHandle;
 
+        private SoundEffect Sound { get; set; }
+        private SoundEffectInstance Instance { get; set; }
+
+
         protected Powerup() : base(null)
         {
             base.TranslationMatrix = Matrix.Identity;
             base.RotationMatrix = Matrix.Identity;
+            Sound = SoundEffectHolder<SoundEffect>.Get("Powerup-Collected");
+            Instance = Sound.CreateInstance();
+            Instance.IsLooped = false;
         }
 
         public void SetPosition(Vector3 position)
@@ -110,9 +118,8 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Powerups
         {
             if (!taked)
             {
-                
                 taked = true;
-                Debug.WriteLine("Powerup " + this.bodyHandle + " Taked=" + taked);
+                Sound.Play();
                 ((Ball)sceneObject).Powerup(this, gameTime.TotalGameTime);
                 simulation.Bodies.Remove(this.bodyHandle);
             }

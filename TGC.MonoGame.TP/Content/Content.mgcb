@@ -268,6 +268,44 @@
 /processorParam:TextureFormat=Compressed
 /build:Models/skybox/cube.fbx
 
+#begin Music/gameplay-music.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Music/gameplay-music.mp3
+
+#begin Music/menu-music.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Music/menu-music.mp3
+
+#begin Sounds/powerup-collected.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/powerup-collected.wav
+
+#begin SpriteFonts/CascadiaCode/CascadiaCodePL.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:SpriteFonts/CascadiaCode/CascadiaCodePL.spritefont
+
+#begin SpriteFonts/CascadiaCode/CascadiaCodePL.ttf
+/copy:SpriteFonts/CascadiaCode/CascadiaCodePL.ttf
+
+#begin SpriteFonts/CascadiaCode/CascadiaMonoPL.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:SpriteFonts/CascadiaCode/CascadiaMonoPL.spritefont
+
+#begin SpriteFonts/CascadiaCode/CascadiaMonoPL.ttf
+/copy:SpriteFonts/CascadiaCode/CascadiaMonoPL.ttf
+
 #begin textures/balls/bronze-normal.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -592,22 +630,3 @@
 /processorParam:TextureFormat=Color
 /build:textures/skyboxes/sunset/sunset.dds
 
-#begin SpriteFonts/CascadiaCode/CascadiaCodePL.spritefont
-/importer:FontDescriptionImporter
-/processor:FontDescriptionProcessor
-/processorParam:PremultiplyAlpha=True
-/processorParam:TextureFormat=Compressed
-/build:SpriteFonts/CascadiaCode/CascadiaCodePL.spritefont
-
-#begin SpriteFonts/CascadiaCode/CascadiaCodePL.ttf
-/copy:SpriteFonts/CascadiaCode/CascadiaCodePL.ttf
-
-#begin SpriteFonts/CascadiaCode/CascadiaMonoPL.spritefont
-/importer:FontDescriptionImporter
-/processor:FontDescriptionProcessor
-/processorParam:PremultiplyAlpha=True
-/processorParam:TextureFormat=Compressed
-/build:SpriteFonts/CascadiaCode/CascadiaMonoPL.spritefont
-
-#begin SpriteFonts/CascadiaCode/CascadiaMonoPL.ttf
-/copy:SpriteFonts/CascadiaCode/CascadiaMonoPL.ttf

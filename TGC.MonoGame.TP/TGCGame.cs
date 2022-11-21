@@ -27,6 +27,8 @@ using BepuPhysics.Constraints;
 using TGC.MonoGame.TP.Models.Scene.Parts.Obstacule;
 using System.Diagnostics;
 using TGC.MonoGame.TP.UI;
+using Microsoft.Xna.Framework.Media;
+using Microsoft.Xna.Framework.Audio;
 
 namespace TGC.MonoGame.TP
 {
@@ -105,14 +107,25 @@ namespace TGC.MonoGame.TP
             LoadTextures();
             LoadEffects();
             LoadFonts();
-
-            
+            LoadMusic();
+            LoadSoundEffects();
         }
 
         private void LoadFonts()
         {
-            //Skybox textures
+            //Load fonts
             FontHolder<SpriteFont>.Load(Content, "GameFont", "CascadiaCode/CascadiaCodePL");
+        }
+
+        private void LoadMusic()
+        {
+            MusicHolder<Song>.Load(Content, "MenuMusic", "menu-music");
+            MusicHolder<Song>.Load(Content, "GamePlay", "gameplay-music");
+        }
+
+        private void LoadSoundEffects()
+        {
+            SoundEffectHolder<SoundEffect>.Load(Content, "Powerup-Collected", "powerup-collected");
         }
 
         private void LoadModels()

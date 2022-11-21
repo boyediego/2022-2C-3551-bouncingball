@@ -18,6 +18,7 @@ using BepuPhysics.CollisionDetection;
 using static TGC.MonoGame.TP.Physics.Collider;
 using BepuPhysics.Collidables;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 
 namespace TGC.MonoGame.TP.UI
 {
@@ -120,6 +121,11 @@ namespace TGC.MonoGame.TP.UI
 
 
             CreateScenario(new Scenario(), this.player);
+
+            MediaPlayer.IsRepeating = true;
+            MediaPlayer.Volume = 0.1f;
+            MediaPlayer.Play(MusicHolder<Song>.Get("GamePlay"));
+
         }
 
         private void CreateScenario(IScene scene, Ball player)
@@ -422,6 +428,7 @@ namespace TGC.MonoGame.TP.UI
 
         public void Dispose()
         {
+            MediaPlayer.Stop();
             Simulation.Clear();
         }
     }

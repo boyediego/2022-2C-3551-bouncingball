@@ -4,6 +4,7 @@ using BepuUtilities.Memory;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -83,6 +84,11 @@ namespace TGC.MonoGame.TP.UI
 
             TextPosition = new Vector2(GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width / 2f, 120) -
                               font.MeasureString("Use A y D para selecionar la bola y luego presione enter") / 2;
+
+            MediaPlayer.IsRepeating = true;
+            MediaPlayer.Volume = 1f;
+            MediaPlayer.Play(MusicHolder<Song>.Get("MenuMusic"));
+            
         }
 
         private void CreateScene()
@@ -141,6 +147,7 @@ namespace TGC.MonoGame.TP.UI
 
             if (Keyboard.GetState().IsKeyDown(Keys.Enter))
             {
+                MediaPlayer.Stop();
                 if (selectedBall == plasticBall)
                 {
                     this.Game.StartGameplay(new PlasticBall(this.Simulation, new Vector3(300, 350, 400)));
@@ -297,7 +304,7 @@ namespace TGC.MonoGame.TP.UI
 
         public void Dispose()
         {
-
+            
         }
 
 
