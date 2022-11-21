@@ -7,36 +7,30 @@
 * Lights
 * Road or plataform with angle
 * Obstacules form and texture
+* Shadows maps
+* Enviroment Map per ball
+* 3 Type of balls
 ------------------------------
-
-
 ***Pending***
 
+
 - PowerUps form and texture
-- Shadows maps
-- Enviroment Map per ball
-
--  Side textures
-
+- HUD, menú con fondo 3D (una sola ventana) , música y sonidos
 - StartRoad - End Road (Player Win)
-- Respawn (Draw powerups and restore checkpoints)
 
--Change texture from sides and back of roads
+- Si bien parece haber checkpoints, lo único que lo distinguen son las texturas y no hay un efecto asociado.
+
+- Create scenario
+- Respawn (Draw powerups and restore checkpoints)
+- Change texture from sides and back of roads
+
 
 **************************
 - Mouse camera orbit
-- Sounds Music
-- 3 Type of balls
 - Map Object
 - PowerUps time
-
-- Create scenario
-
 ------------------------------
-
-
 ***Finish Stage***
-
 
 
 ***Optional***

@@ -140,7 +140,7 @@ namespace TGC.MonoGame.TP
             LoadScenarioSimulation();
 
             //Create player  
-            player = new MetalBall(Simulation, new Vector3(300, 350, 400));
+            player = new PlasticBall(Simulation, new Vector3(300, 350, 400));
 
             //Add to games model list
             gamesModels.Add(player);
@@ -200,6 +200,10 @@ namespace TGC.MonoGame.TP
             TexturesHolder<Texture2D>.Load(Content, "Metal-Normal", "balls/metal-normal");
             TexturesHolder<Texture2D>.Load(Content, "Bronze", "balls/bronze");
             TexturesHolder<Texture2D>.Load(Content, "Bronze-Normal", "balls/bronze-normal");
+            TexturesHolder<Texture2D>.Load(Content, "OldWood", "balls/OldWood");
+            TexturesHolder<Texture2D>.Load(Content, "OldWood-Normal", "balls/OldWood-normal");
+            TexturesHolder<Texture2D>.Load(Content, "Plastic", "balls/Plastic");
+            TexturesHolder<Texture2D>.Load(Content, "Plastic-Normal", "balls/Plastic-normal");
 
             //Roads Textures
             TexturesHolder<Texture2D>.Load(Content, "Road-Type-2", "roads/road-type-2");
