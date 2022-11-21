@@ -9,14 +9,14 @@ using TGC.MonoGame.TP.Models.Scene.Parts.Checkpoints;
 
 namespace TGC.MonoGame.TP.Models.Commons
 {
-    public interface IScene
+    public interface IScene : IGameModel
     {
         Vector3 LightPosition { get; set; }
         Vector3 AmbientLightColor { get; }
         Vector3 DiffuseLightColor { get; }
         Vector3 SpecularLightColor { get; }
+        List<Model3D> models { get; }
 
-        
         void RestorePowerups(Checkpoint current);
         void End();
     }

@@ -51,7 +51,7 @@ namespace TGC.MonoGame.TP
         private SkyBox SkyBox { get; set; }
         private List<IGameModel> gamesModels = new List<IGameModel>();
         private Ball player;
-        private Scenario scenario;
+        private IScene scenario;
 
         //Collision info
         public List<CollisionData> collisionInnfo = new List<CollisionData>();
@@ -91,7 +91,6 @@ namespace TGC.MonoGame.TP
             CubeMapCamera = new StaticCamera(1f, Vector3.Zero, Vector3.UnitX, Vector3.Up);
             CubeMapCamera.BuildProjection(1f, 1f, 5000f, MathHelper.PiOver2);
 
-
             //Set rasterizerState
             var rasterizerState = new RasterizerState();
             rasterizerState.CullMode = CullMode.CullCounterClockwiseFace;
@@ -125,6 +124,13 @@ namespace TGC.MonoGame.TP
             //Load resources
             PreloadResources();
 
+            CreateScenario(new Scenario());
+
+            base.LoadContent();
+        }
+
+        private void CreateScenario(IScene scene)
+        {
             //Create skybox
             CreteSkybox();
 
@@ -149,25 +155,20 @@ namespace TGC.MonoGame.TP
             //Set camera to target player
             TargetCamera.Target = player;
 
-
             //Set Light Position
             LightCamera = new FixedTargetCamera(1f, SharedObjects.CurrentScene.LightPosition, player.Position);
             LightCamera.BuildProjection(1f, LightCameraNearPlaneDistance, LightCameraFarPlaneDistance,
                 MathHelper.PiOver2);
             LightCamera.BuildView();
-
-            //Set render for cube enviroment
-            SharedObjects.CurrentEnvironmentMapRenderTarget = new RenderTargetCube(GraphicsDevice, EnvironmentmapSize, false,
-               SurfaceFormat.Color, DepthFormat.Depth24, 0, RenderTargetUsage.DiscardContents);
-
-
-            base.LoadContent();
         }
 
         private void PreloadResources()
         {
             ShadowMapRenderTarget = new RenderTarget2D(GraphicsDevice, ShadowmapSize, ShadowmapSize, false,
                         SurfaceFormat.Single, DepthFormat.Depth24, 0, RenderTargetUsage.PlatformContents);
+
+            SharedObjects.CurrentEnvironmentMapRenderTarget = new RenderTargetCube(GraphicsDevice, EnvironmentmapSize, false,
+                       SurfaceFormat.Color, DepthFormat.Depth24, 0, RenderTargetUsage.DiscardContents);
 
             LoadModels();
             LoadTextures();
@@ -310,7 +311,9 @@ namespace TGC.MonoGame.TP
         }
         #endregion
 
-        
+
+        private Boolean InMenu = true;
+
         #region Update game
         protected override void Update(GameTime gameTime)
         {
@@ -318,11 +321,28 @@ namespace TGC.MonoGame.TP
             float time = (float)gameTime.TotalGameTime.Milliseconds;
             Simulation.Timestep(1 / 60f, ThreadDispatcher);
 
-
             //Exit Game
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
+            if (InMenu)
+            {
+                if (Keyboard.GetState().IsKeyDown(Keys.Enter))
+                {
+                    InMenu = false;
+                }
+            }
+            else
+            {
+                UpdateOnGamePlay(gameTime);
+            }
+            
+
+            base.Update(gameTime);
+        }
+
+        private void UpdateOnGamePlay(GameTime gameTime)
+        {
             //Camera controls 
             if (Keyboard.GetState().IsKeyDown(Keys.T) && !(Camera is TargetCamera))
             {
@@ -337,13 +357,6 @@ namespace TGC.MonoGame.TP
             else if (Keyboard.GetState().IsKeyDown(Keys.L) && !(Camera is FixedTargetCamera))
             {
                 Camera = LightCamera;
-                SharedObjects.CurrentCamera = Camera;
-            }
-            else if (Keyboard.GetState().IsKeyDown(Keys.C) && !(Camera is StaticCamera))
-            {
-                SetCubemapCameraForOrientation(CubeMapFace.PositiveY);
-                CubeMapCamera.BuildView();
-                Camera = CubeMapCamera;
                 SharedObjects.CurrentCamera = Camera;
             }
 
@@ -376,10 +389,7 @@ namespace TGC.MonoGame.TP
             LightCamera.BuildView();
 
             //Update cubmap camera
-            CubeMapCamera.Position = player.Position + new Vector3(0, 0, 0); 
-
-
-            base.Update(gameTime);
+            CubeMapCamera.Position = player.Position + new Vector3(0, 0, 0);
         }
 
         #endregion
@@ -391,7 +401,16 @@ namespace TGC.MonoGame.TP
 
         protected override void Draw(GameTime gameTime)
         {
-            DrawGame(gameTime);
+            if (InMenu)
+            {
+                GraphicsDevice.SetRenderTarget(null);
+                GraphicsDevice.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.Red, 1f, 0);
+            }
+            else
+            {
+                DrawGame(gameTime);
+            }
+            
         }
 
         private void DrawGame(GameTime gameTime)

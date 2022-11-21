@@ -13,31 +13,30 @@
 * PowerUps form and texture
 * PowerUps time
 * Respawn (Draw powerups and restore checkpoints)
-
+* End Road (Player Win)
 ------------------------------
 ***Pending***
 
-- HUD, menú con fondo 3D (una sola ventana) , música y sonidos
-- End Road (Player Win)
-
-- Si bien parece haber checkpoints, lo único que lo distinguen son las texturas y no hay un efecto asociado.
-
-- Create scenario
-
-
+- Menu
+- Music on loop
+- HUD Gameplay
+- Sounds
+	- When checkpoint reached
+	- When powerup collected
+	- When Start and EndGame
+	- When collide (optional)
+- Create Multiple scenarios
 
 ***Others***
 - Mouse camera orbit
 - Map Object
 - Change texture from sides and back of roads
-
-
+- Physics problems on curves 
+- Physics proiblem sometimes when jump
 
 ***Optional***
 - Blur or effects with powerups
 - Power ups with rotations.
-
-
 
 -----------------------------
 ***Optimization***
