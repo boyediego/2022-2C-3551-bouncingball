@@ -21,6 +21,8 @@ namespace TGC.MonoGame.TP.Models.Scene
     {
         private List<Model3D> sceneObjects;
 
+        public event EventHandler EndGame;
+
         public List<Model3D> models { get { return this.sceneObjects; } }
         public Vector3 LightPosition { get; set; }
         public Vector3 AmbientLightColor { get { return new Vector3(1, 1, 1); } }
@@ -96,8 +98,8 @@ namespace TGC.MonoGame.TP.Models.Scene
 
         public void End()
         {
-            Debug.WriteLine("End!!");
-            //TODO END GAME
+            EndGame?.Invoke(this, new EventArgs());
         }
+
     }
 }

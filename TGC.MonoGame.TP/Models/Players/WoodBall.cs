@@ -14,12 +14,20 @@ namespace TGC.MonoGame.TP.Models.Players
         private Texture2D texture;
         private Texture2D textureNormal;
 
+
+        public override string Aceleracion { get { return "3"; } }
+        public override string Salto { get { return "7"; } }
+        public override string Freno { get { return "6"; } }
+        public override string Control { get { return "7"; } }
+
         protected override float ForwardImpulse { get { return 25f; } }
         protected override float BrakeForce { get { return 40f; } }
         protected override float RotateForce { get { return 45f; } }
         protected override float JumpImpulse { get { return 1200f; } }
         protected override float TopSpeed { get { return 500f; } }
         public override Boolean HasEnviromentMap { get { return false; } }
+
+      
 
         public WoodBall(Simulation Simulation, Vector3 startPosition) : base(Simulation, ModelsHolder.Get("Sphere"), startPosition)
         {

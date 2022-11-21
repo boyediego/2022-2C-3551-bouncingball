@@ -11,6 +11,11 @@
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Content\MyriadPro\**" />
+    <EmbeddedResource Remove="Content\MyriadPro\**" />
+    <None Remove="Content\MyriadPro\**" />
+  </ItemGroup>
+  <ItemGroup>
     <None Remove="Icon.ico" />
     <None Remove="Icon.bmp" />
   </ItemGroup>

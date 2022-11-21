@@ -14,6 +14,11 @@ namespace TGC.MonoGame.TP.Models.Players
         private Texture2D texture;
         private Texture2D textureNormal;
 
+        public override string Aceleracion { get { return "6"; } }
+        public override string Salto { get { return "4"; } }
+        public override string Freno { get { return "5"; } }
+        public override string Control { get { return "4"; } }
+
         protected override float ForwardImpulse { get { return 40f; } }
         protected override float BrakeForce { get { return 30f; } }
         protected override float RotateForce { get { return 30f; } }

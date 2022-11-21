@@ -26,6 +26,12 @@ namespace TGC.MonoGame.TP.Models.Players
 {
     public abstract class Ball : Model3D
     {
+        public abstract String Aceleracion { get; }
+        public abstract String Salto { get; }
+        public abstract String Freno { get; }
+        public abstract String Control { get; }
+
+
         private Simulation simulation;
         private Vector3 PreviousVelocityDirection;
         private Boolean OnGround = false;
@@ -89,6 +95,14 @@ namespace TGC.MonoGame.TP.Models.Players
 
         private Boolean init = false;
         private TimeSpan lastJump = TimeSpan.Zero;
+
+        public void UpdateForMenu(Matrix translation, Matrix rotation, Matrix scale)
+        {
+            base.TranslationMatrix = translation;
+            base.RotationMatrix = rotation;
+            base.ScaleMatrix = scale;
+        }
+
 
         public override void Update(GameTime gameTime, KeyboardState keyboardState)
         {

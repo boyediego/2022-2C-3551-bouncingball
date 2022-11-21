@@ -14,12 +14,14 @@
 * PowerUps time
 * Respawn (Draw powerups and restore checkpoints)
 * End Road (Player Win)
+* Menu
 ------------------------------
 ***Pending***
-
-- Menu
-- Music on loop
 - HUD Gameplay
+
+
+- Music on loop
+
 - Sounds
 	- When checkpoint reached
 	- When powerup collected
@@ -27,7 +29,8 @@
 	- When collide (optional)
 - Create Multiple scenarios
 
-***Others***
+*
+**Others***
 - Mouse camera orbit
 - Map Object
 - Change texture from sides and back of roads

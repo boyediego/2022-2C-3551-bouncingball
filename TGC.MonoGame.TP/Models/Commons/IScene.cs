@@ -19,5 +19,8 @@ namespace TGC.MonoGame.TP.Models.Commons
 
         void RestorePowerups(Checkpoint current);
         void End();
+
+        event EventHandler EndGame;
+
     }
 }
