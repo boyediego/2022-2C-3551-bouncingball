@@ -81,12 +81,6 @@ namespace TGC.MonoGame.TP.Models.Players
         private Boolean init = false;
         private TimeSpan lastJump = TimeSpan.Zero;
 
-
-        protected float KA = 0;
-        protected float KD = 0;
-        protected float KS = 0;
-        protected float Shinnes = 0;
-
         public override void Update(GameTime gameTime, KeyboardState keyboardState)
         {
 
@@ -161,58 +155,6 @@ namespace TGC.MonoGame.TP.Models.Players
             {
                 bodyReference.Awake = true;
                 bodyReference.ApplyLinearImpulse(velocityDirection.PerpendicularClockwiseIn2D().ToNumericVector3() * RotateForce / velocityDirection.Length());
-            }
-
-            if (keyboardState.IsKeyDown(Keys.J))
-            {
-                if (keyboardState.IsKeyDown(Keys.LeftShift))
-                {
-                    KA -= 0.01f;
-                }
-                else
-                {
-                    KA += 0.001f;
-                }
-                Debug.WriteLine("KA : " + KA + " KD : " + KD + " KS : " + KS + " Shines : " + Shinnes);
-            }
-
-            if (keyboardState.IsKeyDown(Keys.K))
-            {
-                if (keyboardState.IsKeyDown(Keys.LeftShift))
-                {
-                    KD-= 0.01f;
-                }
-                else
-                {
-                    KD += 0.001f;
-                }
-                Debug.WriteLine("KA:" + KA + "KD:" + KD + "KS:" + KS + "Shines:" + Shinnes);
-            }
-
-            if (keyboardState.IsKeyDown(Keys.O))
-            {
-                if (keyboardState.IsKeyDown(Keys.LeftShift))
-                {
-                    KS -= 0.01f;
-                }
-                else
-                {
-                    KS += 0.001f;
-                }
-                Debug.WriteLine("KA:" + KA + "KD:" + KD + "KS:" + KS + "Shines:" + Shinnes);
-            }
-
-            if (keyboardState.IsKeyDown(Keys.P))
-            {
-                if (keyboardState.IsKeyDown(Keys.LeftShift))
-                {
-                    Shinnes -= 0.2f;
-                }
-                else
-                {
-                    Shinnes += 0.1f;
-                }
-                Debug.WriteLine("KA:" + KA + "KD:" + KD + "KS:" + KS + "Shines:" + Shinnes);
             }
 
             
