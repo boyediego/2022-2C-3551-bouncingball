@@ -133,7 +133,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Builder
         public CustomBuilder addPowerup(Powerup powerup)
         {
             Tramo last = (Tramo)Last();
-            powerup.SetPosition(last.Center + new Vector3(0, GameParams.ObstacleAltitudeOffset, 0));
+            powerup.SetPosition(last.Center + new Vector3(0, GameParams.PowerupYOffset, 0));
             models.Add(powerup);
             return this;
         }

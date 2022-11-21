@@ -43,6 +43,7 @@ namespace TGC.MonoGame.TP.Models.Scene
                     .addObstacule(new CubeObstacule().Build(500).SetMovementDirection(Vector3.Right).SetSpeed(5000).SetMaxMovement(1500).SetInitialOffset(new Vector3(1500 / 2f, 250, 0)))
                     .addObstacule(new CubeObstacule().Build(500).SetMovementDirection(Vector3.Left).SetSpeed(3000).SetMaxMovement(1500).SetInitialOffset(new Vector3(-1500 / 2f, 250, 650)))
                     .addPlataform(new CustomRoad(3000, 2000, 100, 0, 0, "Plataform-Type-1"))
+                    .addPowerup(new ExtraJump().Build(GameParams.PowerupSize))
                     .addForwardSpace(1000)
                     .addVerticalSpace(300)
                     .addPlataform(new CustomRoad(2000, 3000, 100, 0, 0, "Plataform-Type-1"))

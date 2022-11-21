@@ -21,50 +21,114 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Powerups
 {
     public class ExtraJump : Powerup
     {
-        private const float HEIGTH = 300;
+        
         protected Vector3 color;
 
-        public ExtraJump() : base(ModelsHolder.Get("Powerup"))
+        public ExtraJump() : base()
         {
 
         }
 
         public override void SetEffectAndTextures(Model content)
         {
-            base.Effect = EffectsHolder.Get("BasicShader");
-            color = new Vector3(0, 1, 0);
-        }
-
-        public override BodyDescription GetBodyDescription(Simulation simulation)
-        {
-            base.simulation = simulation;
-            var shape = new Box(300, HEIGTH, 300);
-            bodyDescription = BodyDescription.CreateConvexDynamic(new NumericVector3(base.Position.X, base.Position.Y + (HEIGTH / 2) + 50, base.Position.Z), 0.1f, simulation.Shapes, shape);
-            bodyHandle = simulation.Bodies.Add(bodyDescription);
-            SimulationHandle = bodyHandle.Value;
-            return bodyDescription;
+            base.Effect = EffectsHolder.Get("LightEffect");
+            this.texture = TexturesHolder<Texture2D>.Get("Powerup");
+            this.textureNormal = TexturesHolder<Texture2D>.Get("Powerup-Normal");
         }
 
         public override void Update(GameTime gameTime, KeyboardState keyboardState)
         {
+            if (keyboardState.IsKeyDown(Keys.J))
+            {
+                if (keyboardState.IsKeyDown(Keys.LeftShift))
+                {
+                    KA -= 0.01f;
+                }
+                else
+                {
+                    KA += 0.001f;
+                }
+                Debug.WriteLine("KA: " + KA + "KD: " + KD + "KS: " + KS + "S: " + S);
+            }
 
+            if (keyboardState.IsKeyDown(Keys.K))
+            {
+                if (keyboardState.IsKeyDown(Keys.LeftShift))
+                {
+                    KD-= 0.01f;
+                }
+                else
+                {
+                    KD += 0.001f;
+                }
+                Debug.WriteLine("KA: " + KA + "KD: " + KD + "KS: " + KS + "S: " + S);
+            }
+
+            if (keyboardState.IsKeyDown(Keys.O))
+            {
+                if (keyboardState.IsKeyDown(Keys.LeftShift))
+                {
+                    KS -= 0.01f;
+                }
+                else
+                {
+                    KS += 0.001f;
+                }
+                Debug.WriteLine("KA: " + KA + "KD: " + KD + "KS: " + KS + "S: " + S);
+            }
+
+            if (keyboardState.IsKeyDown(Keys.P))
+            {
+                if (keyboardState.IsKeyDown(Keys.LeftShift))
+                {
+                    S -= 0.1f;
+                }
+                else
+                {
+                    S += 0.1f;
+                }
+
+                Debug.WriteLine("KA: " + KA + "KD: " + KD+ "KS: " + KS + "S: " + S);
+            }
         }
 
-        public override void DrawPowerUp(GameTime gameTime, Matrix view, Matrix projection)
+        private float KA = 0.54598886f;
+        private float KD = 0.31298852f;
+        private float KS = 0.79898363f;
+        private float S = 2f;
+
+        public override void DrawPowerUp(GameTime gameTime, Matrix view, Matrix projection, String techniques)
         {
-            Effect.Parameters["DiffuseColor"].SetValue(color);
-            Effect.Parameters["View"].SetValue(view);
-            Effect.Parameters?["Projection"].SetValue(projection);
-
-            var modelMeshesBaseTransforms = new Matrix[Model.Bones.Count];
-            Model.CopyAbsoluteBoneTransformsTo(modelMeshesBaseTransforms);
-
-            foreach (var mesh in Model.Meshes)
+            var graphicsDevice = SharedObjects.graphicsDeviceManager.GraphicsDevice;
+            var oldRasterizerState = graphicsDevice.RasterizerState;
+            graphicsDevice.RasterizerState = RasterizerState.CullNone;
+            foreach (TrianglePrimitive triangle in base.triangles)
             {
-                var meshWorld = modelMeshesBaseTransforms[mesh.ParentBone.Index];
-                Effect.Parameters?["World"].SetValue(meshWorld * WorldMatrix);
-                mesh.Draw();
+                Effect.CurrentTechnique = Effect.Techniques[techniques];
+
+                Effect.Parameters["lightPosition"].SetValue(base.Position + Vector3.Transform(new Vector3(800,1200,-1500), base.WorldMatrix));
+                
+                Effect.Parameters["diffuseColor"].SetValue(new Vector3(1f, 0.9f, 0f));
+                Effect.Parameters["specularColor"].SetValue(new Vector3(1f, 0.9f, 0f));
+
+                Effect.Parameters["ModelTexture"].SetValue(triangle.Texture);
+                Effect.Parameters["NormalTexture"].SetValue(triangle.TextureNormal);
+                Effect.Parameters["World"].SetValue(WorldMatrix);
+                Effect.Parameters["InverseTransposeWorld"].SetValue(Matrix.Invert(Matrix.Transpose(WorldMatrix)));
+                Effect.Parameters["WorldViewProjection"].SetValue(WorldMatrix * view * projection);
+                Effect.Parameters["Tiling"].SetValue(new Vector2(1f, 1f));
+                Effect.Parameters["KAmbient"].SetValue(KA);
+                Effect.Parameters["KDiffuse"].SetValue(KD);
+                Effect.Parameters["KSpecular"].SetValue(KS);
+                Effect.Parameters["shininess"].SetValue(S);
+            
+                triangle.Draw(Effect);
             }
+            graphicsDevice.RasterizerState = oldRasterizerState;
+            EffectsHolder.Get("LightEffect").Parameters["lightPosition"].SetValue(SharedObjects.CurrentScene.LightPosition);
+            EffectsHolder.Get("LightEffect").Parameters["ambientColor"].SetValue(SharedObjects.CurrentScene.AmbientLightColor);
+            EffectsHolder.Get("LightEffect").Parameters["diffuseColor"].SetValue(SharedObjects.CurrentScene.DiffuseLightColor);
+            EffectsHolder.Get("LightEffect").Parameters["specularColor"].SetValue(SharedObjects.CurrentScene.SpecularLightColor);
         }
 
         public override void ApplyPowerUp(Ball ball)

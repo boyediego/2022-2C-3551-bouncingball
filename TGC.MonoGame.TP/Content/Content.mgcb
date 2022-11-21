@@ -412,6 +412,30 @@
 /processorParam:TextureFormat=Color
 /build:textures/obstacules/Stone-Type-1.png
 
+#begin textures/powerups/Powerup-Normal.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:textures/powerups/Powerup-Normal.png
+
+#begin textures/powerups/Powerup.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:textures/powerups/Powerup.png
+
 #begin textures/roads/Gravel-normal.png
 /importer:TextureImporter
 /processor:TextureProcessor

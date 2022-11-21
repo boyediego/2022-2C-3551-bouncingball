@@ -26,10 +26,8 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Obstacule
     {
         private Texture2D texture;
         private Texture2D textureNormal;
-
         private List<TrianglePrimitive> triangles = new List<TrianglePrimitive>();
-
-        private float Size;
+        protected float Size;
 
 
 

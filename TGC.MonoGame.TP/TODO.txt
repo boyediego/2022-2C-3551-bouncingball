@@ -10,11 +10,12 @@
 * Shadows maps
 * Enviroment Map per ball
 * 3 Type of balls
+* PowerUps form and texture
 ------------------------------
 ***Pending***
 
 
-- PowerUps form and texture
+
 - HUD, menú con fondo 3D (una sola ventana) , música y sonidos
 - StartRoad - End Road (Player Win)
 
