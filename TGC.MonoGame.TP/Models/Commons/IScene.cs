@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Graphics;
+using TGC.MonoGame.TP.Models.Scene.Parts.Checkpoints;
 
 namespace TGC.MonoGame.TP.Models.Commons
 {
@@ -14,5 +15,6 @@ namespace TGC.MonoGame.TP.Models.Commons
         Vector3 AmbientLightColor { get; }
         Vector3 DiffuseLightColor { get; }
         Vector3 SpecularLightColor { get; }
+        void RestorePowerups(Checkpoint current);
     }
 }

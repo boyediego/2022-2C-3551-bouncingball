@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using TGC.MonoGame.TP.Models.Commons;
 using TGC.MonoGame.TP.Shared;
 
 namespace TGC.MonoGame.TP.Models.Players

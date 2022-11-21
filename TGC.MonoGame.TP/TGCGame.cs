@@ -25,6 +25,7 @@ using TGC.MonoGame.TP.Shared;
 using Extreme.Mathematics;
 using BepuPhysics.Constraints;
 using TGC.MonoGame.TP.Models.Scene.Parts.Obstacule;
+using System.Diagnostics;
 
 namespace TGC.MonoGame.TP
 {

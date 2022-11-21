@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using TGC.MonoGame.TP.Models.Commons;
 using TGC.MonoGame.TP.Models.Players;
@@ -107,10 +108,11 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Powerups
 
         public override void Collide(GameTime gameTime, Model3D sceneObject)
         {
-            //Only when player collide with the objetct
             if (!taked)
             {
+                
                 taked = true;
+                Debug.WriteLine("Powerup " + this.bodyHandle + " Taked=" + taked);
                 ((Ball)sceneObject).Powerup(this, gameTime.TotalGameTime);
                 simulation.Bodies.Remove(this.bodyHandle);
             }
@@ -168,5 +170,11 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Powerups
         public abstract void ApplyPowerUp(Ball ball);
         public abstract void Restore(Ball ball);
 
+        public void Reset()
+        {
+            base.TranslationMatrix = Matrix.CreateTranslation(startPosition);
+            GetBodyDescription(this.simulation);
+            this.taked = false;
+        }
     }
 }

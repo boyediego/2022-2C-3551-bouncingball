@@ -56,12 +56,9 @@ namespace TGC.MonoGame.TP.Models.Players
         private float IncreaseSpeedValue = 0;
         private float ExtraSpeedImpulse { get { return ForwardImpulse * (IncreaseSpeedValue / 100f); } }
         private Dictionary<Powerup, TimeSpan> TimePowerups = new Dictionary<Powerup, TimeSpan>();
+        private Checkpoint LastCheckpoint = null;
 
-        public void Restore()
-        {
-            RestoreSpeed();
-            RestoreJump();
-        }
+      
 
         public Ball(Simulation Simulation, Model model, Vector3 startPosition) : base(model)
         {
@@ -204,6 +201,7 @@ namespace TGC.MonoGame.TP.Models.Players
             base.TranslationMatrix = Matrix.CreateTranslation(ReSpawnPosition);
             base.TranslationMatrix = Matrix.Identity;
             CreatePhysics(ReSpawnPosition.ToNumericVector3());
+            SharedObjects.CurrentScene.RestorePowerups(LastCheckpoint);
         }
 
 
@@ -242,6 +240,7 @@ namespace TGC.MonoGame.TP.Models.Players
 
         public void CheckpointReached(Checkpoint checkpoint)
         {
+            LastCheckpoint=checkpoint;
             this.ReSpawnPosition = checkpoint.Position + Vector3.Up * 550;
         }
 
@@ -271,6 +270,13 @@ namespace TGC.MonoGame.TP.Models.Players
         {
             IncreaseSpeedValue = 0;
             TopSpeedMultiplier = 1f;
+        }
+
+        private void Restore()
+        {
+            TimePowerups.Clear();
+            RestoreSpeed();
+            RestoreJump();
         }
     }
 
