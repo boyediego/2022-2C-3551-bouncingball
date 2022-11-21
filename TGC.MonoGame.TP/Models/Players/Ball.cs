@@ -40,6 +40,7 @@ namespace TGC.MonoGame.TP.Models.Players
         protected abstract float BrakeForce { get; }
         protected abstract float RotateForce { get; }
         protected abstract float JumpImpulse { get; }
+        protected abstract float TopSpeed { get; }
         public abstract Boolean HasEnviromentMap { get; }
 
         public override int PhysicsType
@@ -50,6 +51,17 @@ namespace TGC.MonoGame.TP.Models.Players
 
         private float IncreaseJumpValue = 0;
         private float ExtraImpulse { get { return JumpImpulse * (IncreaseJumpValue / 100f); } }
+
+        private float TopSpeedMultiplier = 1;
+        private float IncreaseSpeedValue = 0;
+        private float ExtraSpeedImpulse { get { return ForwardImpulse * (IncreaseSpeedValue / 100f); } }
+        private Dictionary<Powerup, TimeSpan> TimePowerups = new Dictionary<Powerup, TimeSpan>();
+
+        public void Restore()
+        {
+            RestoreSpeed();
+            RestoreJump();
+        }
 
         public Ball(Simulation Simulation, Model model, Vector3 startPosition) : base(model)
         {
@@ -94,6 +106,25 @@ namespace TGC.MonoGame.TP.Models.Players
             base.TranslationMatrix = Matrix.CreateTranslation(new Vector3(position.X, position.Y, position.Z));
 
 
+
+
+            List<Powerup> selectedForRemove = new List<Powerup>();
+            foreach (KeyValuePair<Powerup, TimeSpan> entry in TimePowerups)
+            {
+                if (gameTime.TotalGameTime.Subtract(entry.Value).TotalMilliseconds >= entry.Key.DurationTime)
+                {
+                    entry.Key.Restore(this);
+                    selectedForRemove.Add(entry.Key);
+                }
+            }
+
+            foreach(Powerup powerup in selectedForRemove)
+            {
+                TimePowerups.Remove(powerup);
+            }
+            
+
+
             if (position.Y < -400)
             {
                 Respawn();
@@ -123,7 +154,7 @@ namespace TGC.MonoGame.TP.Models.Players
 
             nVelocityVector.Normalize();
 
-            var dv = velocityVector.Length() / 500;
+            var dv = velocityVector.Length() / (TopSpeed * TopSpeedMultiplier);
             if (dv <= 1)
             {
                 dv = 1;
@@ -133,7 +164,7 @@ namespace TGC.MonoGame.TP.Models.Players
             {
                 bodyReference.Awake = true;
                 applyImpulse = nVelocityVector;
-                bodyReference.ApplyLinearImpulse(applyImpulse.ToNumericVector3() * ForwardImpulse / dv);
+                bodyReference.ApplyLinearImpulse(applyImpulse.ToNumericVector3() * (ForwardImpulse + ExtraSpeedImpulse) / dv);
             }
 
             if (keyboardState.IsKeyDown(Keys.S))
@@ -168,6 +199,7 @@ namespace TGC.MonoGame.TP.Models.Players
 
         private void Respawn()
         {
+            Restore();
             simulation.Bodies.Remove(this.playerHanle);
             base.TranslationMatrix = Matrix.CreateTranslation(ReSpawnPosition);
             base.TranslationMatrix = Matrix.Identity;
@@ -190,7 +222,7 @@ namespace TGC.MonoGame.TP.Models.Players
         }
 
 
-        public override void Collide(Model3D sceneObject)
+        public override void Collide(GameTime gameTime, Model3D sceneObject)
         {
             if (sceneObject.PhysicsType == PhysicsTypeHome.Static)
             {
@@ -203,7 +235,7 @@ namespace TGC.MonoGame.TP.Models.Players
             }
             else
             {
-                sceneObject.Collide(this);
+                sceneObject.Collide(gameTime, this);
             }
 
         }
@@ -213,14 +245,32 @@ namespace TGC.MonoGame.TP.Models.Players
             this.ReSpawnPosition = checkpoint.Position + Vector3.Up * 550;
         }
 
-        public void Powerup(Powerup powerup)
+        public void Powerup(Powerup powerup, TimeSpan timeElapsed)
         {
             powerup.ApplyPowerUp(this);
+            TimePowerups.Add(powerup, timeElapsed);
         }
 
         internal void IncreaseJump(float percent)
         {
             IncreaseJumpValue = percent;
+        }
+
+        internal void IncreaseSpeed(float percent)
+        {
+            IncreaseSpeedValue = percent;
+            TopSpeedMultiplier = 0.2f;
+        }
+
+        internal void RestoreJump()
+        {
+            IncreaseJumpValue = 0;
+        }
+
+        internal void RestoreSpeed()
+        {
+            IncreaseSpeedValue = 0;
+            TopSpeedMultiplier = 1f;
         }
     }
 

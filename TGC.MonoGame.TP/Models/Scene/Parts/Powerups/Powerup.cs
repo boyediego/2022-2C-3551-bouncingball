@@ -3,6 +3,7 @@ using BepuPhysics.Collidables;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -36,6 +37,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Powerups
         public void SetPosition(Vector3 position)
         {
             base.TranslationMatrix = Matrix.CreateTranslation(position);
+            startPosition = position;
         }
 
         public Powerup Build(float size)
@@ -97,18 +99,19 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Powerups
             return bodyDescription;
         }
 
-
+        
+        public abstract double DurationTime { get; }
         public override bool IsGround { get { return false; } }
         public override int PhysicsType { get { return PhysicsTypeHome.Kinematic; } }
         public override StaticDescription GetStaticDescription(Simulation simulation) { throw new NotSupportedException(); }
 
-        public override void Collide(Model3D sceneObject)
+        public override void Collide(GameTime gameTime, Model3D sceneObject)
         {
             //Only when player collide with the objetct
             if (!taked)
             {
                 taked = true;
-                ((Ball)sceneObject).Powerup(this);
+                ((Ball)sceneObject).Powerup(this, gameTime.TotalGameTime);
                 simulation.Bodies.Remove(this.bodyHandle);
             }
         }
@@ -117,10 +120,53 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Powerups
         {
             if (!taked)
                 this.DrawPowerUp(gameTime, view, projection, techniques);
+
+           
         }
+
+        private Vector3 movementDirection = Vector3.Down;
+        protected float speed=1000f;
+        protected float maxMovementUnits=130f;
+        protected Vector3 startPosition;
+        protected Vector3 currentPosition;
+        private int step = 0;
+
+        public override void Update(GameTime gameTime, KeyboardState keyboardState)
+        {
+            if (!taked)
+            {
+                float time = (float)gameTime.ElapsedGameTime.Milliseconds / 1000;
+
+                var bodyReference = simulation.Bodies.GetBodyReference(bodyHandle);
+
+                if (Vector3.Distance(startPosition, currentPosition) > maxMovementUnits && step == 2)
+                {
+                    movementDirection *= -1;
+                    step = 1;
+                }
+                else if (Vector3.Distance(startPosition, currentPosition) < 50 && (step == 1 || step == 0))
+                {
+                    movementDirection *= -1;
+                    step = 2;
+
+                }
+
+                var position = bodyReference.Pose.Position;
+                var quaternion = bodyReference.Pose.Orientation;
+
+
+                bodyReference.Velocity.Linear = movementDirection.ToNumericVector3() * speed * GameParams.ObstacleSpeedMultiplier * time;
+
+
+                this.currentPosition = new Vector3(position.X, position.Y, position.Z);
+                base.TranslationMatrix = Matrix.CreateTranslation(currentPosition);
+            }
+        }
+
 
         public abstract void DrawPowerUp(GameTime gameTime, Matrix view, Matrix projection, String techniques);
         public abstract void ApplyPowerUp(Ball ball);
+        public abstract void Restore(Ball ball);
 
     }
 }

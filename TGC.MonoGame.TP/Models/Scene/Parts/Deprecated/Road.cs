@@ -122,7 +122,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Deprecated
             }
         }
 
-        public override void Collide(Model3D sceneObject)
+        public override void Collide(GameTime gameTime, Model3D sceneObject)
         {
             //Nothing
         }

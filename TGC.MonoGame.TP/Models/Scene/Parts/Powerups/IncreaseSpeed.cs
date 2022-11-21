@@ -19,12 +19,12 @@ using Vector3 = Microsoft.Xna.Framework.Vector3;
 
 namespace TGC.MonoGame.TP.Models.Scene.Parts.Powerups
 {
-    public class ExtraJump : Powerup
+    public class IncreaseSpeed : Powerup
     {
 
-        public override double DurationTime { get { return 8000; } }
+        public override double DurationTime { get { return 5000; } }
 
-        public ExtraJump() : base()
+        public IncreaseSpeed() : base()
         {
 
         }
@@ -55,7 +55,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Powerups
             {
                 if (keyboardState.IsKeyDown(Keys.LeftShift))
                 {
-                    KD -= 0.01f;
+                    KD-= 0.01f;
                 }
                 else
                 {
@@ -88,7 +88,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Powerups
                     S += 0.1f;
                 }
 
-                Debug.WriteLine("KA: " + KA + "KD: " + KD + "KS: " + KS + "S: " + S);
+                Debug.WriteLine("KA: " + KA + "KD: " + KD+ "KS: " + KS + "S: " + S);
             }
 
             base.Update(gameTime, keyboardState);
@@ -99,8 +99,6 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Powerups
         private float KS = 0.79898363f;
         private float S = 2f;
 
-
-
         public override void DrawPowerUp(GameTime gameTime, Matrix view, Matrix projection, String techniques)
         {
             var graphicsDevice = SharedObjects.graphicsDeviceManager.GraphicsDevice;
@@ -110,10 +108,10 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Powerups
             {
                 Effect.CurrentTechnique = Effect.Techniques[techniques];
 
-                Effect.Parameters["lightPosition"].SetValue(base.Position + Vector3.Transform(new Vector3(800, 1200, -1500), base.WorldMatrix));
-
-                Effect.Parameters["diffuseColor"].SetValue(new Vector3(1f, 0.9f, 0f));
-                Effect.Parameters["specularColor"].SetValue(new Vector3(1f, 0.9f, 0f));
+                Effect.Parameters["lightPosition"].SetValue(base.Position + Vector3.Transform(new Vector3(800,1200,-1500), base.WorldMatrix));
+                
+                Effect.Parameters["diffuseColor"].SetValue(new Vector3(0.3f, 0.9f, 0.27f));
+                Effect.Parameters["specularColor"].SetValue(new Vector3(0.3f, 0.9f, 0.27f));
 
                 Effect.Parameters["ModelTexture"].SetValue(triangle.Texture);
                 Effect.Parameters["NormalTexture"].SetValue(triangle.TextureNormal);
@@ -125,7 +123,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Powerups
                 Effect.Parameters["KDiffuse"].SetValue(KD);
                 Effect.Parameters["KSpecular"].SetValue(KS);
                 Effect.Parameters["shininess"].SetValue(S);
-
+            
                 triangle.Draw(Effect);
             }
             graphicsDevice.RasterizerState = oldRasterizerState;
@@ -137,12 +135,12 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Powerups
 
         public override void ApplyPowerUp(Ball ball)
         {
-            ball.IncreaseJump(50);
+            ball.IncreaseSpeed(2000);
         }
 
         public override void Restore(Ball ball)
         {
-            ball.RestoreJump();
+            ball.RestoreSpeed();
         }
     }
 }

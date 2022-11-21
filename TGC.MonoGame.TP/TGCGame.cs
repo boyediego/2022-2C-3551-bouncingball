@@ -351,7 +351,7 @@ namespace TGC.MonoGame.TP
             {
                 foreach (var c in collisionInnfo)
                 {
-                    c.player.Collide(c.sceneObject);
+                    c.player.Collide(gameTime, c.sceneObject);
                     c.procesed = true;
                 }
 

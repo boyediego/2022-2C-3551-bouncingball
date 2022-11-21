@@ -66,7 +66,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Checkpoints
             //cubePrimitive.Draw(world, view, projection);
         }
 
-        public override void Collide(Model3D sceneObject)
+        public override void Collide(GameTime gameTime, Model3D sceneObject)
         {
             //Only when player collide with the objetct
             if (!playerPassCheckPoint)

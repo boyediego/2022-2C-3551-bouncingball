@@ -130,10 +130,10 @@ namespace TGC.MonoGame.TP.Models.Scene.Builder
             return this;
         }
 
-        public CustomBuilder addPowerup(Powerup powerup)
+        public CustomBuilder addPowerup(Powerup powerup, Vector3 offset)
         {
             Tramo last = (Tramo)Last();
-            powerup.SetPosition(last.Center + new Vector3(0, GameParams.PowerupYOffset, 0));
+            powerup.SetPosition(last.Center + new Vector3(0, GameParams.PowerupYOffset, 0) + offset);
             models.Add(powerup);
             return this;
         }

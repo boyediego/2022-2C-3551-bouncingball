@@ -95,7 +95,6 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Obstacule.Base
             
 
             this.currentPosition = new Vector3(position.X, position.Y, position.Z);
-            //base.RotationMatrix = Matrix.CreateFromQuaternion(new Quaternion(quaternion.X, quaternion.Y, quaternion.Z, quaternion.W));
             base.TranslationMatrix = Matrix.CreateTranslation(currentPosition);
         }
 
@@ -105,7 +104,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Obstacule.Base
         public override int PhysicsType { get { return PhysicsTypeHome.Kinematic; } }
       
 
-        public override void Collide(Model3D sceneObject)
+        public override void Collide(GameTime gameTime, Model3D sceneObject)
         {
             //DO NNOTHING
         }

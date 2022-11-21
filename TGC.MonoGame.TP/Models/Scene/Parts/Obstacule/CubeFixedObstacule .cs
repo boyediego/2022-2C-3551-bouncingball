@@ -125,7 +125,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Obstacule
 
         }
 
-        public override void Collide(Model3D sceneObject)
+        public override void Collide(GameTime gameTime, Model3D sceneObject)
         {
 
         }

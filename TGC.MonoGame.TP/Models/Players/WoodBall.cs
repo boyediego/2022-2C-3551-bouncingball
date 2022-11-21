@@ -17,6 +17,7 @@ namespace TGC.MonoGame.TP.Models.Players
         protected override float BrakeForce { get { return 40f; } }
         protected override float RotateForce { get { return 45f; } }
         protected override float JumpImpulse { get { return 1200f; } }
+        protected override float TopSpeed { get { return 500f; } }
         public override Boolean HasEnviromentMap { get { return false; } }
 
         public WoodBall(Simulation Simulation, Vector3 startPosition) : base(Simulation, ModelsHolder.Get("Sphere"), startPosition)

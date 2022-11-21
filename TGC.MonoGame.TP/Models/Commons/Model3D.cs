@@ -79,7 +79,7 @@ namespace TGC.MonoGame.TP.Models.Commons
         public abstract void SetEffectAndTextures(Model content);
         public abstract void Update(GameTime gameTime, KeyboardState keyboardState);
         public abstract void Draw(GameTime gameTime, Matrix view, Matrix projection, String techniques);
-        public abstract void Collide(Model3D sceneObject);
+        public abstract void Collide(GameTime gameTime, Model3D sceneObject);
 
         public abstract StaticDescription GetStaticDescription(Simulation simulation);
         public abstract BodyDescription GetBodyDescription(Simulation simulation);
