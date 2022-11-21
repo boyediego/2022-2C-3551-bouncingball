@@ -153,5 +153,12 @@ namespace TGC.MonoGame.TP.Models.Scene.Builder
             models.Add(new Checkpoint(last.Center, checkpointWidth));
             return this;
         }
+
+        internal CustomBuilder End(float checkpointWidth)
+        {
+            Tramo last = (Tramo)Last();
+            models.Add(new EndRoad(last.Center, checkpointWidth));
+            return this;
+        }
     }
 }

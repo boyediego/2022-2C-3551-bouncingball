@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Numerics;
 using TGC.MonoGame.TP.Models.Commons;
 using TGC.MonoGame.TP.Models.Scene.Builder;
@@ -41,7 +42,7 @@ namespace TGC.MonoGame.TP.Models.Scene
                     .addObstacule(new CubeObstacule().Build(500).SetMovementDirection(Vector3.Left).SetSpeed(3000).SetMaxMovement(1500).SetInitialOffset(new Vector3(-1500 / 2f, 250, 650)))
                     .addPlataform(new CustomRoad(3000, 2000, 100, 0, 0, "Plataform-Type-1"))
                     .addPowerup(new ExtraJump().Build(GameParams.PowerupSize), Vector3.Zero)
-                    .addPowerup(new IncreaseSpeed().Build(GameParams.PowerupSize), new Vector3(-1000,0,-500))
+                    .addPowerup(new IncreaseSpeed().Build(GameParams.PowerupSize), new Vector3(-1000, 0, -500))
                     .addForwardSpace(1000)
                     .addVerticalSpace(300)
                     .addPlataform(new CustomRoad(2000, 3000, 100, 0, 0, "Plataform-Type-1"))
@@ -53,7 +54,7 @@ namespace TGC.MonoGame.TP.Models.Scene
                     .addObstacule(new CubeFixedObstacule().Build(100).SetInitialOffset(new Vector3(0, 100, 0)).Rotate(0.2f))
                     .addForwardSpace(1000)
                     .addPlataform(new CustomRoad(3000, 2000, 100, 0, 0, "Plataform-Type-1"))
-                    .addCheckpoint(2000);
+                    .End(2000);
             sceneObjects = customBuilder.GetScene();
 
 
@@ -95,6 +96,7 @@ namespace TGC.MonoGame.TP.Models.Scene
 
         public void End()
         {
+            Debug.WriteLine("End!!");
             //TODO END GAME
         }
     }
