@@ -126,6 +126,10 @@ namespace TGC.MonoGame.TP
         private void LoadSoundEffects()
         {
             SoundEffectHolder<SoundEffect>.Load(Content, "Powerup-Collected", "powerup-collected");
+            SoundEffectHolder<SoundEffect>.Load(Content, "Jump", "jump");
+            SoundEffectHolder<SoundEffect>.Load(Content, "Checkpoint", "Checkpoint");
+            SoundEffectHolder<SoundEffect>.Load(Content, "Fall", "fall");
+            SoundEffectHolder<SoundEffect>.Load(Content, "NextPrev", "next-prev");
         }
 
         private void LoadModels()

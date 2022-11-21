@@ -429,7 +429,7 @@ namespace TGC.MonoGame.TP.UI
         public void Dispose()
         {
             MediaPlayer.Stop();
-            Simulation.Clear();
+            //Simulation.Clear();
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using BepuPhysics;
 using BepuPhysics.Collidables;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -31,12 +32,15 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Checkpoints
         private CubePrimitive cubePrimitive;
         public bool CheckpointPassed { get { return playerPassCheckPoint; } }
 
+        private SoundEffect Sound { get; set; }
+
         public Checkpoint(Vector3 checkpointPosition, float checkpointWidth) : base(null)
         {
             TranslationMatrix = Matrix.CreateTranslation(checkpointPosition);
             this.checkpointPosition = checkpointPosition;
             this.checkpointWidth = checkpointWidth;
             cubePrimitive = new CubePrimitive(SharedObjects.graphicsDeviceManager.GraphicsDevice, checkpointWidth, Color.Fuchsia);
+            Sound = SoundEffectHolder<SoundEffect>.Get("Checkpoint");
         }
 
         public override bool IsGround { get { return false; } }
@@ -71,6 +75,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Checkpoints
             //Only when player collide with the objetct
             if (!playerPassCheckPoint)
             {
+                Sound.Play();
                 CheckpointReached((Ball)sceneObject);
             }
         }

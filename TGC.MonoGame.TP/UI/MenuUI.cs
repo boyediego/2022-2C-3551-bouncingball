@@ -2,6 +2,7 @@
 using BepuPhysics.CollisionDetection;
 using BepuUtilities.Memory;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
@@ -48,6 +49,8 @@ namespace TGC.MonoGame.TP.UI
         private Vector2 TitlePosition;
         private Vector2 TextPosition;
 
+        private SoundEffect Sound { get; set; }
+
         private GraphicsDevice GraphicsDevice
         {
             get { return SharedObjects.graphicsDeviceManager.GraphicsDevice; }
@@ -88,7 +91,8 @@ namespace TGC.MonoGame.TP.UI
             MediaPlayer.IsRepeating = true;
             MediaPlayer.Volume = 1f;
             MediaPlayer.Play(MusicHolder<Song>.Get("MenuMusic"));
-            
+
+            Sound = SoundEffectHolder<SoundEffect>.Get("NextPrev");
         }
 
         private void CreateScene()
@@ -168,6 +172,7 @@ namespace TGC.MonoGame.TP.UI
             {
                 if (Keyboard.GetState().IsKeyDown(Keys.D))
                 {
+                    Sound.Play();
                     if (selectedBall == plasticBall)
                     {
                         selectedBall.UpdateForMenu(Matrix.CreateTranslation(new Vector3(2500, 550, -1000)), Matrix.Identity, Matrix.CreateScale(2f));
@@ -184,9 +189,11 @@ namespace TGC.MonoGame.TP.UI
                         selectedBall = woodBall;
                     }
                     lastPressed = gameTime.TotalGameTime;
+                    
                 }
                 else if (Keyboard.GetState().IsKeyDown(Keys.A))
                 {
+                    Sound.Play();
                     if (selectedBall == plasticBall)
                     {
                         selectedBall.UpdateForMenu(Matrix.CreateTranslation(new Vector3(2500, 550, -1000)), Matrix.Identity, Matrix.CreateScale(2f));

@@ -280,6 +280,30 @@
 /processorParam:Quality=Best
 /build:Music/menu-music.mp3
 
+#begin Sounds/checkpoint.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/checkpoint.wav
+
+#begin Sounds/fall.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/fall.wav
+
+#begin Sounds/jump.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/jump.wav
+
+#begin Sounds/next-prev.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/next-prev.wav
+
 #begin Sounds/powerup-collected.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor

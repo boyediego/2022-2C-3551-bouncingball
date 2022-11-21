@@ -21,6 +21,7 @@ using TGC.MonoGame.TP.Cameras;
 using TGC.MonoGame.TP.Models.Scene.Parts.Powerups;
 using TGC.MonoGame.TP.Models.Scene.Parts.Checkpoints;
 using TGC.MonoGame.TP.Shared;
+using Microsoft.Xna.Framework.Audio;
 
 namespace TGC.MonoGame.TP.Models.Players
 {
@@ -64,8 +65,10 @@ namespace TGC.MonoGame.TP.Models.Players
         private Dictionary<Powerup, TimeSpan> TimePowerups = new Dictionary<Powerup, TimeSpan>();
         private Checkpoint LastCheckpoint = null;
 
-      
+        private SoundEffect SoundJump { get; set; }
+        private SoundEffect SoundFall { get; set; }
 
+        private Boolean playedFall = false;
         public Ball(Simulation Simulation, Model model, Vector3 startPosition) : base(model)
         {
             this.simulation = Simulation;
@@ -73,6 +76,9 @@ namespace TGC.MonoGame.TP.Models.Players
             CreatePhysics(position);
             this.ReSpawnPosition = startPosition;
             base.ScaleMatrix = Matrix.CreateScale(0.5f);
+
+            SoundJump = SoundEffectHolder<SoundEffect>.Get("Jump");
+            SoundFall = SoundEffectHolder<SoundEffect>.Get("Fall");
         }
 
         private void CreatePhysics(NumericVector3 position)
@@ -133,12 +139,19 @@ namespace TGC.MonoGame.TP.Models.Players
             {
                 TimePowerups.Remove(powerup);
             }
-            
 
+            if(position.Y<-150 && !playedFall)
+            {
+                SoundFall.Play();
+                playedFall = true;
+            }
+            
 
             if (position.Y < -400)
             {
+                SoundFall.Play();
                 Respawn();
+                playedFall=false;
                 return;
             }
 
@@ -226,6 +239,7 @@ namespace TGC.MonoGame.TP.Models.Players
                 if (OnGround)
                 {
                     lastJump = current;
+                    SoundJump.Play();
                     bodyReference.Awake = true;
                     bodyReference.ApplyLinearImpulse(Vector3.Up.ToNumericVector3() * (JumpImpulse + ExtraImpulse));
                     OnGround = false;

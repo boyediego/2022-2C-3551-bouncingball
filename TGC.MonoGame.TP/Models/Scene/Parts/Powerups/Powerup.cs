@@ -31,7 +31,6 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Powerups
         protected BodyHandle bodyHandle;
 
         private SoundEffect Sound { get; set; }
-        private SoundEffectInstance Instance { get; set; }
 
 
         protected Powerup() : base(null)
@@ -39,8 +38,6 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Powerups
             base.TranslationMatrix = Matrix.Identity;
             base.RotationMatrix = Matrix.Identity;
             Sound = SoundEffectHolder<SoundEffect>.Get("Powerup-Collected");
-            Instance = Sound.CreateInstance();
-            Instance.IsLooped = false;
         }
 
         public void SetPosition(Vector3 position)
