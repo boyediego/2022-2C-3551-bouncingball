@@ -36,12 +36,6 @@ namespace TGC.MonoGame.TP
     {
 
 
-        //Physics
-        private Simulation Simulation { get; set; }
-        private BufferPool BufferPool { get; set; }
-        private SimpleThreadDispatcher ThreadDispatcher { get; set; }
-
-
         private IRenderUI currentUI = null;
         private IRenderUI previousUI = null;
 
@@ -69,33 +63,19 @@ namespace TGC.MonoGame.TP
             //Attach to detection collider events
             Collider.CollisionDetected += Collider_CollisionDetected;
 
-            //Init buffer & threads for physic engine
-            InitPhysics();
-
+          
             base.Initialize();
         }
 
-        private void InitPhysics()
-        {
-            BufferPool = new BufferPool();
-
-            var targetThreadCount = Math.Max(1,
-              Environment.ProcessorCount > 4 ? Environment.ProcessorCount - 2 : Environment.ProcessorCount - 1);
-            ThreadDispatcher = new SimpleThreadDispatcher(targetThreadCount);
-        }
+        
 
         protected override void LoadContent()
         {
             //Load resources
             PreloadResources();
 
-            //Create simulation
-            PositionFirstTimestepper p = new PositionFirstTimestepper();
-            Simulation = Simulation.Create(BufferPool, new NarrowPhaseCallbacks(),
-                new PoseIntegratorCallbacks(new NumericVector3(0, -10 * 150, 0)), p);
-
             //Load menu
-            currentUI = new MenuUI(this, Simulation, BufferPool, ThreadDispatcher);
+            currentUI = new MenuUI(this);
 
             //Base calll
             base.LoadContent();
@@ -195,14 +175,14 @@ namespace TGC.MonoGame.TP
 
 
         #region Game flows
-        internal void StartGameplay(Ball selectedPlayer)
+        internal void StartGameplay(int selectedPlayer)
         {
-            currentUI = new GamePlay(this, Simulation, BufferPool, ThreadDispatcher, selectedPlayer);
+            currentUI = new GamePlay(this,selectedPlayer);
         }
 
         internal void EndGameplay(GamePlay gamePlay)
         {
-            currentUI = new MenuUI(this, Simulation, BufferPool, ThreadDispatcher);
+            currentUI = new MenuUI(this);
         }
         #endregion
 
@@ -210,8 +190,6 @@ namespace TGC.MonoGame.TP
         #region Game Draw & Update
         protected override void Update(GameTime gameTime)
         {
-            //Simulation timestep
-            Simulation.Timestep(1 / 60f, ThreadDispatcher);
             currentUI.Upate(gameTime);
 
             if (previousUI != null && previousUI != currentUI)
@@ -232,12 +210,7 @@ namespace TGC.MonoGame.TP
         #region End Game
         protected override void UnloadContent()
         {
-            Simulation.Dispose();
-
-            BufferPool.Clear();
-
-            ThreadDispatcher.Dispose();
-
+     
             // Libero los recursos.
             Content.Unload();
             base.UnloadContent();

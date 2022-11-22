@@ -24,7 +24,7 @@ namespace TGC.MonoGame.TP.UI
 {
     public class GamePlay : IRenderUI
     {
-        
+
         public class CollisionData
         {
             public Model3D player;
@@ -73,23 +73,29 @@ namespace TGC.MonoGame.TP.UI
 
         private RenderTarget2D ShadowMapRenderTarget;
 
+        private int selectedPlayer;
+
         private GraphicsDevice GraphicsDevice
         {
             get { return SharedObjects.graphicsDeviceManager.GraphicsDevice; }
         }
 
-        public GamePlay(TGCGame game, Simulation simulation, BufferPool bufferPool, SimpleThreadDispatcher threadDispatcher, Ball selectedPlayer)
+        public GamePlay(TGCGame game, int selectedPlayer)
         {
-            this.player = selectedPlayer;
-            Initialize(game, simulation, bufferPool, threadDispatcher);
+            this.selectedPlayer = selectedPlayer;
+            Initialize(game);
         }
 
-        public void Initialize(TGCGame game, Simulation simulation, BufferPool bufferPool, SimpleThreadDispatcher threadDispatcher)
+        public void Initialize(TGCGame game)
         {
             //Set simulation
-            this.Simulation = simulation;
-            this.BufferPool= bufferPool;
-            this.ThreadDispatcher = threadDispatcher;
+            InitPhysics();
+
+            //Create simulation
+            PositionFirstTimestepper p = new PositionFirstTimestepper();
+            Simulation = Simulation.Create(BufferPool, new NarrowPhaseCallbacks(),
+                new PoseIntegratorCallbacks(new NumericVector3(0, -10 * 150, 0)), p);
+
             this.Game = game;
 
             //Get Viewport screen size
@@ -120,6 +126,22 @@ namespace TGC.MonoGame.TP.UI
                        SurfaceFormat.Color, DepthFormat.Depth24, 0, RenderTargetUsage.DiscardContents);
 
 
+            switch(selectedPlayer)
+            {
+                case Ball.Metal:
+                    this.player = new MetalBall(Simulation, new Vector3(300, 350, 400));
+                    break;
+
+                case Ball.Wood:
+                    this.player = new WoodBall(Simulation, new Vector3(300, 350, 400));
+                    break;
+
+                case Ball.Plastic:
+                    this.player = new PlasticBall(Simulation, new Vector3(300, 350, 400));
+                    break;
+            }
+
+
             CreateScenario(new Scenario(), this.player);
 
             MediaPlayer.IsRepeating = true;
@@ -128,13 +150,22 @@ namespace TGC.MonoGame.TP.UI
 
         }
 
+        private void InitPhysics()
+        {
+            BufferPool = new BufferPool();
+
+            var targetThreadCount = Math.Max(1,
+              Environment.ProcessorCount > 4 ? Environment.ProcessorCount - 2 : Environment.ProcessorCount - 1);
+            ThreadDispatcher = new SimpleThreadDispatcher(targetThreadCount);
+        }
+
         private void CreateScenario(IScene scene, Ball player)
         {
             //Create skybox
             CreteSkybox();
 
             //Create scenario         
-            scenario =scene;
+            scenario = scene;
 
             scene.EndGame += Scene_EndGame;
 
@@ -189,7 +220,7 @@ namespace TGC.MonoGame.TP.UI
             }
         }
 
-        
+
         public void CollisionDetected(CollidablePair pair, CollisionInformation info)
         {
             if (!PlayerPresent(pair))
@@ -239,6 +270,9 @@ namespace TGC.MonoGame.TP.UI
 
         public void Upate(GameTime gameTime)
         {
+            //Simulation timestep
+            Simulation.Timestep(1 / 60f, ThreadDispatcher);
+
             //Camera controls 
             if (Keyboard.GetState().IsKeyDown(Keys.T) && !(Camera is TargetCamera))
             {
@@ -429,7 +463,12 @@ namespace TGC.MonoGame.TP.UI
         public void Dispose()
         {
             MediaPlayer.Stop();
-            //Simulation.Clear();
+            Simulation.Dispose();
+
+            BufferPool.Clear();
+
+            ThreadDispatcher.Dispose();
+
         }
     }
 }

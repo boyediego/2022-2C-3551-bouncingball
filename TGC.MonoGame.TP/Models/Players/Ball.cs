@@ -27,6 +27,10 @@ namespace TGC.MonoGame.TP.Models.Players
 {
     public abstract class Ball : Model3D
     {
+        public const int Metal = 1;
+        public const int Plastic = 2;
+        public const int Wood = 3;
+
         public abstract String Aceleracion { get; }
         public abstract String Salto { get; }
         public abstract String Freno { get; }
@@ -73,7 +77,9 @@ namespace TGC.MonoGame.TP.Models.Players
         {
             this.simulation = Simulation;
             var position = new NumericVector3(startPosition.X, startPosition.Y, startPosition.Z);
-            CreatePhysics(position);
+            if (simulation != null)
+                CreatePhysics(position);
+
             this.ReSpawnPosition = startPosition;
             base.ScaleMatrix = Matrix.CreateScale(0.5f);
 
@@ -135,23 +141,23 @@ namespace TGC.MonoGame.TP.Models.Players
                 }
             }
 
-            foreach(Powerup powerup in selectedForRemove)
+            foreach (Powerup powerup in selectedForRemove)
             {
                 TimePowerups.Remove(powerup);
             }
 
-            if(position.Y<-150 && !playedFall)
+            if (position.Y < -150 && !playedFall)
             {
                 SoundFall.Play();
                 playedFall = true;
             }
-            
+
 
             if (position.Y < -400)
             {
                 SoundFall.Play();
                 Respawn();
-                playedFall=false;
+                playedFall = false;
                 return;
             }
 
@@ -212,7 +218,7 @@ namespace TGC.MonoGame.TP.Models.Players
                 bodyReference.ApplyLinearImpulse(velocityDirection.PerpendicularClockwiseIn2D().ToNumericVector3() * RotateForce / velocityDirection.Length());
             }
 
-            
+
 
             if (keyboardState.IsKeyDown(Keys.Space))
             {
@@ -231,7 +237,6 @@ namespace TGC.MonoGame.TP.Models.Players
             SharedObjects.CurrentScene.RestorePowerups(LastCheckpoint);
         }
 
-
         private void TryJump(BodyReference bodyReference, TimeSpan current)
         {
             if (lastJump == TimeSpan.Zero || current.Subtract(lastJump).Milliseconds > 300)
@@ -246,7 +251,6 @@ namespace TGC.MonoGame.TP.Models.Players
                 }
             }
         }
-
 
         public override void Collide(GameTime gameTime, Model3D sceneObject)
         {
@@ -268,7 +272,7 @@ namespace TGC.MonoGame.TP.Models.Players
 
         public void CheckpointReached(Checkpoint checkpoint)
         {
-            LastCheckpoint=checkpoint;
+            LastCheckpoint = checkpoint;
             this.ReSpawnPosition = checkpoint.Position + Vector3.Up * 550;
         }
 

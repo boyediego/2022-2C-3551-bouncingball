@@ -13,7 +13,7 @@ namespace TGC.MonoGame.TP.UI
 {
     public interface IRenderUI
     {
-        void Initialize(TGCGame game, Simulation simulation, BufferPool bufferPool, SimpleThreadDispatcher threadDispatcher);
+        void Initialize(TGCGame game);
         void CollisionDetected(CollidablePair pair, CollisionInformation info);
         void Upate(GameTime gameTime);
         void Draw(GameTime gameTime);

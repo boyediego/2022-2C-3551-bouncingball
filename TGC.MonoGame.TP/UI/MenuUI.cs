@@ -27,12 +27,6 @@ namespace TGC.MonoGame.TP.UI
         private TGCGame Game { get; set; }
 
         private StaticCamera Camera { get; set; }
-        private FreeCamera Camera1 { get; set; }
-
-        //Physics objects
-        private Simulation Simulation { get; set; }
-        private BufferPool BufferPool { get; set; }
-        private SimpleThreadDispatcher ThreadDispatcher { get; set; }
 
         private List<Model3D> sceneObjects = new List<Model3D>();
         private SkyBox SkyBox { get; set; }
@@ -56,16 +50,13 @@ namespace TGC.MonoGame.TP.UI
             get { return SharedObjects.graphicsDeviceManager.GraphicsDevice; }
         }
 
-        public MenuUI(TGCGame game, Simulation simulation, BufferPool bufferPool, SimpleThreadDispatcher threadDispatcher)
+        public MenuUI(TGCGame game)
         {
-            Initialize(game, simulation, bufferPool, threadDispatcher);
+            Initialize(game);
         }
 
-        public void Initialize(TGCGame game, Simulation simulation, BufferPool bufferPool, SimpleThreadDispatcher threadDispatcher)
+        public void Initialize(TGCGame game)
         {
-            this.Simulation = simulation;
-            this.BufferPool = bufferPool;
-            this.ThreadDispatcher = threadDispatcher;
             this.Game = game;
 
             Camera = new StaticCamera(1f, new Vector3(-500, 1000, 0), Vector3.UnitX, Vector3.Up);
@@ -74,9 +65,7 @@ namespace TGC.MonoGame.TP.UI
 
             var screenSize = new Point(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height / 2);
 
-            //Create free camera object
-            Camera1 = new FreeCamera(GraphicsDevice.Viewport.AspectRatio, new Vector3(0, 400, 0), screenSize);
-
+       
             SpriteBatch = new SpriteBatch(GraphicsDevice);
             font = FontHolder<SpriteFont>.Get("GameFont");
             CreateScene();
@@ -108,15 +97,15 @@ namespace TGC.MonoGame.TP.UI
                                 .To3DModel()
             );
 
-            woodBall = new WoodBall(Simulation, new Vector3(1300, 1550, 400));
+            woodBall = new WoodBall(null, new Vector3(1300, 1550, 400));
             woodBall.UpdateForMenu(Matrix.CreateTranslation(new Vector3(2500, 550, 1000)), Matrix.Identity, Matrix.CreateScale(2f));
             sceneObjects.Add(woodBall);
 
-            metalBall = new MetalBall(Simulation, new Vector3(1300, 1550, 400));
+            metalBall = new MetalBall(null, new Vector3(1300, 1550, 400));
             metalBall.UpdateForMenu(Matrix.CreateTranslation(new Vector3(2500, 550, 0)), Matrix.Identity, Matrix.CreateScale(2f));
             sceneObjects.Add(metalBall);
 
-            plasticBall = new PlasticBall(Simulation, new Vector3(1300, 1550, 400));
+            plasticBall = new PlasticBall(null, new Vector3(1300, 1550, 400));
             plasticBall.UpdateForMenu(Matrix.CreateTranslation(new Vector3(2500, 550, -1000)), Matrix.Identity, Matrix.CreateScale(2f));
             sceneObjects.Add(plasticBall);
 
@@ -154,15 +143,16 @@ namespace TGC.MonoGame.TP.UI
                 MediaPlayer.Stop();
                 if (selectedBall == plasticBall)
                 {
-                    this.Game.StartGameplay(new PlasticBall(this.Simulation, new Vector3(300, 350, 400)));
+                    
+                    this.Game.StartGameplay(Ball.Plastic);
                 }
                 else if (selectedBall == woodBall)
                 {
-                    this.Game.StartGameplay(new WoodBall(this.Simulation, new Vector3(300, 350, 400)));
+                    this.Game.StartGameplay(Ball.Wood);
                 }
                 else if (selectedBall == metalBall)
                 {
-                    this.Game.StartGameplay(new MetalBall(this.Simulation, new Vector3(300, 350, 400)));
+                    this.Game.StartGameplay(Ball.Metal);
                 }
 
                 return;
