@@ -61,7 +61,7 @@ namespace TGC.MonoGame.TP
             SharedObjects.graphicsDeviceManager.ApplyChanges();
 
             //Attach to detection collider events
-            Collider.CollisionDetected += Collider_CollisionDetected;
+            CollisionDetected += Collider_CollisionDetected;
 
           
             base.Initialize();

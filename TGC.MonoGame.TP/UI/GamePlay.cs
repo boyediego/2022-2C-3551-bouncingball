@@ -126,7 +126,7 @@ namespace TGC.MonoGame.TP.UI
                        SurfaceFormat.Color, DepthFormat.Depth24, 0, RenderTargetUsage.DiscardContents);
 
 
-            switch(selectedPlayer)
+            switch (selectedPlayer)
             {
                 case Ball.Metal:
                     this.player = new MetalBall(Simulation, new Vector3(300, 350, 400));
@@ -288,6 +288,11 @@ namespace TGC.MonoGame.TP.UI
             {
                 Camera = LightCamera;
                 SharedObjects.CurrentCamera = Camera;
+            }
+            else if (Keyboard.GetState().IsKeyDown(Keys.Escape) )
+            {
+                Game.EndGameplay(this);
+                return;
             }
 
             //Before update check collision

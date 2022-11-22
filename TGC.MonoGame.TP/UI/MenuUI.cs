@@ -135,7 +135,7 @@ namespace TGC.MonoGame.TP.UI
             float time = ((float)gameTime.ElapsedGameTime.TotalSeconds);
 
             //Exit Game
-            if (Keyboard.GetState().IsKeyDown(Keys.Escape))
+            if (Keyboard.GetState().IsKeyDown(Keys.F10))
                 this.Game.Exit();
 
             if (Keyboard.GetState().IsKeyDown(Keys.Enter))
