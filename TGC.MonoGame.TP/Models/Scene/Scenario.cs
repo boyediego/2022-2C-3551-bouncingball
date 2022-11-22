@@ -36,8 +36,13 @@ namespace TGC.MonoGame.TP.Models.Scene
 
         public void SetEffectAndTextures(Model model)
         {
+            //KA: 0.37999296 KD: 0.7119946KS: 0.2320004S: 15.500027
             CustomBuilder customBuilder = new CustomBuilder();
             customBuilder
+                    .addTramo(new CustomRoad(2000, 2000, 100, 0, 0, "Marble-Road").SetKLights(0.37999296f, 0.7119946f, 0.2320004f, 16f))
+                    .addTramo(new CustomRoad(2000, 2000, 100, 0, 0, "Marble-Road").SetKLights(0.37999296f, 0.7119946f, 0.2320004f, 16f))
+                    .addTramo(new CustomRoad(2000, 2000, 100, 0, 0, "Marble-Road").SetKLights(0.37999296f, 0.7119946f, 0.2320004f, 16f))
+                    .addTramo(new CustomRoad(2000, 2000, 100, 0, 0, "Marble-Road").SetKLights(0.37999296f, 0.7119946f, 0.2320004f, 16f))
                     .addTramo(new CustomRoad(2000, 7600, 100, 0, 0, "Road-Type-2"))
                     .addObstacule(new CubeObstacule().Build(500).SetMovementDirection(Vector3.Left).SetSpeed(7000).SetMaxMovement(1500).SetInitialOffset(new Vector3(-1500 / 2f, 250, -1650)))
                     .addObstacule(new CubeObstacule().Build(500).SetMovementDirection(Vector3.Right).SetSpeed(5000).SetMaxMovement(1500).SetInitialOffset(new Vector3(1500 / 2f, 250, 0)))
@@ -169,17 +174,17 @@ namespace TGC.MonoGame.TP.Models.Scene
                 .Rotate90DegressClockwise()
                 .addSideSpace(Vector3.Left, 1500)
                 .addForwardSpace(1000)
-                .addVerticalSpace(200)
+                .addVerticalSpace(300)
                 .addPlataform(new CustomRoad(3000, 2000, 100, 0, 0, "Plataform-Type-1"))
-                .addVerticalSpace(200)
+                .addVerticalSpace(300)
                 .addPlataform(new CustomRoad(3000, 2000, 100, 0, 0, "Plataform-Type-1"))
-                .addVerticalSpace(-200)
+                .addVerticalSpace(-300)
                 .addPlataform(new CustomRoad(3000, 2000, 100, 0, 0, "Plataform-Type-1"))
-                .addVerticalSpace(-200)
+                .addVerticalSpace(-300)
                 .addPlataform(new CustomRoad(3000, 2000, 100, 0, 0, "Plataform-Type-1"))
                 .addForwardSpace(250)
                 .addSideSpace(Vector3.Left, 750)
-                .addTramo(new CustomRoad(2000, 15000, 100, 0, 0, "Road-Type-2"));
+                .addTramo(new CustomRoad(2000, 15000, 100, 0, 0, "Marble-Road").SetKLights(0.37999296f, 0.7119946f, 0.2320004f, 16f));
 
             Random rnd = new Random((int)DateTime.Now.Ticks);
             for (int z = -5000; z < 6000; z += 400)
@@ -202,10 +207,12 @@ namespace TGC.MonoGame.TP.Models.Scene
             customBuilder.addTramo(new CustomCurvedRoad(new Vector3(0, 100, 0), new Vector3(5000, 0, 5000), 3000, 100, "Road-Type-2"))
                         .addObstacule(new CubeFixedObstacule().Build(100).SetInitialOffset(new Vector3(0, 100, 0)).Rotate(0.2f))
                         .addForwardSpace(1000)
-                        .addPlataform(new CustomRoad(3000, 2000, 100, 0, 0, "Plataform-Type-1"))
+                        .addSideSpace(Vector3.Left, 650)
+                        .addVerticalSpace(-600)
+                        .addPlataform(new CustomRoad(3000, 4000, 100, 0, 0, "Metal-Finish").SetKLights(0.3f, 0.44f, 0.6f, 0.5f))
                         .End(2000);
             sceneObjects = customBuilder.GetScene();
-
+        
 
         }
 

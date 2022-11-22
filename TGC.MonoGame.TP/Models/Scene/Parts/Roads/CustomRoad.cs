@@ -18,6 +18,7 @@ using TGC.MonoGame.TP.Models.Commons;
 using BepuPhysics.Constraints;
 using TGC.MonoGame.TP.Shared;
 using Microsoft.Xna.Framework.Input;
+using System.Diagnostics;
 
 namespace TGC.MonoGame.TP.Models.Scene.Parts.Roads
 {
@@ -192,6 +193,20 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Roads
             return new StaticDescription();
         }
 
+        private float KA = 0.6f;
+        private float KD = 0.5f;
+        private float KS = 0.4f;
+        private float S = 6f;
+
+        public CustomRoad SetKLights(float KA, float KD, float KS, float S)
+        {
+            this.KA = KA;
+            this.KD = KD;
+            this.KS = KS;
+            this.S = S;
+            return this;
+        }
+
         public override void Draw(GameTime gameTime, Matrix view, Matrix projection, String techniques)
         {
             var graphicsDevice = SharedObjects.graphicsDeviceManager.GraphicsDevice;
@@ -205,11 +220,11 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Roads
                 Effect.Parameters["World"].SetValue(WorldMatrix);
                 Effect.Parameters["InverseTransposeWorld"].SetValue(Matrix.Invert(Matrix.Transpose(WorldMatrix)));
                 Effect.Parameters["WorldViewProjection"].SetValue(WorldMatrix * view * projection);
-                Effect.Parameters["Tiling"].SetValue(new Vector2(1f, 10f));
-                Effect.Parameters["KAmbient"].SetValue(0.60f);
-                Effect.Parameters["KDiffuse"].SetValue(0.5f);
-                Effect.Parameters["KSpecular"].SetValue(0.4f);
-                Effect.Parameters["shininess"].SetValue(6.0f);
+                Effect.Parameters["Tiling"].SetValue(new Vector2(1f, 50f));
+                Effect.Parameters["KAmbient"].SetValue(KA);
+                Effect.Parameters["KDiffuse"].SetValue(KD);
+                Effect.Parameters["KSpecular"].SetValue(KS);
+                Effect.Parameters["shininess"].SetValue(S);
                 triangle.Draw(Effect);
             }
             graphicsDevice.RasterizerState = oldRasterizerState;
@@ -222,7 +237,58 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Roads
 
         public override void Update(GameTime gameTime, KeyboardState keyboardState)
         {
+            if (keyboardState.IsKeyDown(Keys.J))
+            {
+                if (keyboardState.IsKeyDown(Keys.LeftShift))
+                {
+                    KA -= 0.01f;
+                }
+                else
+                {
+                    KA += 0.001f;
+                }
+                Debug.WriteLine("KA: " + KA + "KD: " + KD + "KS: " + KS + "S: " + S);
+            }
 
+            if (keyboardState.IsKeyDown(Keys.K))
+            {
+                if (keyboardState.IsKeyDown(Keys.LeftShift))
+                {
+                    KD -= 0.01f;
+                }
+                else
+                {
+                    KD += 0.001f;
+                }
+                Debug.WriteLine("KA: " + KA + "KD: " + KD + "KS: " + KS + "S: " + S);
+            }
+
+            if (keyboardState.IsKeyDown(Keys.O))
+            {
+                if (keyboardState.IsKeyDown(Keys.LeftShift))
+                {
+                    KS -= 0.01f;
+                }
+                else
+                {
+                    KS += 0.001f;
+                }
+                Debug.WriteLine("KA: " + KA + "KD: " + KD + "KS: " + KS + "S: " + S);
+            }
+
+            if (keyboardState.IsKeyDown(Keys.P))
+            {
+                if (keyboardState.IsKeyDown(Keys.LeftShift))
+                {
+                    S -= 0.1f;
+                }
+                else
+                {
+                    S += 0.1f;
+                }
+
+                Debug.WriteLine("KA: " + KA + "KD: " + KD + "KS: " + KS + "S: " + S);
+            }
         }
 
         public override void Collide(GameTime gameTime, Model3D sceneObject)

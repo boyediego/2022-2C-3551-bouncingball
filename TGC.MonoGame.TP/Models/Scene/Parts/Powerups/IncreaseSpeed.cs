@@ -38,58 +38,7 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Powerups
 
         public override void Update(GameTime gameTime, KeyboardState keyboardState)
         {
-            if (keyboardState.IsKeyDown(Keys.J))
-            {
-                if (keyboardState.IsKeyDown(Keys.LeftShift))
-                {
-                    KA -= 0.01f;
-                }
-                else
-                {
-                    KA += 0.001f;
-                }
-                Debug.WriteLine("KA: " + KA + "KD: " + KD + "KS: " + KS + "S: " + S);
-            }
-
-            if (keyboardState.IsKeyDown(Keys.K))
-            {
-                if (keyboardState.IsKeyDown(Keys.LeftShift))
-                {
-                    KD-= 0.01f;
-                }
-                else
-                {
-                    KD += 0.001f;
-                }
-                Debug.WriteLine("KA: " + KA + "KD: " + KD + "KS: " + KS + "S: " + S);
-            }
-
-            if (keyboardState.IsKeyDown(Keys.O))
-            {
-                if (keyboardState.IsKeyDown(Keys.LeftShift))
-                {
-                    KS -= 0.01f;
-                }
-                else
-                {
-                    KS += 0.001f;
-                }
-                Debug.WriteLine("KA: " + KA + "KD: " + KD + "KS: " + KS + "S: " + S);
-            }
-
-            if (keyboardState.IsKeyDown(Keys.P))
-            {
-                if (keyboardState.IsKeyDown(Keys.LeftShift))
-                {
-                    S -= 0.1f;
-                }
-                else
-                {
-                    S += 0.1f;
-                }
-
-                Debug.WriteLine("KA: " + KA + "KD: " + KD+ "KS: " + KS + "S: " + S);
-            }
+          
 
             base.Update(gameTime, keyboardState);
         }

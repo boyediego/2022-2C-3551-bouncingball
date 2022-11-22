@@ -144,6 +144,10 @@ namespace TGC.MonoGame.TP
             TexturesHolder<Texture2D>.Load(Content, "Plataform-Type-1-Normal", "roads/Plataform-Type-1-normal");
             TexturesHolder<Texture2D>.Load(Content, "Gravel", "roads/Gravel");
             TexturesHolder<Texture2D>.Load(Content, "Gravel-Normal", "roads/Gravel-normal");
+            TexturesHolder<Texture2D>.Load(Content, "Marble-Road", "roads/Marble-1");
+            TexturesHolder<Texture2D>.Load(Content, "Marble-Road-Normal", "roads/Marble-1-normal");
+            TexturesHolder<Texture2D>.Load(Content, "Metal-Finish", "roads/Metal-Finish");
+            TexturesHolder<Texture2D>.Load(Content, "Metal-Finish-Normal", "roads/Metal-Finish-normal");
 
             //Powerups Textures
             TexturesHolder<Texture2D>.Load(Content, "Powerup", "powerups/Powerup");
