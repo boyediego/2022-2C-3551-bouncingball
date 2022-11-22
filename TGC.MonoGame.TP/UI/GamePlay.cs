@@ -42,7 +42,7 @@ namespace TGC.MonoGame.TP.UI
         private TGCGame Game { get; set; }
 
         private const int ShadowmapSize = 2048;
-        private const int EnvironmentmapSize = 2048;
+        private const int EnvironmentmapSize = 512;
 
         private readonly float LightCameraFarPlaneDistance = 90000f;
         private readonly float LightCameraNearPlaneDistance = 1f;
@@ -399,32 +399,34 @@ namespace TGC.MonoGame.TP.UI
                 GraphicsDevice.SetRenderTarget(SharedObjects.CurrentEnvironmentMapRenderTarget, face);
                 GraphicsDevice.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.White, 1f, 0);
 
-                //Set camera orientation
-                SetCubemapCameraForOrientation(face);
-                CubeMapCamera.BuildView();
-
-                // Draw our scene. Do not draw our bakl as it would be occluded by itself 
-                // (if it has backface culling on)
-
-                // DrawSkyBox(CubeMapCamera);
-                foreach (IGameModel m in gamesModels)
+                if (face == CubeMapFace.NegativeZ || face == CubeMapFace.PositiveX || face== CubeMapFace.NegativeX)
                 {
-                    if (m != player)
+                    //Set camera orientation
+                    SetCubemapCameraForOrientation(face);
+                    CubeMapCamera.BuildView();
+
+                    // Draw our scene. Do not draw our bakl as it would be occluded by itself 
+                    // (if it has backface culling on)
+
+                    // DrawSkyBox(CubeMapCamera);
+                    foreach (IGameModel m in gamesModels)
                     {
-                        EffectsHolder.Get("LightEffect").Parameters["eyePosition"].SetValue(player.Position);
-                        EffectsHolder.Get("LightEffect").Parameters["lightPosition"].SetValue(SharedObjects.CurrentScene.LightPosition);
-                        EffectsHolder.Get("LightEffect").Parameters["ambientColor"].SetValue(SharedObjects.CurrentScene.AmbientLightColor);
-                        EffectsHolder.Get("LightEffect").Parameters["diffuseColor"].SetValue(SharedObjects.CurrentScene.DiffuseLightColor);
-                        EffectsHolder.Get("LightEffect").Parameters["specularColor"].SetValue(SharedObjects.CurrentScene.SpecularLightColor);
-                        EffectsHolder.Get("LightEffect").Parameters["shadowMap"].SetValue(ShadowMapRenderTarget);
-                        EffectsHolder.Get("LightEffect").Parameters["shadowMapSize"].SetValue(Vector2.One * ShadowmapSize);
-                        EffectsHolder.Get("LightEffect").Parameters["LightViewProjection"].SetValue(LightCamera.View * LightCamera.Projection);
-                        EffectsHolder.Get("LightEffect").Parameters["hasEnviroment"].SetValue(0f);
-                        m.Draw(gameTime, CubeMapCamera.View, CubeMapCamera.Projection, "LightAndShadow");
+                        if (m != player)
+                        {
+                            EffectsHolder.Get("LightEffect").Parameters["eyePosition"].SetValue(player.Position);
+                            EffectsHolder.Get("LightEffect").Parameters["lightPosition"].SetValue(SharedObjects.CurrentScene.LightPosition);
+                            EffectsHolder.Get("LightEffect").Parameters["ambientColor"].SetValue(SharedObjects.CurrentScene.AmbientLightColor);
+                            EffectsHolder.Get("LightEffect").Parameters["diffuseColor"].SetValue(SharedObjects.CurrentScene.DiffuseLightColor);
+                            EffectsHolder.Get("LightEffect").Parameters["specularColor"].SetValue(SharedObjects.CurrentScene.SpecularLightColor);
+                            EffectsHolder.Get("LightEffect").Parameters["shadowMap"].SetValue(ShadowMapRenderTarget);
+                            EffectsHolder.Get("LightEffect").Parameters["shadowMapSize"].SetValue(Vector2.One * ShadowmapSize);
+                            EffectsHolder.Get("LightEffect").Parameters["LightViewProjection"].SetValue(LightCamera.View * LightCamera.Projection);
+                            EffectsHolder.Get("LightEffect").Parameters["hasEnviroment"].SetValue(0f);
+                            m.Draw(gameTime, CubeMapCamera.View, CubeMapCamera.Projection, "NormalMapping");
+                        }
                     }
+
                 }
-
-
             }
         }
 

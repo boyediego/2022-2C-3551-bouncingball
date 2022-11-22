@@ -55,7 +55,7 @@ namespace TGC.MonoGame.TP.Models.Scene
                     .addPlataform(new CustomRoad(3000, 2000, 100, 0, 0, "Plataform-Type-1"))
                     .addPowerup(new IncreaseSpeed().Build(GameParams.PowerupSize), Vector3.Zero)
                     .addTramo(new CustomRoad(3000, 10000, 100, 0, 0, "Road-Type-2"));
-        
+
             for (int x = 0; x < 2500; x += 100)
             {
                 customBuilder.addObstacule(new CubeFixedObstacule().Build(100).SetInitialOffset(new Vector3(1450, 50, x)));
@@ -163,14 +163,47 @@ namespace TGC.MonoGame.TP.Models.Scene
                 .addTramo(new CustomRoad(5000, 3000, 100, 0, 0, "Road-Type-2"))
                 .addPowerup(new ExtraJump().Build(GameParams.PowerupSize), Vector3.Zero)
                 .addTramo(new CustomRoad(5000, 3000, 100, 900, 0, "Road-Type-2"))
-                .addPowerup(new ExtraJump().Build(GameParams.PowerupSize), Vector3.Zero)
                 .addTramo(new CustomRoad(5000, 3000, 100, 0, 0, "Road-Type-2"))
                 .addCheckpoint(5000)
-                .addTramo(new CustomCurvedRoad(new Vector3(0, 100, 0), new Vector3(12000, 900, 16000), 3000, 100, "Road-Type-2"))
-                .addObstacule(new CubeFixedObstacule().Build(100).SetInitialOffset(new Vector3(0, 100, 0)).Rotate(0.2f))
-                .addForwardSpace(1000)
                 .addPlataform(new CustomRoad(3000, 2000, 100, 0, 0, "Plataform-Type-1"))
-                .End(2000);
+                .Rotate90DegressClockwise()
+                .addSideSpace(Vector3.Left, 1500)
+                .addForwardSpace(1000)
+                .addVerticalSpace(200)
+                .addPlataform(new CustomRoad(3000, 2000, 100, 0, 0, "Plataform-Type-1"))
+                .addVerticalSpace(200)
+                .addPlataform(new CustomRoad(3000, 2000, 100, 0, 0, "Plataform-Type-1"))
+                .addVerticalSpace(-200)
+                .addPlataform(new CustomRoad(3000, 2000, 100, 0, 0, "Plataform-Type-1"))
+                .addVerticalSpace(-200)
+                .addPlataform(new CustomRoad(3000, 2000, 100, 0, 0, "Plataform-Type-1"))
+                .addForwardSpace(250)
+                .addSideSpace(Vector3.Left, 750)
+                .addTramo(new CustomRoad(2000, 15000, 100, 0, 0, "Road-Type-2"));
+
+            Random rnd = new Random((int)DateTime.Now.Ticks);
+            for (int z = -5000; z < 6000; z += 400)
+            {
+                int offsetZ = rnd.Next(10, 80);
+                int obstacleSize = rnd.Next(100, 200);
+                float offsetY = obstacleSize / 2;
+                
+
+                int obstacleInLine = rnd.Next(1, 4);
+
+                for (int countLine = 0; countLine < obstacleInLine; countLine++)
+                {
+                    float inclinacion = Convert.ToSingle((Math.PI * 2) * rnd.NextDouble());
+                    int offsetX = rnd.Next(0, 2000) - 1000;
+                    customBuilder.addObstacule(new CubeFixedObstacule().Build(obstacleSize).Rotate(inclinacion).SetInitialOffset(new Vector3(offsetX, offsetY, z + offsetZ)));
+                }
+            }
+
+            customBuilder.addTramo(new CustomCurvedRoad(new Vector3(0, 100, 0), new Vector3(5000, 0, 5000), 3000, 100, "Road-Type-2"))
+                        .addObstacule(new CubeFixedObstacule().Build(100).SetInitialOffset(new Vector3(0, 100, 0)).Rotate(0.2f))
+                        .addForwardSpace(1000)
+                        .addPlataform(new CustomRoad(3000, 2000, 100, 0, 0, "Plataform-Type-1"))
+                        .End(2000);
             sceneObjects = customBuilder.GetScene();
 
 
