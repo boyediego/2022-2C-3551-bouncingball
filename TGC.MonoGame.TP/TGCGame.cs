@@ -152,6 +152,8 @@ namespace TGC.MonoGame.TP
             //Obstacule Textures
             TexturesHolder<Texture2D>.Load(Content, "Stone-Type-1", "obstacules/Stone-Type-1");
             TexturesHolder<Texture2D>.Load(Content, "Stone-Type-1-Normal", "obstacules/Stone-Type-1-normal");
+            TexturesHolder<Texture2D>.Load(Content, "Marble", "obstacules/Marble");
+            TexturesHolder<Texture2D>.Load(Content, "Marble-Normal", "obstacules/Marble-normal");
 
 
             //Extras

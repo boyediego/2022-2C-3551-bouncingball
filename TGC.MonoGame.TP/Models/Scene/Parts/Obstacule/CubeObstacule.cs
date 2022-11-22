@@ -30,7 +30,12 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Obstacule
         protected float Size;
 
 
+        private float KA = 0.4f;
+        private float KD = 0.8f;
+        private float KS = 0.2f;
+        private float shininess = 12f;
 
+        
         public CubeObstacule() : base(null)
         {
 
@@ -42,6 +47,17 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Obstacule
             base.Effect = EffectsHolder.Get("LightEffect");
             this.texture = TexturesHolder<Texture2D>.Get("Stone-Type-1");
             this.textureNormal = TexturesHolder<Texture2D>.Get("Stone-Type-1-Normal");
+        }
+
+        public CubeObstacule ChangeTexture(String texture, float KA, float KD, float KS, float shininess)
+        {
+            this.texture = TexturesHolder<Texture2D>.Get(texture);
+            this.textureNormal = TexturesHolder<Texture2D>.Get(texture + "-Normal");
+            this.KA = KA;
+            this.KD = KD;
+            this.KS = KS;
+            this.shininess = shininess;
+            return this;
         }
 
         public CubeObstacule Build(float size)
@@ -118,10 +134,10 @@ namespace TGC.MonoGame.TP.Models.Scene.Parts.Obstacule
                 Effect.Parameters["InverseTransposeWorld"].SetValue(Matrix.Invert(Matrix.Transpose(WorldMatrix)));
                 Effect.Parameters["WorldViewProjection"].SetValue(WorldMatrix * view * projection);
                 Effect.Parameters["Tiling"].SetValue(new Vector2(1f, 4f));
-                Effect.Parameters["KAmbient"].SetValue(0.4f);
-                Effect.Parameters["KDiffuse"].SetValue(0.8f);
-                Effect.Parameters["KSpecular"].SetValue(0.2f);
-                Effect.Parameters["shininess"].SetValue(12.0f);
+                Effect.Parameters["KAmbient"].SetValue(KA);
+                Effect.Parameters["KDiffuse"].SetValue(KD);
+                Effect.Parameters["KSpecular"].SetValue(KS);
+                Effect.Parameters["shininess"].SetValue(shininess);
                 if (techniques == null)
                     Effect.CurrentTechnique = Effect.Techniques["NormalMapping"];
 
